@@ -1,0 +1,32 @@
+<book date="2019-01-04" xml:lang="de">
+<title>Die Klinik</title>
+<body>Ein Blick hinter die Kulissen eines Krankenhauses vom Autor der Bestseller "Der Medicus" und "Der Medicus von Saragossa". Der Wissenschaftler Adam Silverstone, der kubanische Aristokrat Rafael Meomartino und der Farbige Spurgeon Robinson - sie sind drei grundverschiedene Klinik-Ärzte, die unter der unerbittlichen Aufsicht von Dr. Longwood praktizieren. Eines Tages stirbt eine Patientin, und Dr. Longwood wittert einen Behandlungsfehler. Sofort macht er sich auf die Suche nach einem Schuldigen, dem er die Verantwortung in die Schuhe schieben könnte ...</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+</categories>
+<authors>Noah Gordon</authors>
+<published>2013-12-02</published>
+<isbn>9783641136291</isbn>
+<url>https://www.randomhouse.de/ebook/Die-Klinik/Noah-Gordon/Heyne/e460034.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Die Erben von Midkemia 4</title>
+<body>Die Bedrohungen für Midkemia und Kelewan wollen nicht enden: Obwohl das Konklave der Schatten Leso Varen und seinen Nachtfalken dicht auf den Fersen ist, schmieden sie weiter ihre finsteren Umsturzpläne gegen das Herrscherhaus von Kesh. Zugleich stellt sich heraus, dass von den mysteriösen Talnoy eine bisher ungekannte Gefahr ausgeht: durch ihre magischen Kräfte können die fürchterlichen Dasati ins Reich Midkemia eindringen und alle ins Unheil stürzen …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Fantasy</topic>
+<topic d="2" label="True">Heroische Fantasy</topic>
+</category>
+</categories>
+<authors>Raymond Feist</authors>
+<published>2016-06-20</published>
+<isbn>9783641185787</isbn>
+<url>https://www.randomhouse.de/ebook/Die-Erben-von-Midkemia-4/Raymond-Feist/Blanvalet-Taschenbuch/e496571.rhd%0A</url>
+</book>
