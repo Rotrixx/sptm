@@ -1,3 +1,5 @@
+from textblob_de import TextBlobDE
+
 bookStr = ''
 bodyStr = ''
 bookArray = []
@@ -19,4 +21,17 @@ with open('Data/train_small.txt','r') as file:
 		else:
 			bookStr += line
 
-print(bookArray)
+print(bookArray[0][1])
+
+def wordsPerSentenceAndNumberSentences(text):
+	j = 0
+	k = 0
+	blob = TextBlobDE(text)
+	for sentence in blob.sentences:
+		k += 1 #
+		for word in sentence.words:
+			j += 1
+	j = j / k
+	return j,k
+
+print(wordsPerSentenceAndNumberSentences(bookArray[0][1]))
