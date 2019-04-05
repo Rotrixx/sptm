@@ -30,3 +30,23 @@
 <isbn>9783641185787</isbn>
 <url>https://www.randomhouse.de/ebook/Die-Erben-von-Midkemia-4/Raymond-Feist/Blanvalet-Taschenbuch/e496571.rhd%0A</url>
 </book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Meine russische Energiedusche</title>
+<body>Warten Sie nicht auf ein gesünderes Leben nach dem Tod. Handeln Sie jetzt. In gewohnter provokant-unterhaltsamer Manier vermittelt Norbekov Techniken, die zu optimistischer Lebenseinstellung und emotionaler Balance führen. Sein Übungsbuch bietet Praktiken zur Atemregulierung, Aktivierung eigener Energiefelder und Verjüngung der Wirbelsäule. Nach dem Kälte-Wärme-Prickeln-Prinzip kann jeder sein inneres Energiepotenzial entfalten und ein vitales Ganzkörpergefühl erreichen. Norbekovs „Energiedusche“ wirkt besser als jeder Energizer-Drink.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Ganzheitliches Bewusstsein</topic>
+<topic d="1" label="True">Körper & Seele</topic>
+</category>
+<category>
+<topic d="0">Ganzheitliches Bewusstsein</topic>
+<topic d="1" label="True">Energieheilung</topic>
+</category>
+</categories>
+<authors>Mirsakarim Norbekov</authors>
+<published>2011-02-14</published>
+<isbn>9783442219353</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Meine-russische-Energiedusche/Mirsakarim-Norbekov/Goldmann-TB/e349766.rhd%0A</url>
+</book>
