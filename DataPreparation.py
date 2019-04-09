@@ -3,6 +3,9 @@
 from textblob_de import TextBlobDE
 import pandas as pd
 import json
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split
+from sklearn import metrics
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -12,6 +15,7 @@ bodyStr = ''
 titleStr = ''
 authorStr = ''
 categoryStr = ''
+firstCategory = ''
 allCategoryStr = set()
 isbnStr = ''
 bookArray = []
@@ -26,10 +30,11 @@ with open('Data/train_small.txt','r') as file:
 			titleStr = ''
 			authorStr = ''
 			categoryStr = ''
+			firstCategory = ''
 			allCategoryStr = set()
 			isbnStr = ''
 		elif line.startswith('</book>'):
-			bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr))
+			bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
 		elif line.startswith('<body>'):
 			bodyStr += line
 			bodyStr = bodyStr[:-8]
@@ -46,6 +51,7 @@ with open('Data/train_small.txt','r') as file:
 			categoryStr += line
 			categoryStr = categoryStr[:-9]
 			categoryStr = categoryStr[13:]
+			firstCategory = categoryStr
 			allCategoryStr.add(categoryStr)
 			categoryStr = ''
 		elif line.startswith('<isbn>'):
@@ -156,10 +162,26 @@ def featurize(text):
 
 for i in bookArray:
 	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-	data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG])
+	data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
 	isbnData.append(bookArray[currPos][4])
 	currPos += 1
 
-dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],index=isbnData,dtype=float)
+dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
 
 print(dataFrame)
+
+X=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
+y=dataFrame['Genre']  # Labels
+
+# Split dataset into training set and test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
+
+#Create a Gaussian Classifier
+clf=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+
+#Train the model using the training sets y_pred=clf.predict(X_test)
+clf.fit(X_train,y_train)
+
+y_pred=clf.predict(X_test)
+
+print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
