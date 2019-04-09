@@ -84,7 +84,7 @@ with open('Data/blurbs_test.txt','r') as file:
 			tallCategoryStr = set()
 			tisbnStr = ''
 		elif line.startswith('</book>'):
-			bookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+			tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
 		elif line.startswith('<body>'):
 			tbodyStr += line
 			tbodyStr = tbodyStr[:-8]
@@ -233,8 +233,8 @@ for i in tbookArray:
 dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
 dataFrameNoDict=pd.DataFrame(dataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],index=isbnData,dtype=float)
 
-tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
-tdataFrameNoDict=pd.DataFrame(tdataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],index=isbnData,dtype=float)
+tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
+tdataFrameNoDict=pd.DataFrame(tdataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],dtype=float)
 
 #print(dataFrame)
 
@@ -244,8 +244,8 @@ y=dataFrame['Genre']  # Labels
 X_trainBD=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
 y_trainBD=dataFrame['Genre']  # Labels
 
-X_testBD=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
-y_testBD=dataFrame['Genre']  # Labels
+X_testBD=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
+y_testBD=tdataFrame['Genre']  # Labels
 
 # Split dataset into training set and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
@@ -278,7 +278,6 @@ y_pred=clf.predict(X_test)
 cla=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
 cla.fit(X_train,y_train)
 y_pred2=cla.predict(X_test)
-
 
 print("Accuracy RandomForestNoDict:",metrics.accuracy_score(y_test, y_pred))
 print("Accuracy NearestCentroidNoDict:",metrics.accuracy_score(y_test, y_pred2))
