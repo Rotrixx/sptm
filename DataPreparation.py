@@ -23,7 +23,7 @@ data = []
 isbnData = []
 currPos = 0
 
-with open('Data/train_small.txt','r') as file:
+with open('Data/blurbs_train.txt','r') as file:
 	for line in file:
 		if line.startswith('<book'):
 			bodyStr = ''
@@ -149,14 +149,19 @@ def featurize(text):
 	rVerbs = nVerbs / tockens
 	rAdjectives = nAdjectives / tockens
 
-	gdrLU = grLU / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrR = grR / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrKJ = grKJ / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrS = grS / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrGB = grGB / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrGE = grGE / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrK = grK / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
-	gdrAG = grAG / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	allHits = (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+
+	if allHits == 0:
+		allHits = 1
+
+	gdrLU = grLU / allHits
+	gdrR = grR / allHits
+	gdrKJ = grKJ / allHits
+	gdrS = grS / allHits
+	gdrGB = grGB / allHits
+	gdrGE = grGE / allHits
+	gdrK = grK / allHits
+	gdrAG = grAG / allHits
 
 	return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
