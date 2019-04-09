@@ -2,6 +2,7 @@
 
 from textblob_de import TextBlobDE
 import pandas as pd
+import json
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -52,6 +53,23 @@ with open('Data/train_small.txt','r') as file:
 			isbnStr = isbnStr[:-8]
 			isbnStr = isbnStr[6:]
 
+with open('dictLU.txt','r') as file:
+	dictLU = json.load(file)
+with open('dictR.txt','r') as file:
+	dictR = json.load(file)
+with open('dictKJ.txt','r') as file:
+	dictKJ = json.load(file)
+with open('dictS.txt','r') as file:
+	dictS = json.load(file)
+with open('dictGB.txt','r') as file:
+	dictGB = json.load(file)
+with open('dictGE.txt','r') as file:
+	dictGE = json.load(file)
+with open('dictK.txt','r') as file:
+	dictK = json.load(file)
+with open('dictAG.txt','r') as file:
+	dictAG = json.load(file)
+
 print(bookArray[0][0])
 print(bookArray[0][1])
 print(bookArray[0][2])
@@ -72,7 +90,20 @@ def featurize(text):
 		k += 1
 		for word in sentence.words:
 			j += 1
+
+	if k == 0:
+		k = 1
+
 	j = j / k
+
+	grLU = 0
+	grR = 0
+	grKJ = 0
+	grS = 0
+	grGB = 0
+	grGE = 0
+	grK = 0
+	grAG = 0
 
 	textTockens = blob.tags
 	for i in textTockens:
@@ -88,18 +119,47 @@ def featurize(text):
 		elif i[1] == 'SYM':
 			nSym += 1
 
+		if i[0] in dictLU:
+			grLU += 1
+		if i[0] in dictR:
+			grR += 1
+		if i[0] in dictKJ:
+			grKJ += 1
+		if i[0] in dictS:
+			grS += 1
+		if i[0] in dictGB:
+			grGB += 1
+		if i[0] in dictGE:
+			grGE += 1
+		if i[0] in dictK:
+			grK += 1
+		if i[0] in dictAG:
+			grAG += 1
+
+	if tockens == 0:
+		tockens = 1
+
 	rNouns = nNouns / tockens
 	rVerbs = nVerbs / tockens
 	rAdjectives = nAdjectives / tockens
 
-	return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym
+	gdrLU = grLU / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrR = grR / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrKJ = grKJ / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrS = grS / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrGB = grGB / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrGE = grGE / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrK = grK / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+	gdrAG = grAG / (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
+
+	return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
 for i in bookArray:
-	wps,ns,rn,rv,ra,nc,nsym = featurize(bookArray[currPos][0])
-	data.append([wps,ns,rn,rv,ra,nc,nsym])
+	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+	data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG])
 	isbnData.append(bookArray[currPos][4])
 	currPos += 1
 
-dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols'],index=isbnData,dtype=float)
+dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],index=isbnData,dtype=float)
 
 print(dataFrame)
