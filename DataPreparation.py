@@ -4,6 +4,7 @@ from textblob_de import TextBlobDE
 import pandas as pd
 import json
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.neighbors.nearest_centroid import NearestCentroid
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
@@ -20,10 +21,23 @@ allCategoryStr = set()
 isbnStr = ''
 bookArray = []
 data = []
+dataNoDict = []
 isbnData = []
 currPos = 0
 
-with open('Data/blurbs_train.txt','r') as file:
+tbodyStr = ''
+ttitleStr = ''
+tauthorStr = ''
+tcategoryStr = ''
+tfirstCategory = ''
+tallCategoryStr = set()
+tisbnStr = ''
+tbookArray = []
+tdata = []
+tdataNoDict = []
+tisbnData = []
+
+with open('Data/blurbs_train2.txt','r') as file:
 	for line in file:
 		if line.startswith('<book'):
 			bodyStr = ''
@@ -58,6 +72,42 @@ with open('Data/blurbs_train.txt','r') as file:
 			isbnStr += line
 			isbnStr = isbnStr[:-8]
 			isbnStr = isbnStr[6:]
+
+with open('Data/blurbs_test.txt','r') as file:
+	for line in file:
+		if line.startswith('<book'):
+			tbodyStr = ''
+			ttitleStr = ''
+			tauthorStr = ''
+			tcategoryStr = ''
+			tfirstCategory = ''
+			tallCategoryStr = set()
+			tisbnStr = ''
+		elif line.startswith('</book>'):
+			bookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+		elif line.startswith('<body>'):
+			tbodyStr += line
+			tbodyStr = tbodyStr[:-8]
+			tbodyStr = tbodyStr[6:]
+		elif line.startswith('<title>'):
+			ttitleStr += line
+			ttitleStr = ttitleStr[:-9]
+			ttitleStr = ttitleStr[7:]
+		elif line.startswith('<authors>'):
+			tauthorStr += line
+			tauthorStr = tauthorStr[:-11]
+			tauthorStr = tauthorStr[9:]
+		elif line.startswith('<topic d="0">'):
+			tcategoryStr += line
+			tcategoryStr = tcategoryStr[:-9]
+			tcategoryStr = tcategoryStr[13:]
+			tfirstCategory = tcategoryStr
+			tallCategoryStr.add(tcategoryStr)
+			tcategoryStr = ''
+		elif line.startswith('<isbn>'):
+			tisbnStr += line
+			tisbnStr = tisbnStr[:-8]
+			tisbnStr = tisbnStr[6:]
 
 with open('dictLU.txt','r') as file:
 	dictLU = json.load(file)
@@ -168,25 +218,80 @@ def featurize(text):
 for i in bookArray:
 	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
 	data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+	dataNoDict.append([wps,ns,rn,rv,ra,nc,nsym,bookArray[currPos][5]])
 	isbnData.append(bookArray[currPos][4])
 	currPos += 1
 
-dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
+currPos = 0
+for i in tbookArray:
+	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
+	tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+	tdataNoDict.append([wps,ns,rn,rv,ra,nc,nsym,tbookArray[currPos][5]])
+	tisbnData.append(tbookArray[currPos][4])
+	currPos += 1
 
-print(dataFrame)
+dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
+dataFrameNoDict=pd.DataFrame(dataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],index=isbnData,dtype=float)
+
+tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
+tdataFrameNoDict=pd.DataFrame(tdataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],index=isbnData,dtype=float)
+
+#print(dataFrame)
 
 X=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
 y=dataFrame['Genre']  # Labels
+
+X_trainBD=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
+y_trainBD=dataFrame['Genre']  # Labels
+
+X_testBD=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
+y_testBD=dataFrame['Genre']  # Labels
 
 # Split dataset into training set and test set
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
 
 #Create a Gaussian Classifier
 clf=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-
 #Train the model using the training sets y_pred=clf.predict(X_test)
 clf.fit(X_train,y_train)
-
 y_pred=clf.predict(X_test)
 
-print("Accuracy:",metrics.accuracy_score(y_test, y_pred))
+cla=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
+cla.fit(X_train,y_train)
+y_pred2=cla.predict(X_test)
+
+print("Accuracy RandomForest:",metrics.accuracy_score(y_test, y_pred))
+print("Accuracy NearestCentroid:",metrics.accuracy_score(y_test, y_pred2))
+
+X=dataFrameNoDict[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols']]  # Features
+y=dataFrameNoDict['Genre']  # Labels
+
+# Split dataset into training set and test set
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
+
+#Create a Gaussian Classifier
+clf=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+#Train the model using the training sets y_pred=clf.predict(X_test)
+clf.fit(X_train,y_train)
+y_pred=clf.predict(X_test)
+
+cla=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
+cla.fit(X_train,y_train)
+y_pred2=cla.predict(X_test)
+
+
+print("Accuracy RandomForestNoDict:",metrics.accuracy_score(y_test, y_pred))
+print("Accuracy NearestCentroidNoDict:",metrics.accuracy_score(y_test, y_pred2))
+
+clfBD=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+#Train the model using the training sets y_pred=clf.predict(X_test)
+clfBD.fit(X_trainBD,y_trainBD)
+y_predBD=clfBD.predict(X_testBD)
+
+claBD=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
+claBD.fit(X_trainBD,y_trainBD)
+y_pred2BD=claBD.predict(X_testBD)
+
+
+print("Accuracy RandomForestBetterDict:",metrics.accuracy_score(y_testBD, y_predBD))
+print("Accuracy NearestCentroidBetterDict:",metrics.accuracy_score(y_testBD, y_pred2BD))
