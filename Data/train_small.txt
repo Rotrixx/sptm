@@ -32,21 +32,475 @@
 </book>
 
 <book date="2019-01-04" xml:lang="de">
-<title>Meine russische Energiedusche</title>
-<body>Warten Sie nicht auf ein gesünderes Leben nach dem Tod. Handeln Sie jetzt. In gewohnter provokant-unterhaltsamer Manier vermittelt Norbekov Techniken, die zu optimistischer Lebenseinstellung und emotionaler Balance führen. Sein Übungsbuch bietet Praktiken zur Atemregulierung, Aktivierung eigener Energiefelder und Verjüngung der Wirbelsäule. Nach dem Kälte-Wärme-Prickeln-Prinzip kann jeder sein inneres Energiepotenzial entfalten und ein vitales Ganzkörpergefühl erreichen. Norbekovs „Energiedusche“ wirkt besser als jeder Energizer-Drink.</body>
+<title>Völlig losgelöst</title>
+<body>In der Dreizimmerwohnung stapeln sich Flohmarktfunde und modische Fehlkäufe, und durch den lang erhofften Karrieresprung dreht sich das Hamsterrad nur noch schneller. Vielen Menschen geht es ähnlich: In unserer Welt voll Hektik und Überfluss sehnen wir uns danach, uns wieder auf die wirklich wichtigen Dinge zu konzentrieren und Zeit zu haben für Familie, Freunde und uns selbst. Konsumforscher, Psychologen und überzeugte Minimalisten zeigen in diesem Buch, wie wir uns von Unwichtigem trennen, nachhaltig konsumieren und uns endlich wieder frei fühlen – denn weniger ist in der Tat mehr.</body>
 <copyright>(c) Verlagsgruppe Random House GmbH</copyright>
 <categories>
 <category>
-<topic d="0">Ganzheitliches Bewusstsein</topic>
-<topic d="1" label="True">Körper & Seele</topic>
-</category>
-<category>
-<topic d="0">Ganzheitliches Bewusstsein</topic>
-<topic d="1" label="True">Energieheilung</topic>
+<topic d="0">Ratgeber</topic>
+<topic d="1">Lebenshilfe & Psychologie</topic>
+<topic d="2" label="True">Besser leben</topic>
 </category>
 </categories>
-<authors>Mirsakarim Norbekov</authors>
-<published>2011-02-14</published>
-<isbn>9783442219353</isbn>
-<url>https://www.randomhouse.de/Taschenbuch/Meine-russische-Energiedusche/Mirsakarim-Norbekov/Goldmann-TB/e349766.rhd%0A</url>
+<authors>Susanne Weingarten</authors>
+<published>2019-01-14</published>
+<isbn>9783328103646</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Voellig-losgeloest/Susanne-Weingarten/Penguin/e542881.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Dich erfüllen</title>
+<body>An der Seite von Damien fühlt sich Nikki zum ersten Mal geborgen, aber auch immer wieder herausgefordert. Mit ihm erlebt sie erfüllende Leidenschaft und tiefe Nähe. Endlich hat Damien ihr sein dunkelstes Geheimnis anvertraut. Doch Intrigen erschüttern die Beziehung und stellen ihre Liebe auf eine harte Probe. Als Damien mit seinem schlimmsten Albtraum konfrontiert wird, droht Nikki ihn für immer zu verlieren … Roman 3 der Stark-Serie</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Erotik</topic>
+</category>
+</categories>
+<authors>J. Kenner</authors>
+<published>2014-04-14</published>
+<isbn>9783453357792</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Dich-erfuellen/J.-Kenner/Diana/e446387.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Der Orientzyklus</title>
+<body>Wer Kara Ben Nemsi, Hadschi Halef Omar und Sir David Lindsay leibhaftig bei ihren Abenteuern zwischen Algerien und Istanbul erleben möchte, dem sei diese originalgetreue, effektvolle Hörspielinszenierung ans Herz gelegt. Der Westdeutsche Rundfunk produziert mit Walter Adler (Regie) und über 140 Sprechern ein opulentes Spektakel für die Hörer, vor einer aufwändigen Geräuschkulisse aus Bazargeplauder und Kampflärm, aus Pferdegetrappel und stimmungsvoll orchestrierter Musik. Für fast zwölf Hörstunden werden Kara Ben Nemsis alias Karl Mays Orientabenteuer mit seinen Geschichten von Treue und Verrat, von Glaube und Toleranz plötzlich ganz lebendig.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+</categories>
+<authors>Karl May</authors>
+<published>2007-08-13</published>
+<isbn>9783844504958</isbn>
+<url>https://www.randomhouse.de/Hoerbuch-Download/Der-Orientzyklus/Karl-May/der-Hoerverlag/e400467.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Ana Kraš Ikebana Albums</title>
+<body>Fotografin, Künstlerin, Illustratorin, Designerin und gelegentlich auch Model – die Talente von Ana Kraš sind vielseitig und laut der New York Times ist die Newcomerin der „Design Star of the Moment“. Besonders ihre Möbel- und Interiordesigns haben Kraš zu einer gefragten Designerin in den USA und darüber hinaus gemacht. Was auch immer sie gerade macht, das Ergebnis ist stets innovativ und klug durchdacht. In der Fotografie eine Autodidaktin, stellte Kraš für ihre erste wichtige Monografie rund 200 sehr persönliche Aufnahmen sowohl in Farbe als auch in Schwarzweiß zusammen. Es sind keine perfekten Kompositionen, sondern charmante Momentaufnahmen voller Kreativität und Lebenslust. Als wären sie Schnappschüsse direkt aus ihrem Leben. Ikebana Albums wurde von Kraš‘ Aufenthalten in Japan inspiriert und ist sicher nicht das letzte Fotobuch dieser aufstrebenden Künstlerin, die man unbedingt im Auge behalten sollte.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Künste</topic>
+<topic d="1" label="True">Fotografie</topic>
+</category>
+</categories>
+<authors>Ana Kraš</authors>
+<published>2016-10-03</published>
+<isbn>9783791382746</isbn>
+<url>https://www.randomhouse.de/Buch/Ana-Kras-Ikebana-Albums/Ana-Kras/Prestel/e500429.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Wenn Gott verschwindet, verschwindet der Mensch</title>
+<body>Kein Himmel, keine Hölle, kein Gott! Nicht nur John Lennon erträumte eine friedliche Welt ohne Religion. Immer mehr Menschen scheint die Abkehr vom Glauben das Heilmittel gegen Kriege, Unrecht und Gewalt, gegen Fanatismus, Unmündigkeit und kirchliche Bevormundung. Der Katholik und Weltreisende Rolf Bauerdick folgt den Wegen und Irrwegen des Christentums der Gegenwart nicht als distanzierter Beobachter. Er zeigt, was es heißt, wenn der Mensch die spirituelle Dimension seines Daseins verliert. In einer Zeit, in der die alten Gottesbilder verschwinden und der Mensch selbst zum Maß aller Dinge wird, wirbt Bauerdick für einen selbstbewussten Glauben, der Tradition und Freiheit versöhnt. Dieser Glaube lebt vom steten Wachhalten des Fragens und verlässt sich nicht auf ewig gültige Antworten. Rolf Bauerdicks Buch ist eine äußere und innere Reise auf den Spuren einer der zentralen Fragen des Menschseins.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Sachbuch</topic>
+<topic d="1" label="True">Glaube und Grenzerfahrungen</topic>
+</category>
+</categories>
+<authors>Rolf Bauerdick</authors>
+<published>2016-10-11</published>
+<isbn>9783421046024</isbn>
+<url>https://www.randomhouse.de/Buch/Wenn-Gott-verschwindet,-verschwindet-der-Mensch/Rolf-Bauerdick/DVA-Sachbuch/e430837.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Let's Bake</title>
+<body>Über 70 ganz neue Rezepte der Berliner Baking Queen! Alles ganz leicht nachzubacken und einfach unwiderstehlich. Mit vielen Extratipps, damit’s garantiert gelingt! Schokolade-Orangen-Muffins, Ziegenkäsemuffins, perfekte Brötchen, Blaubeerpfannkuchen, Buttermilch-Nuss-Waffeln, Zimt-Rosinen-Bagels, Himbeer-Cheesecake-Brownies, Variationen vom Apple Pie, weißer Schokokuchen, Marzipan-Cheesecake, Mokka-Cupcakes ...</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Ratgeber</topic>
+<topic d="1">Essen & Trinken</topic>
+<topic d="2" label="True">Starköche</topic>
+</category>
+</categories>
+<authors>Cynthia Barcomi, Ulf Meyer zu Kueingdorf</authors>
+<published>2013-03-18</published>
+<isbn>9783442392421</isbn>
+<url>https://www.randomhouse.de/Buch/Lets-Bake/Cynthia-Barcomi/Mosaik-Verlag/e422556.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Du bist nie allein</title>
+<body>Die junge Witwe Julie muss sich zwischen zwei Männern entscheiden: dem charmanten Richard und dem schüchternen Mike. Als sie schließlich ihre Wahl trifft, glaubt sie, ihr Glück gefunden zu haben. Doch bald kommen ihr Zweifel an ihrem Verehrer: Seine Liebe wird mehr und mehr zur Besessenheit."Nicholas Sparks schreibt stilsicher, glaubhaft und voller Wärme."</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Frauenunterhaltung</topic>
+<topic d="2" label="True">Große Gefühle</topic>
+</category>
+</categories>
+<authors>Nicholas Sparks</authors>
+<published>2006-05-02</published>
+<isbn>9783453810105</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Du-bist-nie-allein/Nicholas-Sparks/Heyne/e208784.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Star Trek: Nexus</title>
+<body>Die USS Cochise wird von unerklärlichen Gravitationsanomalien erschüttert. Dann ergreift eine furchtbare Angst die Mannschaft, ein Crew-Mitglied tötet seinen Kameraden und begeht anschließend Selbstmord. Die Sensoren der Enterprise können die Ursachen des Phänomens erfassen: Ein Tor, das den Transit zu einer Lichtjahre weit entfernten Galaxis ermöglicht. Schon einmal war der Enterprise ein derartiger Transit gelungen. Plötzlich tauchen überall im Föderationsgebiet derartige Tore auf, bedrohen sogar die Erde und verbreiten Paranoia. Auch Captain Kirk wird von dem Panik-Sydrom erfasst. Und dann wird die Enterprise in den Gravitationsstrudel des Tores gerissen.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Science Fiction</topic>
+</category>
+</categories>
+<authors>Gene DeWeese</authors>
+<published>2014-02-25</published>
+<isbn>9783641114886</isbn>
+<url>https://www.randomhouse.de/ebook/Star-Trek:-Nexus/Gene-DeWeese/Heyne/e442052.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Sternenstaub</title>
+<body>Die selbstbewusste Archäologin Riley hat einen Auftrag: Zusammen mit fünf weiteren Auserwählten muss sie nach Irland reisen, um dort die Suche nach dem letzten Stern, dem Stern des Eises, zu vollenden und das Schicksal aller Welten zu retten. Um die noch fehlenden Hinweise zu finden, vertieft sich Riley in die Geschichte und die Mythen Irlands. Als sie eines Tages in eine gefährliche Situation gerät, ist es der geheimnisvolle Doyle, der sie rettet, und sie kommen einander näher, gefährlich nah. Doch Doyle verschloss einst sein Herz für immer. Wird ihre Liebe trotzdem eine Chance haben? Und werden die sechs Auserwählten es schaffen, ihre Mission zu erfüllen?</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Frauenunterhaltung</topic>
+<topic d="2" label="True">Große Gefühle</topic>
+</category>
+</categories>
+<authors>Nora Roberts</authors>
+<published>2017-06-19</published>
+<isbn>9783734103414</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Sternenstaub/Nora-Roberts/Blanvalet-Taschenbuch/e499325.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Der Araber von morgen, Band 1</title>
+<body>Arabischer Frühling, Umsturz in Libyen und Krieg in Syrien. Als Reaktion darauf greift der 36-jährige französische Zeichner und Filmemacher Riad Sattouf zum Stift und erzählt von seiner Kindheit in der arabischen Welt: ein blondgelockter Junge, Sohn einer Französin und eines Syrers, wächst in Libyen und Syrien auf. Die Graphic Novel vom blonden Araber im Land der Diktatoren stürmte in Frankreich die Bestsellerlisten wie zuvor nur Marjane Satrapis „Persepolis“.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Comic & Cartoon</topic>
+</category>
+</categories>
+<authors>Riad Sattouf</authors>
+<published>2015-02-16</published>
+<isbn>9783813506662</isbn>
+<url>https://www.randomhouse.de/Paperback/Der-Araber-von-morgen,-Band-1/Riad-Sattouf/Knaus/e474173.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Cheers, Ladies!</title>
+<body>Einen Toast auf alle Frauen, die unbeirrt ihren Weg gehen und die Welt verändern! Cheers, Ladies! feiert 60 ikonischen Frauen unserer Zeit und widmet jeder einen eigenen Cocktail. Inspiriert von ihrer schillernden Persönlichkeit, ihren Vorlieben oder ihrem individuellen Stil, bringen die Drinks die unverwechselbare Besonderheit dieser Frauen zum Ausdruck. Köstliche Cocktailrezepte, gemixt mit charmanten Anekdoten und lebhaften Illustrationen – eine erfrischende Hommage an die coolsten, unkonventionellsten und einflussreichsten Frauen des 20. und 21. Jahrhunderts. Mit Cocktail-Rezepten u.a von Frida Kahlo, Beyoncé, Sofia Coppola, Vivienne Westwood, Missy Elliott, Cher, Yoko Ono, Zaha Hadid, Gloria Steinem, Hari Nef, Edith Pia, Tanya Tagaq, Dolly Parto, M.I.A, Anaïs Nin, Carmen Miranda, Rei Kawakubo, Kathleen Hanna, Peaches, Jane Goodall, Josephine Baker, Serena Williams, Patti Smith, Mary Tyler Moore, Alison Bechdel, Selena, Marlene Dietrich, Joan Didion, Yayoi Kusama, Beth Ditto, Marina Abramović, Lucille Ball, Coco Chanel, Grace Jones, Flo-Jo, Margaret Atwood, Edith Head, Naomi Klein, Margaret Cho, Grace Coddington, Ella Fitzgerald, Mindy Kaling, Cindy Sherman, Maya Angelou, Bette Davis, Nadya Tolokonnikova, Christiane Amanpour, Meryl Streep, Daryl Hannah, Anna Pavlova, Simone de Beauvoir, Rihanna, Rupi Kaur, Nigella Lawson, Virginia Woolf, Zadie Smith, Melissa McCarthy, Laverne Cox, Angelina Jolie und Iris Apfel.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Künste</topic>
+<topic d="1" label="True">Mode & Lifestyle</topic>
+</category>
+</categories>
+<authors>Jennifer Croll, Kelly Shami</authors>
+<published>2018-05-29</published>
+<isbn>9783791384252</isbn>
+<url>https://www.randomhouse.de/Buch/Cheers,-Ladies/Jennifer-Croll/Prestel/e536319.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Clockwork Orange</title>
+<body>Der Jugendliche Alex zieht mit drei anderen Rowdys durch die Straßen. Zum Spaß verprügeln sie hilflose Passanten, rauben Geschäfte aus und vergewaltigen Frauen. Nach einem missglückten Raubüberfall auf eine alte Frau, die dabei stirbt, wird Alex festgenommen und zu 14 Jahren Haft verurteilt. Um vorzeitig freizukommen, stimmt er einer besonderen Resozialisierung zu ...</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+</categories>
+<authors>Anthony Burgess</authors>
+<published>2012-10-08</published>
+<isbn>9783837117486</isbn>
+<url>https://www.randomhouse.de/Hoerbuch-Download/Clockwork-Orange/Anthony-Burgess/Hoerbuch-Editionen/e431347.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Knochenbett</title>
+<body>Scarpetta ist als Zeugin im Prozess gegen einen Öl-Tycoon geladen, der seine spurlos verschwundene Ehefrau ermordet haben soll. Wenige Stunden zuvor wurde eine mumifizierte Frauenleiche aus dem Bostoner Hafen geborgen. ist sie die Vermisste? Fieberhaft beginnt die berühmte Rechtsmedizinerin mit der Untersuchung, während die Anwältin des Angeklagten alles daran setzt, Scarpettas Reputation zu untergraben. Daneben machen Scarpetta noch ganz andere Probleme zu schaffen: Chefermittler Pete Marino gerät unter Mordverdacht, und Ehemann Benton Wesley scheint sich von ihr abzuwenden. Steuert sie beruflich und privat auf eine Katastrophe zu?</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Krimi & Thriller</topic>
+<topic d="2" label="True">Gerichtsmedizin / Pathologie</topic>
+</category>
+</categories>
+<authors>Patricia Cornwell</authors>
+<published>2015-02-16</published>
+<isbn>9783442478545</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Knochenbett/Patricia-Cornwell/Goldmann-TB/e406170.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Der Krieg der Trolle (4)</title>
+<body>Im Land zwischen den Bergen ist die Zeit des Friedens vorbei. Krieg liegt in der Luft, und dann taucht auch noch ein tödlich verwundeter Zwerg im südlichen Hochland von Wlachkis auf – Ereignisse, die wie ein dunkler Schatten auf dem Land liegen. Doch die eigentliche Gefahr nähert sich aus dem Dunkel in den Tiefen der Berge: blutrünstige Wesen, die Jagd auf Trolle machen und neue Zwietracht zwischen den Stämmen säen. Der Feind, der nun erwacht ist, bedroht alles Leben unter und über der Erde. Werden Trolle und Menschen sich zur letzten großen Schlacht vereinen können?</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Fantasy</topic>
+<topic d="2" label="True">Abenteuer-Fantasy</topic>
+</category>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Fantasy</topic>
+<topic d="2" label="True">Heroische Fantasy</topic>
+</category>
+</categories>
+<authors>Christoph Hardebusch</authors>
+<published>2012-11-12</published>
+<isbn>9783453314313</isbn>
+<url>https://www.randomhouse.de/Paperback/Der-Krieg-der-Trolle-(4)/Christoph-Hardebusch/Heyne/e416299.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Altern wie ein Gentleman</title>
+<body>Der Ernst des Arbeitslebens sitzt uns tief unter der Haut – das merkt man spätestens mit der ersten Rentenrate, meint Sven Kuntze, renommierter Journalist – im Ruhestand. Denn mit dem Ende geregelter Arbeit drohen Verlust des Selbstwertgefühls und Lebensunordnung. Kuntze erinnert sich zu Beginn seiner neuen Zeitrechnung, dass über Jahrhunderte Muße unser Lebensziel war, nicht Arbeit. Wie aus dem Arbeitenden ein Flaneur, ein entschleunigter Genießer wird, verfolgt er an sich und einigen Altersgenossen. Um die Freiheit von Arbeit schätzen zu lernen, muss er sich neu erfinden, dabei alle unerbetenen Ratschläge genauso in den Wind schlagen wie frühes Aufstehen und Tagesplanung. Was Sven Kuntze in drei Jahren Ruhestand mit sich und anderen erlebt, mit Witz, Nachdenklichkeit und Lebensfreude kommentiert, gibt jedem Anlass, lange vor dem Ruhestand das »Schneller Höher Weiter« des Alltags kritisch zu beleuchten.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Sachbuch</topic>
+<topic d="1">Politik & Gesellschaft</topic>
+<topic d="2" label="True">Gesellschaftskritik</topic>
+</category>
+</categories>
+<authors>Sven Kuntze</authors>
+<published>2011-05-11</published>
+<isbn>9783641059569</isbn>
+<url>https://www.randomhouse.de/ebook/Altern-wie-ein-Gentleman/Sven-Kuntze/C.-Bertelsmann/e378575.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Kopf hoch, Deutschland!</title>
+<body>Welche E-Mail lesen Deutschlands Manager, Schüler und Politiker schon um 6 Uhr morgens? Das "Morning Briefing" des "Handelsblatt"-Herausgebers und Bestsellerautors Gabor Steingart. Steingart erklärt das Weltgeschehen und hat bei seinen über 500.000 Abonnenten Kultstatus. Sein Markenzeichen: Themen setzen, kommentieren, pointiert, kritisch, aber immer mit Zuversicht. Der Wert des Geschriebenen zeigt sich, wie bei einem guten Tagebuch, erst in der Rückschau. Für sein Buch "Kopf hoch, Deutschland!" hat Steingart das Beste aus seinem morgendlichen Weckruf zusammengestellt, überarbeitet und thematisch neu geordnet: Entstanden ist ein kluger und inspirierender Blick auf unsere Welt, wie sie wirklich ist.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Sachbuch</topic>
+<topic d="1">Politik & Gesellschaft</topic>
+<topic d="2" label="True">Weltpolitik & Globalisierung</topic>
+</category>
+</categories>
+<authors>Gabor Steingart</authors>
+<published>2017-11-13</published>
+<isbn>9783813508000</isbn>
+<url>https://www.randomhouse.de/Buch/Kopf-hoch,-Deutschland/Gabor-Steingart/Knaus/e535094.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Der unglückliche Mörder</title>
+<body>Kommissar Van Veeteren schwört Rache: Sein Sohn Erich, seit Jahren das Sorgenkind der Familie, wird ermordet aufgefunden, gerade als er wieder anfing, im bürgerlichen Leben Fuß zu fassen. Hat er sich auf kriminelle Geschäfte eingelassen? Wenig später wird die Leiche einer jungen, unbescholtenen Frau entdeckt – von derselben Waffe erschlagen wie Erich Van Veeteren. Was verband die beiden jungen Leute? Wer hatte ein Interesse, sie aus dem Weg zu räumen?</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Krimi & Thriller</topic>
+<topic d="2" label="True">Nordische Krimis</topic>
+</category>
+</categories>
+<authors>Håkan Nesser</authors>
+<published>2012-10-08</published>
+<isbn>9783442742783</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Der-unglueckliche-Moerder/Hakan-Nesser/btb-Taschenbuch/e395761.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Bekommen wir ein gesundes Baby?</title>
+<body>Bekommen wir ein gesundes Baby? Das ist die Frage, die werdende Eltern am meisten bewegt. Die moderne Medizin bietet entsprechende Kontrolluntersuchungen an, die bei Eltern häufig jedoch Verunsicherung auslösen und zu ethischen Konflikten führen. Die erfahrene Geburtsvorbereiterin Vivian Weigert informiert umfassend über Chancen und Risiken der pränatalen Diagnostik. Sie geht dabei auch auf den emotionalen Zwiespalt und auf Ängste ein, die werdende Eltern durchleben, gibt Entscheidungshilfen und lässt Betroffene zu Wort kommen. Ein Buch für alle Schwangeren und ihre Partner, die wissen wollen, was vorgeburtliche Untersuchungen wirklich nützen und wie sie einen eigenen, für sich stimmigen Weg finden.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Ratgeber</topic>
+<topic d="1">Eltern & Familie</topic>
+<topic d="2" label="True">Schwangerschaft & Geburt</topic>
+</category>
+</categories>
+<authors>Vivian Weigert</authors>
+<published>2006-09-14</published>
+<isbn>9783466344994</isbn>
+<url>https://www.randomhouse.de/Paperback/Bekommen-wir-ein-gesundes-Baby/Vivian-Weigert/Koesel/e244853.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Liebesarten</title>
+<body>In jedem Leben gibt es Wendepunkte, nach denen nichts mehr so ist wie zuvor – war das Glück überwältigend, wird es plötzlich brüchig, selbstlose Hingabe wechselt in eitle Eigenliebe, Leidenschaft wird Verzweiflung. Ulla Hahn erzählt von diesen Wendepunkten, und jeder Wendepunkt stellt eine Variation auf die Liebe dar. Das sind bestrickende Geschichten über die Sehnsüchte, die nur manchmal erfüllt werden, über die Siege und Niederlagen des Zusammenlebens, über Zuwendung und Zärtlichkeit. Mitreißend und doch empfindsam, nahe, aber nie indiskret erzählt Ulla Hahn aus unserem Leben.</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Romane & Erzählungen</topic>
+<topic d="2" label="True">Erzählungen & Kurzgeschichten</topic>
+</category>
+</categories>
+<authors>Ulla Hahn</authors>
+<published>2017-10-09</published>
+<isbn>9783328101840</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Liebesarten/Ulla-Hahn/Penguin/e525273.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Gefährtin der Ewigkeit</title>
+<body>Seit Jahrhunderten lebt die mächtige Vampirin Nefri in einer Welt, in der es keine Leidenschaften gibt. Nun hat sie nicht nur einen gefährlichen Auftrag, sondern auch einen betörenden Begleiter. Der schöne Santiago strahlt eine Anziehungskraft aus, der sie sich kaum entziehen kann. Nefri stürzt sich in den Kampf: gegen die uralte finstere Kraft, die unter den Menschen und Dämonen wütet, und gegen das überwältigende Verlangen, das Santiago in ihr entfacht …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Fantasy</topic>
+<topic d="2" label="True">Urban Fantasy</topic>
+</category>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Mystery</topic>
+</category>
+</categories>
+<authors>Alexandra Ivy</authors>
+<published>2013-11-11</published>
+<isbn>9783453355897</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Gefaehrtin-der-Ewigkeit/Alexandra-Ivy/Diana/e373544.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Sündiges Spiel</title>
+<body>Es ist der bisher mysteriöseste Fall für Lieutenant Eve Dallas. Bart Minnock, Gründer von U-Play, einem gigantischen Computerspieleimperium, wird tot in seinem Haus aufgefunden. Die Freundin des Opfers ist gelähmt vor Trauer, und seine Partner bei U-Play sind aufrichtig geschockt. Der sympathische Millionär schien keine Feinde zu haben. Doch Erfolg zieht immer Neider nach sich, sobald es um viel Geld, Macht und Rivalitäten geht. Das weiß auch Roarke, Eves Ehemann und Konkurrent von Minnock. Aber der junge Unternehmer war alles andere als naiv und wusste, wie man sich wehrt, sowohl in der realen Welt als auch in der virtuellen …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Krimi & Thriller</topic>
+<topic d="2" label="True">Lady-Thriller</topic>
+</category>
+</categories>
+<authors>J.D. Robb</authors>
+<published>2016-05-16</published>
+<isbn>9783734102011</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Suendiges-Spiel/J.D.-Robb/Blanvalet-Taschenbuch/e481762.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Schabbat und Werktage</title>
+<body>- Die Gebetstexte durch das jüdische Jahr in einer zeitgemäßen, leicht verständlichen Übertragung - Klar gegliedert und übersichtlich gestaltet Ein Gebetbuch ist der öffentlichste und zugleich der intimste Ausdruck jüdischer Wertvorstellungen und Erfahrungen. Es ist der beste Zugang, um einen Einblick in die Seele des jüdischen Glaubens zu erhalten, ist aber gleichzeitig auch ein Zeugnis der täglichen Kämpfe, die in dieser Seele stattfinden. In diesem vierbändigen Jüdischen Gebetbuch eröffnet sich die reiche Tradition des jüdischen Gottesdienstes in einer leicht erschließbaren Form und einer ausdrucksvollen deutschen Übersetzung, die die poetische Sprachkraft des Originals bewahrt. Es ist die wesentliche Grundlage der jüdischen Glaubenspraxis, das die Gebetstexte durch das gesamte jüdische Jahr zugänglich macht. Der erste Band versammelt die Gebete für Werktage und Schabbat. Band 2 enthält Pessach, Schawuot und Sukkot, Band 3 Rosch Haschana (Neujahrsfest) und Band 4 Jom Kippur (Versöhnungstag).</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Glaube & Ethik</topic>
+<topic d="1" label="True">Theologie</topic>
+</category>
+<category>
+<topic d="0">Glaube & Ethik</topic>
+<topic d="1">Spiritualität & Religion</topic>
+<topic d="2" label="True">Spiritualität & Religion Weltreligionen</topic>
+</category>
+</categories>
+<authors>Andreas Nachama, Jonah Sievers</authors>
+<published>2009-09-21</published>
+<isbn>9783579025957</isbn>
+<url>https://www.randomhouse.de/Buch/Schabbat-und-Werktage/Andreas-Nachama/Guetersloher-Verlagshaus/e251048.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>April in Paris</title>
+<body>Frühjahr 1943 im besetzten Paris: Der junge deutsche Gefreite Roth glaubt sich aus den Wirren des Kriegs heraushalten zu können. Tagsüber arbeitet er als Dolmetscher für die Gestapo, abends flaniert er heimlich in Zivilkleidern durch seine geliebte Stadt. Auf einem dieser Streifzüge lernt er Chantal kennen, die Tochter eines französischen Buchhändlers. Er ahnt nicht, dass diese geheimnisvolle junge Frau der Résistance angehört und er dabei ist, sich auf eine unmögliche und äußerst gefährliche Liebe einzulassen. Und viel zu spät begreift er auch, dass er seine Zurückhaltung, die ihm das Leben retten sollte, längst aufgegeben hat …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Historische Romane</topic>
+</category>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+</categories>
+<authors>Michael Wallner</authors>
+<published>2007-10-01</published>
+<isbn>9783442736935</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/April-in-Paris/Michael-Wallner/btb-Taschenbuch/e242847.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Abingdon Hall - Der letzte Sommer</title>
+<body>Europa im Oktober 1914. Der Krieg naht, doch in diesem letzten Sommer hat er Abingdon Hall noch nicht erreicht. Hier, auf dem luxuriösen Landsitz der Familie Greville, nehmen die Partys und Romanzen ihren Lauf. Alexandra Greville, die Tochter des Hauses, macht sich für ihre Saison als Debütantin bereit, während ihr Bruder Charles einer hoffnungslosen Liebe nachtrauert. In den unteren Etagen, bei der Dienerschaft, bemüht sich das neue Hausmädchen Ivy, sich den Routinen der eingeschworenen Bediensteten anzupassen – und möglichst wenig aufzufallen. Doch lange kann der Krieg auch auf Abingdon Hall nicht mehr verleugnet werden …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Frauenunterhaltung</topic>
+<topic d="2" label="True">Familiensaga</topic>
+</category>
+</categories>
+<authors>Phillip Rock</authors>
+<published>2014-09-15</published>
+<isbn>9783442383047</isbn>
+<url>https://www.randomhouse.de/Taschenbuch/Abingdon-Hall-Der-letzte-Sommer/Phillip-Rock/Blanvalet-Taschenbuch/e440056.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Ein Ja im Sommer</title>
+<body>Cara versucht Fuß auf dem Heiratsmarkt zu fassen. Natürlich nur beruflich. Als Floristin entwirft sie romantische Blumenarrangements für den großen Tag. Privat glaubt Cara schon lange nicht mehr an die Liebe, und mit ihrem Ehemann ist es aus. In ihrem Leben läuft es wirklich alles andere als rund: Ihr Assistent will lieber für die Konkurrenz arbeiten, ihr strenger Vater fordert sein Geld zurück, und ein Hundedieb hat es auf ihren Vierbeiner abgesehen. Warum nur sieht der Kerl so unverschämt gut aus? Sinnlich und erfrischend liest Rike Schmid den neuen Roman von M.K. Andrews – ein unwiderstehlich, „prickelndes“ Hörvergnügen!</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Romane & Erzählungen</topic>
+</category>
+</categories>
+<authors>Mary Kay Andrews</authors>
+<published>2015-05-25</published>
+<isbn>9783837130676</isbn>
+<url>https://www.randomhouse.de/Hoerbuch-MP3/Ein-Ja-im-Sommer/Mary-Kay-Andrews/Random-House-Audio/e479662.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Operation Foxbat</title>
+<body>Überall auf der Welt entführen Unbekannte russische MiG-25, genannt Foxbat. Für die russischen Behörden handelt es sich lediglich um das Verschwinden veralteter Ausrüstung. Doch Jason Richter vom britischen Geheimdienst erkennt die Zusammenhänge. Skrupellose Politiker inszenieren einen spektakulären Coup. Sie wollen die Vereinigten Staaten erpressen, um so ungestört ihren Machtplänen nachgehen zu können – und Jason Richter ist der Einzige, der sie aufhalten kann …</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Krimi & Thriller</topic>
+<topic d="2" label="True">Politthriller</topic>
+</category>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1">Krimi & Thriller</topic>
+<topic d="2" label="True">Abenteuer & Action</topic>
+</category>
+</categories>
+<authors>Commander James Barrington</authors>
+<published>2010-08-13</published>
+<isbn>9783641048013</isbn>
+<url>https://www.randomhouse.de/ebook/Operation-Foxbat/Commander-James-Barrington/Blanvalet-Taschenbuch/e368097.rhd%0A</url>
+</book>
+
+<book date="2019-01-04" xml:lang="de">
+<title>Der Sommer der schwarzen Schafe</title>
+<body>Eine ganz normale Straße in einer ganz normalen Vorstadt irgendwo in England. Als während eines ungewöhnlich heißen Sommers Mrs. Creasy verschwindet, wird hinter verschlossenen Türen und vorgehaltenen Händen getuschelt. Ist sie aus freien Stücken gegangen? Oder wurde Mrs. Creasy Opfer eines Verbrechens? Die beiden Mädchen Grace und Tilly beschließen, die Sache aufzuklären. Sie klopfen an Türen, stellen Fragen – und kommen dabei einem ganz anderen Geheimnis auf die Spur. Jeder hier scheint etwas verbergen zu wollen. Und als die Hitze immer drückender wird, drängt eine lange vergrabene Wahrheit ans Licht, die für alle Bewohner Konsequenzen haben wird ...</body>
+<copyright>(c) Verlagsgruppe Random House GmbH</copyright>
+<categories>
+<category>
+<topic d="0">Literatur & Unterhaltung</topic>
+<topic d="1" label="True">Frauenunterhaltung</topic>
+</category>
+</categories>
+<authors>Joanna Cannon</authors>
+<published>2017-05-09</published>
+<isbn>9783809026693</isbn>
+<url>https://www.randomhouse.de/Buch/Der-Sommer-der-schwarzen-Schafe/Joanna-Cannon/Limes/e487194.rhd%0A</url>
 </book>
