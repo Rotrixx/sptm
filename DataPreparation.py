@@ -5,9 +5,13 @@ import pandas as pd
 import json
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.neighbors import RadiusNeighborsClassifier
 from sklearn.naive_bayes import ComplementNB
+from sklearn.naive_bayes import GaussianNB
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.naive_bayes import BernoulliNB
 from sklearn.linear_model import PassiveAggressiveClassifier
-from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
 pd.set_option('display.max_rows', 500)
@@ -258,10 +262,35 @@ nearestcentroidClassifier=NearestCentroid(metric='manhattan', shrink_threshold=0
 nearestcentroidClassifier.fit(X_train,y_train)
 y_predNC=nearestcentroidClassifier.predict(X_test)
 
+# KNearestNeighborClassifier
+kNearestNeighborClassifier=KNeighborsClassifier(n_neighbors=5)
+kNearestNeighborClassifier.fit(X_train,y_train)
+y_predKNN=kNearestNeighborClassifier.predict(X_test)
+
+# RadiusNeighborClassifier
+radiusNeighborClassifier=RadiusNeighborsClassifier(radius=10.0)
+radiusNeighborClassifier.fit(X_train,y_train)
+y_predRN=radiusNeighborClassifier.predict(X_test)
+
 # ComplementNaiveBayesClassifier
 naiveBayesClassifier=ComplementNB(alpha=0.3)
 naiveBayesClassifier.fit(X_train,y_train)
 y_predNB=naiveBayesClassifier.predict(X_test)
+
+# GaussianNaiveBayesClassifier
+gaussianNaiveBayesClassifier=GaussianNB()
+gaussianNaiveBayesClassifier.fit(X_train,y_train)
+y_predGNB=gaussianNaiveBayesClassifier.predict(X_test)
+
+# Multinominal<NaiveBayesClassifier
+multinominalNaiveBayesClassifier=MultinomialNB()
+multinominalNaiveBayesClassifier.fit(X_train,y_train)
+y_predMNB=multinominalNaiveBayesClassifier.predict(X_test)
+
+# BernoulliNaiveBayesClassifier
+bernoulliNaiveBayesClassifier=BernoulliNB()
+bernoulliNaiveBayesClassifier.fit(X_train,y_train)
+y_predBNB=bernoulliNaiveBayesClassifier.predict(X_test)
 
 # PassiveAggressiveClassifier
 passiveAggressiveClassifier=PassiveAggressiveClassifier(C=1.0,max_iter=100,random_state=0,tol=0.002)
@@ -270,5 +299,22 @@ y_predPA=passiveAggressiveClassifier.predict(X_test)
 
 print("Accuracy RandomForest:",metrics.accuracy_score(y_test, y_predRF))
 print("Accuracy NearestCentroid:",metrics.accuracy_score(y_test, y_predNC))
+print("Accuracy KNearestNeighbor:",metrics.accuracy_score(y_test, y_predKNN))
+print("Accuracy RadiusNeighbor:",metrics.accuracy_score(y_test, y_predRN))
 print("Accuracy NaiveBayes:",metrics.accuracy_score(y_test, y_predNB))
+print("Accuracy GaussianNaiveBayes:",metrics.accuracy_score(y_test, y_predGNB))
+print("Accuracy MultinominalNaiveBayes:",metrics.accuracy_score(y_test, y_predMNB))
+print("Accuracy BernoulliNaiveBayes:",metrics.accuracy_score(y_test, y_predBNB))
 print("Accuracy PassiveAggressive:",metrics.accuracy_score(y_test, y_predPA))
+
+"""
+Accuracy RandomForest: 0.728448275862069
+Accuracy NearestCentroid: 0.09913793103448276
+Accuracy KNearestNeighbor: 0.5086206896551724
+Accuracy RadiusNeighbor: 0.5387931034482759
+Accuracy NaiveBayes: 0.21551724137931033
+Accuracy GaussianNaiveBayes: 0.7327586206896551
+Accuracy MultinominalNaiveBayes: 0.5431034482758621
+Accuracy BernoulliNaiveBayes: 0.5387931034482759
+Accuracy PassiveAggressive: 0.4353448275862069
+"""
