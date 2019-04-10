@@ -5,6 +5,8 @@ import pandas as pd
 import json
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors.nearest_centroid import NearestCentroid
+from sklearn.naive_bayes import ComplementNB
+from sklearn.linear_model import PassiveAggressiveClassifier
 from sklearn.model_selection import train_test_split
 from sklearn import metrics
 
@@ -12,6 +14,7 @@ pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
 pd.set_option('display.width', 1000)
 
+# TrainVariables
 bodyStr = ''
 titleStr = ''
 authorStr = ''
@@ -21,10 +24,10 @@ allCategoryStr = set()
 isbnStr = ''
 bookArray = []
 data = []
-dataNoDict = []
 isbnData = []
 currPos = 0
 
+# TestVariables
 tbodyStr = ''
 ttitleStr = ''
 tauthorStr = ''
@@ -34,9 +37,9 @@ tallCategoryStr = set()
 tisbnStr = ''
 tbookArray = []
 tdata = []
-tdataNoDict = []
 tisbnData = []
 
+# Read TrainData
 with open('Data/blurbs_train2.txt','r') as file:
 	for line in file:
 		if line.startswith('<book'):
@@ -73,6 +76,7 @@ with open('Data/blurbs_train2.txt','r') as file:
 			isbnStr = isbnStr[:-8]
 			isbnStr = isbnStr[6:]
 
+# Read TestData
 with open('Data/blurbs_test.txt','r') as file:
 	for line in file:
 		if line.startswith('<book'):
@@ -215,82 +219,56 @@ def featurize(text):
 
 	return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
+# Creation of TrainDataFrame
 for i in bookArray:
 	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
 	data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
-	dataNoDict.append([wps,ns,rn,rv,ra,nc,nsym,bookArray[currPos][5]])
 	isbnData.append(bookArray[currPos][4])
 	currPos += 1
 
+# Creation of TestDataFrame
 currPos = 0
 for i in tbookArray:
 	wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
 	tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
-	tdataNoDict.append([wps,ns,rn,rv,ra,nc,nsym,tbookArray[currPos][5]])
 	tisbnData.append(tbookArray[currPos][4])
 	currPos += 1
 
+# TrainDataFrame
 dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
-dataFrameNoDict=pd.DataFrame(dataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],index=isbnData,dtype=float)
 
+# TestDataFrame
 tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
-tdataFrameNoDict=pd.DataFrame(tdataNoDict,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','Genre'],dtype=float)
 
-#print(dataFrame)
+# TrainData
+X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+y_train=dataFrame['Genre']
 
-X=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
-y=dataFrame['Genre']  # Labels
+# TestData
+X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+y_test=tdataFrame['Genre']
 
-X_trainBD=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
-y_trainBD=dataFrame['Genre']  # Labels
+# RandomForestClassifier
+randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+randomForestClassifier.fit(X_train,y_train)
+y_predRF=randomForestClassifier.predict(X_test)
 
-X_testBD=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]  # Features
-y_testBD=tdataFrame['Genre']  # Labels
+# NearestCentroidClassifier
+nearestcentroidClassifier=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
+nearestcentroidClassifier.fit(X_train,y_train)
+y_predNC=nearestcentroidClassifier.predict(X_test)
 
-# Split dataset into training set and test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
+# ComplementNaiveBayesClassifier
+naiveBayesClassifier=ComplementNB(alpha=0.3)
+naiveBayesClassifier.fit(X_train,y_train)
+y_predNB=naiveBayesClassifier.predict(X_test)
 
-#Create a Gaussian Classifier
-clf=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-#Train the model using the training sets y_pred=clf.predict(X_test)
-clf.fit(X_train,y_train)
-y_pred=clf.predict(X_test)
+# PassiveAggressiveClassifier
+passiveAggressiveClassifier=PassiveAggressiveClassifier(C=1.0,max_iter=100,random_state=0,tol=0.002)
+passiveAggressiveClassifier.fit(X_train,y_train)
+y_predPA=passiveAggressiveClassifier.predict(X_test)
 
-cla=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
-cla.fit(X_train,y_train)
-y_pred2=cla.predict(X_test)
-
-print("Accuracy RandomForest:",metrics.accuracy_score(y_test, y_pred))
-print("Accuracy NearestCentroid:",metrics.accuracy_score(y_test, y_pred2))
-
-X=dataFrameNoDict[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols']]  # Features
-y=dataFrameNoDict['Genre']  # Labels
-
-# Split dataset into training set and test set
-X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3) # 70% training and 30% test
-
-#Create a Gaussian Classifier
-clf=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-#Train the model using the training sets y_pred=clf.predict(X_test)
-clf.fit(X_train,y_train)
-y_pred=clf.predict(X_test)
-
-cla=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
-cla.fit(X_train,y_train)
-y_pred2=cla.predict(X_test)
-
-print("Accuracy RandomForestNoDict:",metrics.accuracy_score(y_test, y_pred))
-print("Accuracy NearestCentroidNoDict:",metrics.accuracy_score(y_test, y_pred2))
-
-clfBD=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-#Train the model using the training sets y_pred=clf.predict(X_test)
-clfBD.fit(X_trainBD,y_trainBD)
-y_predBD=clfBD.predict(X_testBD)
-
-claBD=NearestCentroid(metric='manhattan', shrink_threshold=0.3)
-claBD.fit(X_trainBD,y_trainBD)
-y_pred2BD=claBD.predict(X_testBD)
-
-
-print("Accuracy RandomForestBetterDict:",metrics.accuracy_score(y_testBD, y_predBD))
-print("Accuracy NearestCentroidBetterDict:",metrics.accuracy_score(y_testBD, y_pred2BD))
+print("Accuracy RandomForest:",metrics.accuracy_score(y_test, y_predRF))
+print("Accuracy NearestCentroid:",metrics.accuracy_score(y_test, y_predNC))
+print("Accuracy NaiveBayes:",metrics.accuracy_score(y_test, y_predNB))
+print("Accuracy PassiveAggressive:",metrics.accuracy_score(y_test, y_predPA))
