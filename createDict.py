@@ -35,7 +35,7 @@ def addToDict(word):
 	if 'Architektur & Garten' in bookArray[curr][1]:
 		dictAG[word] = 1
 
-with open('Data/train_small.txt','r') as file:
+with open('Data/blurbs_train2.txt','r') as file:
 	for line in file:
 		if line.startswith('<book'):
 			bodyStr = ''
