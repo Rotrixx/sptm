@@ -134,11 +134,7 @@ with open('dictK.txt','r') as file:
 with open('dictAG.txt','r') as file:
         dictAG = json.load(file)
 
-print(bookArray[0][0])
-print(bookArray[0][1])
-print(bookArray[0][2])
-print(bookArray[0][3])
-print(bookArray[0][4])
+print('Reading files Done')
 
 def featurize(text):
         j = 0
@@ -246,6 +242,8 @@ for i in tbookArray:
         tisbnData.append(tbookArray[currPos][4])
         currPos += 1
 
+print('Featurize Done')
+
 # TrainDataFrame
 dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
 
@@ -260,12 +258,14 @@ y_train=dataFrame['Genre']
 X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
 y_test=tdataFrame['Genre']
 
+print('DataFrames Done')
+
 # RandomForestClassifier
 randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
 randomForestClassifier.fit(X_train,y_train)
 
 # RadiusNeighborClassifier
-radiusNeighborClassifier=RadiusNeighborsClassifier(radius=6.0)
+radiusNeighborClassifier=RadiusNeighborsClassifier(radius=9.0,outlier_label='Literatur & Unterhaltung')
 radiusNeighborClassifier.fit(X_train,y_train)
 
 # GaussianNaiveBayesClassifier
@@ -280,11 +280,15 @@ multinominalNaiveBayesClassifier.fit(X_train,y_train)
 bernoulliNaiveBayesClassifier=BernoulliNB(alpha=0.95)
 bernoulliNaiveBayesClassifier.fit(X_train,y_train)
 
+print('All training  Done')
+
 y_predRF=randomForestClassifier.predict(X_test)
 y_predRN=radiusNeighborClassifier.predict(X_test)
 y_predGNB=gaussianNaiveBayesClassifier.predict(X_test)
 y_predMNB=multinominalNaiveBayesClassifier.predict(X_test)
 y_predBNB=bernoulliNaiveBayesClassifier.predict(X_test)
+
+print('Predictions Done')
 
 # Add to Ensemble
 for e in y_predRF:
@@ -304,7 +308,6 @@ ensembleDecision = []
 while i < len(ensembleArray[0]):
     vdict = {'Literatur & Unterhaltung' : 0, 'Ratgeber' : 0, 'Kinderbuch & Jugendbuch' : 0, 'Sachbuch' : 0, 'Ganzheitliches Bewusstsein' : 0, 'Glaube & Ethik' : 0, 'Künste' : 0, 'Architektur & Garten' : 0} 
     j = 0
-    print(ensembleArray[2])
     while j < 5:
         if j == 0 or j == 2:
             w = 2
@@ -328,8 +331,6 @@ while i < len(ensembleArray[0]):
             vdict['Architektur & Garten'] += w
         j += 1
     ensembleDecision.append(max(vdict, key=vdict.get))
-    print(vdict)
-    print(ensembleDecision[i])
     i += 1
 
 #X_ensembleTreeDataFrameTrain = pd.DataFrame(data={'RF' : ensembleArray[0], 'RN' : ensembleArray[1], 'GNB' : ensembleArray[2], 'MNB' : ensembleArray[3], 'BNB' : ensembleArray[4]})
