@@ -60,6 +60,8 @@ with open('Data/blurbs_train2.txt','r') as file:
                         bodyStr += line
                         bodyStr = bodyStr[:-8]
                         bodyStr = bodyStr[6:]
+                        if bodyStr == '':
+                            continue
                 elif line.startswith('<title>'):
                         titleStr += line
                         titleStr = titleStr[:-9]
@@ -97,6 +99,8 @@ with open('Data/blurbs_test.txt','r') as file:
                         tbodyStr += line
                         tbodyStr = tbodyStr[:-8]
                         tbodyStr = tbodyStr[6:]
+                        if tbodyStr == '':
+                            continue
                 elif line.startswith('<title>'):
                         ttitleStr += line
                         ttitleStr = ttitleStr[:-9]
