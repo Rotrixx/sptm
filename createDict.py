@@ -1,4 +1,5 @@
 from textblob_de import TextBlobDE
+from nltk.corpus import stopwords
 import json
 
 bodyStr = ''
@@ -6,6 +7,7 @@ bookArray = []
 categoryStr = ''
 allCategoryStr = set()
 curr = 0
+stopWords = set(stopwords.words('german'))
 
 dictLU = {}
 dictR = {}
@@ -18,21 +20,21 @@ dictAG = {}
 
 def addToDict(word):
         global curr
-        if 'Literatur & Unterhaltung' in bookArray[curr][1]:
+        if 'Literatur & Unterhaltung' in bookArray[curr][1] and word not in stopWords:
                 dictLU[word] = 1
-        if 'Ratgeber' in bookArray[curr][1]:
+        if 'Ratgeber' in bookArray[curr][1] and word not in stopWords:
                 dictR[word] = 1
-        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1]:
+        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1] and word not in stopWords:
                 dictKJ[word] = 1
-        if 'Sachbuch' in bookArray[curr][1]:
+        if 'Sachbuch' in bookArray[curr][1] and word not in stopWords:
                 dictS[word] = 1
-        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1]:
+        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1] and word not in stopWords:
                 dictGB[word] = 1
-        if 'Glaube & Ethik' in bookArray[curr][1]:
+        if 'Glaube & Ethik' in bookArray[curr][1] and word not in stopWords:
                 dictGE[word] = 1
-        if 'Künste' in bookArray[curr][1]:
+        if 'Künste' in bookArray[curr][1] and word not in stopWords:
                 dictK[word] = 1
-        if 'Architektur & Garten' in bookArray[curr][1]:
+        if 'Architektur & Garten' in bookArray[curr][1]and word not in stopWords:
                 dictAG[word] = 1
 
 with open('Data/blurbs_train2.txt','r') as file:
