@@ -51,6 +51,11 @@ X_train = None
 X_test = None
 y_train = None
 y_test = None
+y_predRF = None
+y_predRN = None
+y_predGNB = None
+y_predMNB = None
+y_predBNB = None
 genreData = []
 dictLU = {}
 dictR = {}
@@ -457,6 +462,11 @@ def trainClassifier():
     global X_test
     global y_test
     global y_train
+    global y_predRF
+    global y_predRN
+    global y_predGNB
+    global y_predMNB
+    global y_predBNB
     # RandomForestClassifier
     randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
     randomForestClassifier.fit(X_train,y_train)
@@ -562,12 +572,30 @@ def ensemble():
         print("F-Score Ensemble:",metrics.f1_score(y_test, ensembleDecision,average='micro'))
         print("ConfusionMatrix Ensemble:",metrics.confusion_matrix(y_test, ensembleDecision,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
 
+def verboseOutput():
+    global y_test
+    global y_predRF
+    global predGNB
+    global y_predMNB
+    global y_predBNB
+    with open("verboseResults.txt","w") as file:
+        file.write("F-Score RandomForest:" + str(metrics.f1_score(y_test, y_predRF,average='micro')) + str("\n"))
+        file.write("F-Score RadiusNeighbor:" + str(metrics.f1_score(y_test, y_predRN,average='micro')) + str("\n"))
+        file.write("F-Score GaussianNaiveBayes:" + str(metrics.f1_score(y_test, y_predGNB,average='micro')) + str("\n"))
+        file.write("F-Score MultinominalNaiveBayes:" + str(metrics.f1_score(y_test, y_predMNB,average='micro')) + str("\n"))
+        file.write("F-Score BernoulliNaiveBayes:" + str(metrics.f1_score(y_test, y_predBNB,average='micro')) + str("\n"))
+        file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix RadiusNeighbor:\n" + str(metrics.confusion_matrix(y_test, y_predRN,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix GaussianNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predGNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix MultinominalNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predMNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix BernoulliNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predBNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
 parser.add_argument("-f", help="fast test 1 run with dictfromFile",action="store_true")
 parser.add_argument("-x", help="n crossvalidation", action="store_true")
 parser.add_argument("-n", "--num", help="number of validations")
-parser.add_argument("-o", "--output", help="outputfile")
+parser.add_argument("-do", "--dataOutput", help="outputfile")
 parser.add_argument("-tr", "--traindata", help="traindatafile")
 parser.add_argument("-ts", "--testdata", help="testdatafile")
 parser.add_argument("-cv", help="10 crossvalidation", action="store_true")
@@ -583,6 +611,7 @@ if args.f:
     createDataArray()
     createDataFrames()
     trainClassifier()
+    verboseOutput()
 if args.x:
     readDataOneFile()
     runNum = 0
@@ -594,9 +623,11 @@ if args.x:
         createDataArray()
         createDataFrames()
         trainClassifier()
+        verboseOutput()
 if args.cv:
     readDataOneFile()
     splitData()
     createTempDict()
     createDataCrossVal()
     classifierCorssVal()
+    verboseOutput()
