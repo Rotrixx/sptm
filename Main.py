@@ -13,6 +13,7 @@ from sklearn.naive_bayes import BernoulliNB
 from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import train_test_split
+from sklearn.model_selection import cross_validate
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -50,6 +51,12 @@ X_train = None
 X_test = None
 y_train = None
 y_test = None
+y_predRF = None
+y_predRN = None
+y_predGNB = None
+y_predMNB = None
+y_predBNB = None
+genreData = []
 dictLU = {}
 dictR = {}
 dictKJ = {}
@@ -384,6 +391,9 @@ def featurize(text):
         nSym += text.count('&')
         nSym += text.count('*')
         nSym += text.count('"')
+        nSym += text.count('-')
+        nSym += text.count(':')
+        nSym += text.count(';')
         
         return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
@@ -431,11 +441,32 @@ def createDataFrames():
     X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_test=tdataFrame['Genre']
 
+def createDataCrossVal():
+    global currPos
+    global bookArray
+    global tbookArray
+    global data
+    global tdata
+    global isbnData
+    global tisbnData
+    global genreData
+    for i in bookArray:
+            wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+            data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG])
+            genreData.append(bookArray[currPos][5])
+            isbnData.append(bookArray[currPos][4])
+            currPos += 1
+
 def trainClassifier():
     global X_train
     global X_test
     global y_test
     global y_train
+    global y_predRF
+    global y_predRN
+    global y_predGNB
+    global y_predMNB
+    global y_predBNB
     # RandomForestClassifier
     randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
     randomForestClassifier.fit(X_train,y_train)
@@ -480,6 +511,17 @@ def trainClassifier():
         print("ConfusionMatrix GaussianNaiveBayes:\n",metrics.confusion_matrix(y_test, y_predGNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
         print("ConfusionMatrix MultinominalNaiveBayes:\n",metrics.confusion_matrix(y_test, y_predMNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
         print("ConfusionMatrix BernoulliNaiveBayes:\n",metrics.confusion_matrix(y_test, y_predBNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+
+def classifierCorssVal():
+    global X_train
+    global X_test
+    global y_test
+    global y_train
+    # RandomForestClassifier
+    randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    crossVal = cross_validate(randomForestClassifier, data, genreData, cv=10,return_train_score=False)
+    if verbose == True:
+        print(crossVal['test_score'])
 
 def ensemble():
     # Add to Ensemble
@@ -530,11 +572,33 @@ def ensemble():
         print("F-Score Ensemble:",metrics.f1_score(y_test, ensembleDecision,average='micro'))
         print("ConfusionMatrix Ensemble:",metrics.confusion_matrix(y_test, ensembleDecision,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
 
+def verboseOutput():
+    global y_test
+    global y_predRF
+    global predGNB
+    global y_predMNB
+    global y_predBNB
+    with open("verboseResults.txt","w") as file:
+        file.write("F-Score RandomForest:" + str(metrics.f1_score(y_test, y_predRF,average='micro')) + str("\n"))
+        file.write("F-Score RadiusNeighbor:" + str(metrics.f1_score(y_test, y_predRN,average='micro')) + str("\n"))
+        file.write("F-Score GaussianNaiveBayes:" + str(metrics.f1_score(y_test, y_predGNB,average='micro')) + str("\n"))
+        file.write("F-Score MultinominalNaiveBayes:" + str(metrics.f1_score(y_test, y_predMNB,average='micro')) + str("\n"))
+        file.write("F-Score BernoulliNaiveBayes:" + str(metrics.f1_score(y_test, y_predBNB,average='micro')) + str("\n"))
+        file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix RadiusNeighbor:\n" + str(metrics.confusion_matrix(y_test, y_predRN,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix GaussianNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predGNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix MultinominalNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predMNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+        file.write("ConfusionMatrix BernoulliNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predBNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
-parser.add_argument("-f", help="fast test (1 run with dictfromFile",action="store_true")
+parser.add_argument("-f", help="fast test 1 run with dictfromFile",action="store_true")
 parser.add_argument("-x", help="n crossvalidation", action="store_true")
 parser.add_argument("-n", "--num", help="number of validations")
+parser.add_argument("-do", "--dataOutput", help="outputfile")
+parser.add_argument("-tr", "--traindata", help="traindatafile")
+parser.add_argument("-ts", "--testdata", help="testdatafile")
+parser.add_argument("-cv", help="10 crossvalidation", action="store_true")
 arg = vars(parser.parse_args())
 args = parser.parse_args()
 
@@ -547,6 +611,7 @@ if args.f:
     createDataArray()
     createDataFrames()
     trainClassifier()
+    verboseOutput()
 if args.x:
     readDataOneFile()
     runNum = 0
@@ -558,3 +623,11 @@ if args.x:
         createDataArray()
         createDataFrames()
         trainClassifier()
+        verboseOutput()
+if args.cv:
+    readDataOneFile()
+    splitData()
+    createTempDict()
+    createDataCrossVal()
+    classifierCorssVal()
+    verboseOutput()
