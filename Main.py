@@ -65,11 +65,17 @@ dictGB = {}
 dictGE = {}
 dictK = {}
 dictAG = {}
+stopwords = None
 
 # Ensemble
 ensembleArray = [[],[],[],[],[]]
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
+
+def stopWordListRead():
+    global stopwords
+    with open('Data/stopwords_german.txt','r') as file:
+        stopwords = json.load(file)
 
 def readTrainData():
     global bodyStr
@@ -271,21 +277,22 @@ def addToDict(word):
         global dictGE
         global dictK
         global dictAG
-        if 'Literatur & Unterhaltung' in bookArray[curr][1]:
+        global stopwords
+        if 'Literatur & Unterhaltung' in bookArray[curr][1] and word not in stopwords:
                 dictLU[word] = 1
-        if 'Ratgeber' in bookArray[curr][1]:
+        if 'Ratgeber' in bookArray[curr][1] and word not in stopwords:
                 dictR[word] = 1
-        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1]:
+        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1] and word not in stopwords:
                 dictKJ[word] = 1
-        if 'Sachbuch' in bookArray[curr][1]:
+        if 'Sachbuch' in bookArray[curr][1] and word not in stopwords:
                 dictS[word] = 1
-        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1]:
+        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1] and word not in stopwords:
                 dictGB[word] = 1
-        if 'Glaube & Ethik' in bookArray[curr][1]:
+        if 'Glaube & Ethik' in bookArray[curr][1] and word not in stopwords:
                 dictGE[word] = 1
-        if 'Künste' in bookArray[curr][1]:
+        if 'Künste' in bookArray[curr][1] and word not in stopwords:
                 dictK[word] = 1
-        if 'Architektur & Garten' in bookArray[curr][1]:
+        if 'Architektur & Garten' in bookArray[curr][1] and word not in stopwords:
                 dictAG[word] = 1
 
 def createTempDict():
@@ -614,6 +621,7 @@ if args.f:
     verboseOutput()
 if args.x:
     readDataOneFile()
+    stopWordListRead()
     runNum = 0
     runRange = int(arg["num"])
     for runNum in range(runRange):
@@ -626,6 +634,7 @@ if args.x:
         verboseOutput()
 if args.cv:
     readDataOneFile()
+    stopWordListRead()
     splitData()
     createTempDict()
     createDataCrossVal()
