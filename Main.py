@@ -67,26 +67,6 @@ dictK = {}
 dictAG = {}
 stopwords = None
 
-X_trainNoDict = None
-X_testNoDict = None
-y_testNoDict = None
-y_trainNoDict = None
-y_predRFNoDict = None
-y_predRNNoDict = None
-y_predGNBNoDict = None
-y_predMNBNoDict = None
-y_predBNBNoDict = None
-
-X_trainOnlyDict = None
-X_testOnlyDict = None
-y_testOnlyDict = None
-y_trainOnlyDict = None
-y_predRFOnlyDict = None
-y_predRNOnlyDict = None
-y_predGNBOnlyDict = None
-y_predMNBOnlyDict = None
-y_predBNBOnlyDict = None
-
 # Ensemble
 ensembleArray = [[],[],[],[],[]]
 ensembleDecision = []
@@ -338,7 +318,6 @@ def featurize(text):
         nVerbs = 0
         nAdjectives = 0
         nCommas = text.count(',')
-        nSym = 0
         tockens = 0
         blob = TextBlobDE(text)
         for sentence in blob.sentences:
@@ -410,20 +389,19 @@ def featurize(text):
         gdrK = grK / allHits
         gdrAG = grAG / allHits
 
-        nSym += text.count('$')
-        nSym += text.count('€')
-        nSym += text.count('#')
-        nSym += text.count('$')
-        nSym += text.count('%')
-        nSym += text.count('§')
-        nSym += text.count('&')
-        nSym += text.count('*')
-        nSym += text.count('"')
-        nSym += text.count('-')
-        nSym += text.count(':')
-        nSym += text.count(';')
-        
-        return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSym,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
+        nSymE = text.count('€')
+        nSymH = text.count('#')
+        nSymD = text.count('$')
+        nSymP = text.count('%')
+        nSymPa = text.count('§')
+        nSymA = text.count('&')
+        nSymS = text.count('*')
+        nSymQ = text.count('"')
+        nSymDa = text.count('-')
+        nSymDd = text.count(':')
+        nSymSc = text.count(';')
+
+        return j,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
 def createDataArray():
     global currPos
@@ -434,16 +412,19 @@ def createDataArray():
     global isbnData
     global tisbnData
     # Creation of TrainDataFrame
-    for i in bookArray:
-            wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+    for _ in bookArray:
+            #wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+            wps,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+            data.append([wps,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
     # Creation of TestDataFrame
     currPos = 0
-    for i in tbookArray:
-            wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-            tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+    for _ in tbookArray:
+            # wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
+            wps,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
+            # tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+            tdata.append([wps,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             tisbnData.append(tbookArray[currPos][4])
             currPos += 1
 
@@ -455,43 +436,19 @@ def createDataFrames():
     global X_test
     global y_test
     global y_train
-    global X_trainNoDict
-    global X_testNoDict
-    global y_testNoDict
-    global y_trainNoDict
-    global X_trainOnlyDict
-    global X_testOnlyDict
-    global y_testOnlyDict
-    global y_trainOnlyDict
     # TrainDataFrame
-    dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
+    dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],index=isbnData,dtype=float)
 
     # TestDataFrame
-    tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
+    tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
 
     # TrainData
-    X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_train=dataFrame[['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_train=dataFrame['Genre']
 
     # TestData
-    X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG',]]
+    X_test=tdataFrame[['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_test=tdataFrame['Genre']
-
-    # TrainDataNoDict
-    X_trainNoDict=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols']]
-    y_trainNoDict=dataFrame['Genre']
-
-    # TestDataNoDict
-    X_testNoDict=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols']]
-    y_testNoDict=tdataFrame['Genre']
-
-    # TrainDataOnlyDict
-    X_trainOnlyDict=dataFrame[['GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
-    y_trainOnlyDict=dataFrame['Genre']
-
-    # TestDataOnlyDict
-    X_testOnlyDict=tdataFrame[['GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG',]]
-    y_testOnlyDict=tdataFrame['Genre']
 
 def createDataCrossVal():
     global currPos
@@ -515,32 +472,11 @@ def trainClassifier():
     global y_test
     global y_train
 
-    global X_trainNoDict
-    global X_testNoDict
-    global y_testNoDict
-    global y_trainNoDict
-    
     global y_predRF
     global y_predRN
     global y_predGNB
     global y_predMNB
     global y_predBNB
-
-    global y_predRFNoDict
-    global y_predRNNoDict
-    global y_predGNBNoDict
-    global y_predMNBNoDict
-    global y_predBNBNoDict
-
-    global X_trainOnlyDict
-    global X_testOnlyDict
-    global y_testOnlyDict
-    global y_trainOnlyDict
-    global y_predRFOnlyDict
-    global y_predRNOnlyDict
-    global y_predGNBOnlyDict
-    global y_predMNBOnlyDict
-    global y_predBNBOnlyDict
 
     # RandomForestClassifier
     randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
@@ -568,63 +504,7 @@ def trainClassifier():
     y_predMNB=multinominalNaiveBayesClassifier.predict(X_test)
     y_predBNB=bernoulliNaiveBayesClassifier.predict(X_test)
 
-    ####################################################
-    # NoDict
-    ####################################################
-    randomForestClassifierNoDict=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-    randomForestClassifierNoDict.fit(X_trainNoDict,y_trainNoDict)
-
-    # RadiusNeighborClassifier
-    radiusNeighborClassifierNoDict=RadiusNeighborsClassifier(radius=15.0,outlier_label='Literatur & Unterhaltung')
-    radiusNeighborClassifierNoDict.fit(X_trainNoDict,y_trainNoDict)
-
-    # GaussianNaiveBayesClassifier
-    gaussianNaiveBayesClassifierNoDict=GaussianNB()
-    gaussianNaiveBayesClassifierNoDict.fit(X_trainNoDict,y_trainNoDict)
-
-    # MultinominalNaiveBayesClassifier
-    multinominalNaiveBayesClassifierNoDict=MultinomialNB(alpha=0.95)
-    multinominalNaiveBayesClassifierNoDict.fit(X_trainNoDict,y_trainNoDict)
-
-    # BernoulliNaiveBayesClassifier
-    bernoulliNaiveBayesClassifierNoDict=BernoulliNB(alpha=0.95)
-    bernoulliNaiveBayesClassifierNoDict.fit(X_trainNoDict,y_trainNoDict)
-
-    y_predRFNoDict=randomForestClassifierNoDict.predict(X_testNoDict)
-    y_predRNNoDict=radiusNeighborClassifierNoDict.predict(X_testNoDict)
-    y_predGNBNoDict=gaussianNaiveBayesClassifierNoDict.predict(X_testNoDict)
-    y_predMNBNoDict=multinominalNaiveBayesClassifierNoDict.predict(X_testNoDict)
-    y_predBNBNoDict=bernoulliNaiveBayesClassifierNoDict.predict(X_testNoDict)
-
-    ####################################################
-    # OnlyDict
-    ####################################################
-    randomForestClassifierOnlyDict=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-    randomForestClassifierOnlyDict.fit(X_trainOnlyDict,y_trainOnlyDict)
-
-    # RadiusNeighborClassifier
-    radiusNeighborClassifierOnlyDict=RadiusNeighborsClassifier(radius=15.0,outlier_label='Literatur & Unterhaltung')
-    radiusNeighborClassifierOnlyDict.fit(X_trainOnlyDict,y_trainOnlyDict)
-
-    # GaussianNaiveBayesClassifier
-    gaussianNaiveBayesClassifierOnlyDict=GaussianNB()
-    gaussianNaiveBayesClassifierOnlyDict.fit(X_trainOnlyDict,y_trainOnlyDict)
-
-    # MultinominalNaiveBayesClassifier
-    multinominalNaiveBayesClassifierOnlyDict=MultinomialNB(alpha=0.95)
-    multinominalNaiveBayesClassifierOnlyDict.fit(X_trainOnlyDict,y_trainOnlyDict)
-
-    # BernoulliNaiveBayesClassifier
-    bernoulliNaiveBayesClassifierOnlyDict=BernoulliNB(alpha=0.95)
-    bernoulliNaiveBayesClassifierOnlyDict.fit(X_trainOnlyDict,y_trainOnlyDict)
-
-    y_predRFOnlyDict=randomForestClassifierOnlyDict.predict(X_testOnlyDict)
-    y_predRNOnlyDict=radiusNeighborClassifierOnlyDict.predict(X_testOnlyDict)
-    y_predGNBOnlyDict=gaussianNaiveBayesClassifierOnlyDict.predict(X_testOnlyDict)
-    y_predMNBOnlyDict=multinominalNaiveBayesClassifierOnlyDict.predict(X_testOnlyDict)
-    y_predBNBOnlyDict=bernoulliNaiveBayesClassifierOnlyDict.predict(X_testOnlyDict)
-
-    if verbose == True:
+    if verbose:
         print("Accuracy RandomForest:",metrics.accuracy_score(y_test, y_predRF))
         print("Accuracy RadiusNeighbor:",metrics.accuracy_score(y_test, y_predRN))
         print("Accuracy GaussianNaiveBayes:",metrics.accuracy_score(y_test, y_predGNB))
@@ -678,7 +558,7 @@ def ensemble():
     # EnsembleVoting
     i = 0
     while i < len(ensembleArray[0]):
-        vdict = {'Literatur & Unterhaltung' : 0, 'Ratgeber' : 0, 'Kinderbuch & Jugendbuch' : 0, 'Sachbuch' : 0, 'Ganzheitliches Bewusstsein' : 0, 'Glaube & Ethik' : 0, 'Künste' : 0, 'Architektur & Garten' : 0} 
+        vdict = {'Literatur & Unterhaltung' : 0, 'Ratgeber' : 0, 'Kinderbuch & Jugendbuch' : 0, 'Sachbuch' : 0, 'Ganzheitliches Bewusstsein' : 0, 'Glaube & Ethik' : 0, 'Künste' : 0, 'Architektur & Garten' : 0}
         j = 0
         while j < 5:
             if j == 0 or j == 2:
@@ -711,20 +591,10 @@ def ensemble():
 
 def verboseOutput():
     global y_test
-    global y_testNoDict
     global y_predRF
     global predGNB
     global y_predMNB
     global y_predBNB
-    global X_trainNoDict
-    global X_testNoDict
-    global y_testNoDict
-    global y_trainNoDict
-    global y_predRFNoDict
-    global y_predRNNoDict
-    global y_predGNBNoDict
-    global y_predMNBNoDict
-    global y_predBNBNoDict
     with open("verboseResults.txt","w") as file:
         file.write("F-Score RandomForest:" + str(metrics.f1_score(y_test, y_predRF,average='micro')) + str("\n"))
         file.write("F-Score RadiusNeighbor:" + str(metrics.f1_score(y_test, y_predRN,average='micro')) + str("\n"))
@@ -738,28 +608,6 @@ def verboseOutput():
         file.write("ConfusionMatrix MultinominalNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predMNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
         file.write("ConfusionMatrix BernoulliNaiveBayes:\n" + str(metrics.confusion_matrix(y_test, y_predBNB,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
         file.write("ConfusionMatrix Ensemble:\n" + str(metrics.confusion_matrix(y_test, ensembleDecision,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-
-        file.write("F-Score RandomForestNoDict:" + str(metrics.f1_score(y_testNoDict, y_predRFNoDict,average='micro')) + str("\n"))
-        file.write("F-Score RadiusNeighborNoDict:" + str(metrics.f1_score(y_testNoDict, y_predRNNoDict,average='micro')) + str("\n"))
-        file.write("F-Score GaussianNaiveBayesNoDict:" + str(metrics.f1_score(y_testNoDict, y_predGNBNoDict,average='micro')) + str("\n"))
-        file.write("F-Score MultinominalNaiveBayesNoDict:" + str(metrics.f1_score(y_testNoDict, y_predMNBNoDict,average='micro')) + str("\n"))
-        file.write("F-Score BernoulliNaiveBayesNoDict:" + str(metrics.f1_score(y_testNoDict, y_predBNBNoDict,average='micro')) + str("\n"))
-        file.write("ConfusionMatrix RandomForestNoDict:\n" + str(metrics.confusion_matrix(y_testNoDict, y_predRFNoDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix RadiusNeighborNoDict:\n" + str(metrics.confusion_matrix(y_testNoDict, y_predRNNoDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix GaussianNaiveBayesNoDict:\n" + str(metrics.confusion_matrix(y_testNoDict, y_predGNBNoDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix MultinominalNaiveBayesNoDict:\n" + str(metrics.confusion_matrix(y_testNoDict, y_predMNBNoDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix BernoulliNaiveBayesNoDict:\n" + str(metrics.confusion_matrix(y_testNoDict, y_predBNBNoDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-
-        file.write("F-Score RandomForestOnlyDict:" + str(metrics.f1_score(y_testOnlyDict, y_predRFOnlyDict,average='micro')) + str("\n"))
-        file.write("F-Score RadiusNeighborOnlyDict:" + str(metrics.f1_score(y_testOnlyDict, y_predRNOnlyDict,average='micro')) + str("\n"))
-        file.write("F-Score GaussianNaiveBayesOnlyDict:" + str(metrics.f1_score(y_testOnlyDict, y_predGNBOnlyDict,average='micro')) + str("\n"))
-        file.write("F-Score MultinominalNaiveBayesOnlyDict:" + str(metrics.f1_score(y_testOnlyDict, y_predMNBOnlyDict,average='micro')) + str("\n"))
-        file.write("F-Score BernoulliNaiveBayesOnlyDict:" + str(metrics.f1_score(y_testOnlyDict, y_predBNBOnlyDict,average='micro')) + str("\n"))
-        file.write("ConfusionMatrix RandomForestOnlyDict:\n" + str(metrics.confusion_matrix(y_testOnlyDict, y_predRFOnlyDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix RadiusNeighborOnlyDict:\n" + str(metrics.confusion_matrix(y_testOnlyDict, y_predRNOnlyDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix GaussianNaiveBayesOnlyDict:\n" + str(metrics.confusion_matrix(y_testOnlyDict, y_predGNBOnlyDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix MultinominalNaiveBayesOnlyDict:\n" + str(metrics.confusion_matrix(y_testOnlyDict, y_predMNBOnlyDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        file.write("ConfusionMatrix BernoulliNaiveBayesOnlyDict:\n" + str(metrics.confusion_matrix(y_testOnlyDict, y_predBNBOnlyDict,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
 
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
