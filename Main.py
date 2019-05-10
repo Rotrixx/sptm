@@ -213,7 +213,8 @@ def readDataOneFile():
                             allCategoryStr = set()
                             isbnStr = ''
                     elif line.startswith('</book>'):
-                            bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
+                            for i in allCategoryStr:
+                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
