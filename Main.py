@@ -44,6 +44,8 @@ tbookArray = []
 tdata = []
 tisbnData = []
 
+allWords = set()
+
 # Other
 verbose = False
 curr = 0
@@ -214,13 +216,15 @@ def readDataOneFile():
                             isbnStr = ''
                     elif line.startswith('</book>'):
                             for i in allCategoryStr:
+                                if bodyStr == '':
+                                    continue
+                                if isbnStr.startswith('4'):
+                                    continue
                                 bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
                             bodyStr = bodyStr[6:]
-                            if bodyStr == '':
-                                continue
                     elif line.startswith('<title>'):
                             titleStr += line
                             titleStr = titleStr[:-9]
@@ -292,22 +296,97 @@ def addToDict(word):
         global dictK
         global dictAG
         global stopwords
+        global allWords
+
         if 'Literatur & Unterhaltung' in bookArray[curr][1] and word not in stopwords:
-                dictLU[word] = 1
+                if word in dictLU:
+                        dictLU[word] += 1
+                else:
+                        dictLU[word] = 1
         if 'Ratgeber' in bookArray[curr][1] and word not in stopwords:
-                dictR[word] = 1
+                if word in dictR:
+                        dictR[word] += 1
+                else:
+                        dictR[word] = 1
         if 'Kinderbuch & Jugendbuch' in bookArray[curr][1] and word not in stopwords:
-                dictKJ[word] = 1
+                if word in dictKJ:
+                        dictKJ[word] += 1
+                else:
+                        dictKJ[word] = 1
         if 'Sachbuch' in bookArray[curr][1] and word not in stopwords:
-                dictS[word] = 1
+                if word in dictS:
+                        dictS[word] += 1
+                else:
+                        dictS[word] = 1
         if 'Ganzheitliches Bewusstsein' in bookArray[curr][1] and word not in stopwords:
-                dictGB[word] = 1
+                if word in dictGB:
+                        dictGB[word] += 1
+                else:
+                        dictGB[word] = 1
         if 'Glaube & Ethik' in bookArray[curr][1] and word not in stopwords:
-                dictGE[word] = 1
+                if word in dictGE:
+                        dictGE[word] += 1
+                else:
+                        dictGE[word] = 1
         if 'Künste' in bookArray[curr][1] and word not in stopwords:
-                dictK[word] = 1
+                if word in dictK:
+                        dictK[word] += 1
+                else:
+                        dictK[word] = 1
         if 'Architektur & Garten' in bookArray[curr][1] and word not in stopwords:
-                dictAG[word] = 1
+                if word in dictAG:
+                        dictAG[word] += 1
+                else:
+                        dictAG[word] = 1
+        allWords.add(word)
+
+
+def improveDict():
+    global dictLU
+    global dictR
+    global dictKJ
+    global dictS
+    global dictGB
+    global dictGE
+    global dictK
+    global dictAG
+    global allWords
+
+    for word in allWords:
+        counter = 0
+        if word in dictLU:
+            counter += 1
+        if word in dictR:
+            counter += 1
+        if word in dictKJ:
+            counter += 1
+        if word in dictS:
+            counter += 1
+        if word in dictGB:
+            counter += 1
+        if word in dictGE:
+            counter += 1
+        if word in dictK:
+            counter += 1
+        if word in dictAG:
+            counter += 1
+
+        if word in dictLU:
+            dictLU /= counter
+        if word in dictR:
+            dictR /= counter
+        if word in dictKJ:
+            dictKJ /= counter
+        if word in dictS:
+            dictS /= counter
+        if word in dictGB:
+            dictGB /= counter
+        if word in dictGE:
+            dictGE /= counter
+        if word in dictK:
+            dictK /= counter
+        if word in dictAG:
+            dictAg /= counter
 
 def createTempDict():
     global bookArray
