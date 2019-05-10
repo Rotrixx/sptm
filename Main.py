@@ -372,21 +372,21 @@ def improveDict():
             counter += 1
 
         if word in dictLU:
-            dictLU /= counter
+            dictLU[word] /= counter
         if word in dictR:
-            dictR /= counter
+            dictR[word] /= counter
         if word in dictKJ:
-            dictKJ /= counter
+            dictKJ[word] /= counter
         if word in dictS:
-            dictS /= counter
+            dictS[word] /= counter
         if word in dictGB:
-            dictGB /= counter
+            dictGB[word] /= counter
         if word in dictGE:
-            dictGE /= counter
+            dictGE[word] /= counter
         if word in dictK:
-            dictK /= counter
+            dictK[word] /= counter
         if word in dictAG:
-            dictAg /= counter
+            dictAG[word] /= counter
 
 def createTempDict():
     global bookArray
@@ -695,7 +695,7 @@ def verboseOutput():
     with open("verboseResults.txt","w") as file:
         file.write("F-Score RandomForest:" + str(metrics.f1_score(y_test, y_predRF,average='micro')) + str("\n"))
         file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
-        
+
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
 parser.add_argument("-f", help="fast test 1 run with dictfromFile",action="store_true")
@@ -727,6 +727,7 @@ if args.x:
         print("Starting Run: " + str(runNum + 1))
         splitData()
         createTempDict()
+        improveDict()
         createDataArray()
         createDataFrames()
         trainClassifier()
