@@ -5,6 +5,7 @@ import pandas as pd
 import json
 import argparse
 import random
+import timeit
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.neighbors import RadiusNeighborsClassifier
 from sklearn.naive_bayes import GaussianNB
@@ -215,12 +216,19 @@ def readDataOneFile():
                             allCategoryStr = set()
                             isbnStr = ''
                     elif line.startswith('</book>'):
+                            """
                             for i in allCategoryStr:
                                 if bodyStr == '':
                                     continue
                                 if isbnStr.startswith('4'):
                                     continue
                                 bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                            """
+                            if bodyStr == '':
+                                    continue
+                            if isbnStr.startswith('4'):
+                                    continue
+                            bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
@@ -237,6 +245,13 @@ def readDataOneFile():
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
                             categoryStr = categoryStr[13:]
+                            firstCategory = categoryStr
+                            allCategoryStr.add(categoryStr)
+                            categoryStr = ''
+                    elif line.startswith('<topic d="0" label'):
+                            categoryStr += line
+                            categoryStr = categoryStr[:-9]
+                            categoryStr = categoryStr[26:]
                             firstCategory = categoryStr
                             allCategoryStr.add(categoryStr)
                             categoryStr = ''
@@ -340,7 +355,6 @@ def addToDict(word):
                         dictAG[word] = 1
         allWords.add(word)
 
-
 def improveDict():
     global dictLU
     global dictR
@@ -430,6 +444,7 @@ def featurize(text):
         grGE = 0
         grK = 0
         grAG = 0
+        allHits = 0
 
         textTockens = blob.tags
         for i in textTockens:
@@ -444,21 +459,29 @@ def featurize(text):
                         nSym += 1
 
                 if i[0] in dictLU:
-                        grLU += 1
+                        grLU += dictLU[i[0]]
+                        allHits += 1
                 if i[0] in dictR:
-                        grR += 1
+                        grR += dictR[i[0]]
+                        allHits += 1
                 if i[0] in dictKJ:
-                        grKJ += 1
+                        grKJ += dictKJ[i[0]]
+                        allHits += 1
                 if i[0] in dictS:
-                        grS += 1
+                        grS += dictS[i[0]]
+                        allHits += 1
                 if i[0] in dictGB:
-                        grGB += 1
+                        grGB += dictGB[i[0]]
+                        allHits += 1
                 if i[0] in dictGE:
-                        grGE += 1
+                        grGE += dictGE[i[0]]
+                        allHits += 1
                 if i[0] in dictK:
-                        grK += 1
+                        grK += dictK[i[0]]
+                        allHits += 1
                 if i[0] in dictAG:
-                        grAG += 1
+                        grAG += dictAG[i[0]]
+                        allHits += 1
 
         if tockens == 0:
                 tockens = 1
@@ -466,8 +489,6 @@ def featurize(text):
         rNouns = nNouns / tockens
         rVerbs = nVerbs / tockens
         rAdjectives = nAdjectives / tockens
-
-        allHits = (grLU+grAG+grK+grGE+grGB+grS+grKJ+grR)
 
         if allHits == 0:
                 allHits = 1
@@ -565,38 +586,38 @@ def createDataFrames():
 
     #NOWPS
     # TrainData
-    X_trainNoWPS=dataFrame[['NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_trainNoWPS=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_trainNoWPS=dataFrame['Genre']
 
     # TestData
-    X_testNoWPS=tdataFrame[['NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_testNoWPS=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_testNoWPS=tdataFrame['Genre']
 
     #NoNS
     # TrainData
-    X_trainNoNS=dataFrame[['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_trainNoNS=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_trainNoNS=dataFrame['Genre']
 
     # TestData
-    X_testNoNS=tdataFrame[['WordsPerSentence','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_testNoNS=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_testNoNS=tdataFrame['Genre']
 
     # NoRPOG
     # TrainData
-    X_trainNoRPog=dataFrame[['WordsPerSentence','NumberSentences','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_trainNoRPog=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_trainNoRPog=dataFrame['Genre']
 
     # TestData
-    X_testNoRPog=tdataFrame[['WordsPerSentence','NumberSentences','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_testNoRPog=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_testNoRPog=tdataFrame['Genre']
 
     #NoSym
     # TrainData
-    X_trainNoSym=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_trainNoSym=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_trainNoSym=dataFrame['Genre']
 
     # TestData
-    X_testNoSym=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_testNoSym=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_testNoSym=tdataFrame['Genre']
 
 def createDataCrossVal():
@@ -644,19 +665,19 @@ def trainClassifier():
     global y_predRF
 
     # RandomForestClassifier
-    randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight="balanced")
     randomForestClassifier.fit(X_train,y_train)
 
-    randomForestClassifierNoWPS=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    randomForestClassifierNoWPS=RandomForestClassifier(n_estimators=60,random_state=0,class_weight="balanced")
     randomForestClassifierNoWPS.fit(X_trainNoWPS,y_trainNoWPS)
 
-    randomForestClassifierNoNS=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    randomForestClassifierNoNS=RandomForestClassifier(n_estimators=70,random_state=0,class_weight="balanced")
     randomForestClassifierNoNS.fit(X_trainNoNS,y_trainNoNS)
 
-    randomForestClassifierNoRPog=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    randomForestClassifierNoRPog=RandomForestClassifier(n_estimators=80,random_state=0,class_weight="balanced")
     randomForestClassifierNoRPog.fit(X_trainNoRPog,y_trainNoRPog)
 
-    randomForestClassifierNoSym=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
+    randomForestClassifierNoSym=RandomForestClassifier(n_estimators=100,random_state=0,class_weight="balanced")
     randomForestClassifierNoSym.fit(X_trainNoSym,y_trainNoSym)
 
     y_predRF=randomForestClassifier.predict(X_test)
@@ -666,17 +687,17 @@ def trainClassifier():
     y_predRFNoSym=randomForestClassifierNoSym.predict(X_testNoSym)
 
     if verbose:
-        print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
-        print("F-Score RandomForestNoWPS:",metrics.f1_score(y_testNoWPS, y_predRFNoWPS,average='micro'))
-        print("F-Score RandomForestNoNS:",metrics.f1_score(y_testNoNS, y_predRFNoNS,average='micro'))
-        print("F-Score RandomForestNoRPog:",metrics.f1_score(y_testNoRPog, y_predRFNoRPog,average='micro'))
-        print("F-Score RandomForestNoSym:",metrics.f1_score(y_testNoSym, y_predRFNoSym,average='micro'))
+        print("F-Score RandomForest50:",metrics.f1_score(y_test, y_predRF,average='micro'))
+        print("F-Score RandomForest60:",metrics.f1_score(y_testNoWPS, y_predRFNoWPS,average='micro'))
+        print("F-Score RandomForest70:",metrics.f1_score(y_testNoNS, y_predRFNoNS,average='micro'))
+        print("F-Score RandomForest80:",metrics.f1_score(y_testNoRPog, y_predRFNoRPog,average='micro'))
+        print("F-Score RandomForest100:",metrics.f1_score(y_testNoSym, y_predRFNoSym,average='micro'))
 
-        print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-        print("ConfusionMatrix RandomForestNoWPS:\n",metrics.confusion_matrix(y_testNoWPS, y_predRFNoWPS,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-        print("ConfusionMatrix RandomForestNoNS:\n",metrics.confusion_matrix(y_testNoNS, y_predRFNoNS,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-        print("ConfusionMatrix RandomForestNoRPog:\n",metrics.confusion_matrix(y_testNoRPog, y_predRFNoRPog,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-        print("ConfusionMatrix RandomForestNoSym:\n",metrics.confusion_matrix(y_testNoSym, y_predRFNoSym,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+        print("ConfusionMatrix RandomForest50:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+        print("ConfusionMatrix RandomForest60:\n",metrics.confusion_matrix(y_testNoWPS, y_predRFNoWPS,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+        print("ConfusionMatrix RandomForest70:\n",metrics.confusion_matrix(y_testNoNS, y_predRFNoNS,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+        print("ConfusionMatrix RandomForest80:\n",metrics.confusion_matrix(y_testNoRPog, y_predRFNoRPog,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+        print("ConfusionMatrix RandomForest100:\n",metrics.confusion_matrix(y_testNoSym, y_predRFNoSym,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
 
 def classifierCorssVal():
     global X_train
@@ -695,6 +716,16 @@ def verboseOutput():
     with open("verboseResults.txt","w") as file:
         file.write("F-Score RandomForest:" + str(metrics.f1_score(y_test, y_predRF,average='micro')) + str("\n"))
         file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+
+def generateFinalOutputFile():
+    global tisbnData
+    global y_predRF
+
+    j = 0
+    with open("finalOut.txt","w") as file:
+        for i in tisbnData:
+            file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
+            j += 1
 
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
@@ -719,6 +750,7 @@ if args.f:
     trainClassifier()
     verboseOutput()
 if args.x:
+    start = timeit.default_timer()
     readDataOneFile()
     stopWordListRead()
     runNum = 0
@@ -732,6 +764,9 @@ if args.x:
         createDataFrames()
         trainClassifier()
         verboseOutput()
+        generateFinalOutputFile()
+    stop = timeit.default_timer()
+    print("Runntime: ", stop - start)
 if args.cv:
     readDataOneFile()
     stopWordListRead()
