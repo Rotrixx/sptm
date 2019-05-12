@@ -2,6 +2,7 @@
 
 from textblob_de import TextBlobDE
 import pandas as pd
+import numpy as np
 import json
 import argparse
 import random
@@ -71,6 +72,9 @@ estimator = None
 
 dataVec = []
 tdataVec = []
+
+trainTexts = []
+testTexts = []
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
@@ -311,42 +315,42 @@ def addToDict(word):
         global stopwords
         global allWords
 
-        if 'Literatur & Unterhaltung' in bookArray[curr][1] and word not in stopwords:
+        if 'Literatur & Unterhaltung' in bookArray[curr][5] and word not in stopwords:
                 if word in dictLU:
                         dictLU[word] += 1
                 else:
                         dictLU[word] = 1
-        if 'Ratgeber' in bookArray[curr][1] and word not in stopwords:
+        if 'Ratgeber' in bookArray[curr][5] and word not in stopwords:
                 if word in dictR:
                         dictR[word] += 1
                 else:
                         dictR[word] = 1
-        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1] and word not in stopwords:
+        if 'Kinderbuch & Jugendbuch' in bookArray[curr][5] and word not in stopwords:
                 if word in dictKJ:
                         dictKJ[word] += 1
                 else:
                         dictKJ[word] = 1
-        if 'Sachbuch' in bookArray[curr][1] and word not in stopwords:
+        if 'Sachbuch' in bookArray[curr][5] and word not in stopwords:
                 if word in dictS:
                         dictS[word] += 1
                 else:
                         dictS[word] = 1
-        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1] and word not in stopwords:
+        if 'Ganzheitliches Bewusstsein' in bookArray[curr][5] and word not in stopwords:
                 if word in dictGB:
                         dictGB[word] += 1
                 else:
                         dictGB[word] = 1
-        if 'Glaube & Ethik' in bookArray[curr][1] and word not in stopwords:
+        if 'Glaube & Ethik' in bookArray[curr][5] and word not in stopwords:
                 if word in dictGE:
                         dictGE[word] += 1
                 else:
                         dictGE[word] = 1
-        if 'Künste' in bookArray[curr][1] and word not in stopwords:
+        if 'Künste' in bookArray[curr][5] and word not in stopwords:
                 if word in dictK:
                         dictK[word] += 1
                 else:
                         dictK[word] = 1
-        if 'Architektur & Garten' in bookArray[curr][1] and word not in stopwords:
+        if 'Architektur & Garten' in bookArray[curr][5] and word not in stopwords:
                 if word in dictAG:
                         dictAG[word] += 1
                 else:
@@ -414,6 +418,52 @@ def createTempDict():
                     elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
                             addToDict(i[0].lower())
             curr += 1
+
+def permutateArray(array):
+    arrayLU = []
+    arrayR = []
+    arrayKJ = []
+    arrayS = []
+    arrayGB = []
+    arrayGE = []
+    arrayK = []
+    arrayAG = []
+    #retArray = []
+
+    i = 0
+    print(array[0][5])
+    for _ in array:
+        if array[i][5] == 'Literatur & Unterhaltung':
+            arrayLU.append(array[i])    
+        if array[i][5] == 'Ratgeber':
+            arrayR.append(array[i])  
+        if array[i][5] == 'Kinderbuch & Jugendbuch':
+            arrayKJ.append(array[i])  
+        if array[i][5] == 'Sachbuch':
+            arrayS.append(array[i])  
+        if array[i][5] == 'Ganzheitliches Bewusstsein':
+            arrayGB.append(array[i])  
+        if array[i][5] == 'Glaube & Ethik':
+            arrayGE.append(array[i])  
+        if array[i][5] == 'Künste':
+            arrayK.append(array[i])  
+        if array[i][5] == 'Architektur & Garten':
+            arrayAG.append(array[i])
+        i += 1
+
+    lengthArray = []
+    lengthArray.append(len(arrayLU))
+    lengthArray.append(len(arrayR))
+    lengthArray.append(len(arrayKJ))
+    lengthArray.append(len(arrayS))
+    lengthArray.append(len(arrayGB))
+    lengthArray.append(len(arrayGE))
+    lengthArray.append(len(arrayK))
+    lengthArray.append(len(arrayAG))
+    maxNum = min(lengthArray)
+
+    retArray = arrayLU[:maxNum] + arrayR[:maxNum] + arrayKJ[:maxNum] +arrayS[:maxNum] + arrayGB[:maxNum] + arrayGE[:maxNum] + arrayK[:maxNum] + arrayAG[:maxNum]
+    return retArray
 
 def featurize(text):
         j = 0
@@ -525,38 +575,37 @@ def createDataArray():
     global tisbnData
     global dataVec
     global tdataVec
-    """
-    for _ in bookArray:
-            dataVec.append(bookArray[currPos][0])
-            currPos += 1
-    # Creation of TestDataFrame
-    currPos = 0
-    for _ in tbookArray:
-            tdataVec.append(tbookArray[currPos][0])
-            currPos += 1
-    """
-    #dataVector = vectorizer.transform(dataVec)
-    #tdataVector = vectorizer.transform(tdataVec)
+    global testTexts
+    global trainTexts
+    
     currPos = 0
     # Creation of TrainDataFrame
     for _ in bookArray:
-            #wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            #vec = dataVector[currPos]
-            #print(vec)
-            data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+            trainTexts.append(bookArray[currPos][0])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
+
+    dataVector = vectorizer.transform(trainTexts)
+    currPos = 0
+    for _ in bookArray:
+            vec = np.mean(dataVector[currPos].data)
+            data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+            currPos += 1
+
     # Creation of TestDataFrame
     currPos = 0
     for _ in tbookArray:
-            # wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-            #vec = tdataVector[currPos]
-            #print(vec)
-            # tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
-            tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+            testTexts.append(tbookArray[currPos][0])
             tisbnData.append(tbookArray[currPos][4])
+            currPos += 1
+
+    tdataVector = vectorizer.transform(testTexts)
+    currPos = 0
+    for _ in tbookArray:
+            vec = np.mean(tdataVector[currPos].data)
+            tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             currPos += 1
 
 def createDataFrames():
@@ -610,10 +659,13 @@ def trainClassifier():
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,"Literatur & Unterhaltung":1},{0:1,"Ratgeber":3},{0:1,"Kinderbuch & Jugendbuch":3},{0:1,"Sachbuch":3},{0:1,"Ganzheitliches Bewusstsein":3},{0:1,"Glaube & Ethik":3},{0:1,"Künste":3},{0:1,"Architektur & Garten":3}])
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,1:.3},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1}])
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:.3,1:1,2:1,3:1,4:1,5:1,6:1,7:1}])
-    randomForestClassifier=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
+    randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,verbose=10,n_jobs=2,bootstrap=True)
     randomForestClassifier.fit(X_train,y_train)
 
     y_predRF=randomForestClassifier.predict(X_test)
+
+    print(randomForestClassifier.predict(np.asarray(X_test.loc[1,]).reshape(1,-1)))
+    print(randomForestClassifier.predict_log_proba(np.asarray(X_test.loc[1,]).reshape(1,-1)))
 
     estimator = randomForestClassifier.estimators_[2]
 
@@ -628,6 +680,8 @@ def trainClassifier():
     """
 
     if verbose:
+        print("Feature Importance:",randomForestClassifier.feature_importances_)
+
         print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
 
         print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
@@ -729,9 +783,11 @@ if args.x:
     for runNum in range(runRange):
         print("Starting Run: " + str(runNum + 1))
         splitData()
+        bookArray = permutateArray(bookArray)
         createTempDict()
         improveDict()
-        vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False)
+        print(dictAG)
+        vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False,analyzer='word',ngram_range=(1,2),strip_accents='unicode',norm='l2')
         createDataArray()
         createDataFrames()
         trainClassifier()

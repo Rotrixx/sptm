@@ -150,14 +150,60 @@ def createDataArray():
             tdata2.append(tbookArray[currPos][5])
             currPos += 1
 
+def permutateArray(array):
+    arrayLU = []
+    arrayR = []
+    arrayKJ = []
+    arrayS = []
+    arrayGB = []
+    arrayGE = []
+    arrayK = []
+    arrayAG = []
+    retArray = []
+
+    i = 0
+    for _ in array:
+        if array[i][5] == 'Literatur & Unterhaltung':
+            arrayLU.append(array[i])    
+        if 'Ratgeber' == array[i][5]:
+            arrayR.append(array[i])  
+        if 'Kinderbuch & Jugendbuch' == array[i][5]:
+            arrayKJ.append(array[i])  
+        if 'Sachbuch' == array[i][5]:
+            arrayS.append(array[i])  
+        if 'Ganzheitliches Bewusstse=' == array[i][5]:
+            arrayGB.append(array[i])  
+        if 'Glaube & Ethik' == array[i][5]:
+            arrayGE.append(array[i])  
+        if 'Künste' == array[i][5]:
+            arrayK.append(array[i])  
+        if 'Architektur & Garten' == array[i][5]:
+            arrayAG.append(array[i])
+        i += 1
+
+    lengthArray = []
+    lengthArray.append(len(arrayLU))
+    lengthArray.append(len(arrayR))
+    lengthArray.append(len(arrayKJ))
+    lengthArray.append(len(arrayS))
+    lengthArray.append(len(arrayGB))
+    lengthArray.append(len(arrayGE))
+    lengthArray.append(len(arrayK))
+    lengthArray.append(len(arrayAG))
+    maxNum = min(lengthArray)
+
+    retArray = arrayLU[:maxNum] + arrayR[:maxNum] + arrayKJ[:maxNum] +arrayS[:maxNum] + arrayGB[:maxNum] + arrayGE[:maxNum] + arrayK[:maxNum] + arrayAG[:maxNum]
+    return retArray
 
 readDataOneFile()
 stopWordListRead()
 splitData()
 createDataArray()
+print(data[0][5])
+data = permutateArray(data)
 
 y_train, y_test = data2, tdata2
-
+"""
 vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False,analyzer='word',ngram_range=(1,2),strip_accents='unicode',norm='l2')
 X_train = vectorizer.transform(data)
 X_test = vectorizer.transform(tdata)
@@ -173,33 +219,31 @@ X_trainTest = []
 
 i = 0
 traintest = vectorizer.transform(data)
-
 while i < len(data):
-    X_trainTest.append(traintest[i].data[0])
+    X_trainTest.append(traintest[i])
     i += 1
-
 
 i = 0
 testtest = vectorizer.transform(tdata)
 while i < len(tdata):
-    X_testTest.append(testtest[i].data[0])
+    X_testTest.append(testtest[i])
     i += 1
 
+np.asarray(traintest)
+np.asarray(testtest)
 
-randomForestClassifier=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
+randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,verbose=10,n_jobs=2)
 randomForestClassifier.fit(X_train,y_train)
 
 y_predRF = randomForestClassifier.predict(X_test)
 
-X_trainTest = np.asarray(X_trainTest).reshape(-1,1)
-X_testTest = np.asarray(X_testTest).reshape(-1,1)
-
-randomForestClassifierTest=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
+randomForestClassifierTest=RandomForestClassifier(n_estimators=1,random_state=0,verbose=10,n_jobs=2)
 randomForestClassifierTest.fit(X_trainTest,y_train)
 
 y_predRFTest = randomForestClassifier.predict(X_testTest)
 
 print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
-print("F-Score RandomForestTest:",metrics.f1_score(y_test, y_predRFTest,average='micro'))
+#print("F-Score RandomForestTest:",metrics.f1_score(y_test, y_predRFTest,average='micro'))
 print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-print("ConfusionMatrix RandomForestTest:\n",metrics.confusion_matrix(y_test, y_predRFTest,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+#print("ConfusionMatrix RandomForestTest:\n",metrics.confusion_matrix(y_test, y_predRFTest,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+"""
