@@ -15,6 +15,8 @@ from sklearn import metrics
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import cross_validate
 from sklearn.model_selection import GridSearchCV
+from sklearn.feature_extraction.text import HashingVectorizer
+from sklearn.tree import export_graphviz
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -65,6 +67,10 @@ dictGE = {}
 dictK = {}
 dictAG = {}
 stopwords = None
+estimator = None
+
+dataVec = []
+tdataVec = []
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
@@ -517,10 +523,27 @@ def createDataArray():
     global tdata
     global isbnData
     global tisbnData
+    global dataVec
+    global tdataVec
+    """
+    for _ in bookArray:
+            dataVec.append(bookArray[currPos][0])
+            currPos += 1
+    # Creation of TestDataFrame
+    currPos = 0
+    for _ in tbookArray:
+            tdataVec.append(tbookArray[currPos][0])
+            currPos += 1
+    """
+    #dataVector = vectorizer.transform(dataVec)
+    #tdataVector = vectorizer.transform(tdataVec)
+    currPos = 0
     # Creation of TrainDataFrame
     for _ in bookArray:
             #wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+            #vec = dataVector[currPos]
+            #print(vec)
             data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
@@ -529,6 +552,8 @@ def createDataArray():
     for _ in tbookArray:
             # wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
+            #vec = tdataVector[currPos]
+            #print(vec)
             # tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             tisbnData.append(tbookArray[currPos][4])
@@ -579,15 +604,18 @@ def trainClassifier():
     global y_test
     global y_train
     global y_predRF
+    global estimator
 
     # RandomForestClassifier
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,"Literatur & Unterhaltung":1},{0:1,"Ratgeber":3},{0:1,"Kinderbuch & Jugendbuch":3},{0:1,"Sachbuch":3},{0:1,"Ganzheitliches Bewusstsein":3},{0:1,"Glaube & Ethik":3},{0:1,"Künste":3},{0:1,"Architektur & Garten":3}])
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,1:.3},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1}])
     #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:.3,1:1,2:1,3:1,4:1,5:1,6:1,7:1}])
-    randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,verbose=1)
+    randomForestClassifier=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
     randomForestClassifier.fit(X_train,y_train)
 
     y_predRF=randomForestClassifier.predict(X_test)
+
+    estimator = randomForestClassifier.estimators_[2]
 
     """
     gridSearchForest = RandomForestClassifier()
@@ -657,12 +685,18 @@ def verboseOutput():
 def generateFinalOutputFile():
     global tisbnData
     global y_predRF
+    global estimator
 
     j = 0
     with open("finalOut.txt","w") as file:
         for i in tisbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
+    export_graphviz(estimator, out_file='tree.dot', 
+                feature_names = ['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],
+                class_names = ["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"],
+                rounded = True, proportion = False, 
+                precision = 2, filled = True)
 
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
@@ -697,6 +731,7 @@ if args.x:
         splitData()
         createTempDict()
         improveDict()
+        vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False)
         createDataArray()
         createDataFrames()
         trainClassifier()

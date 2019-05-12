@@ -3,6 +3,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
 import json
 import random
+import numpy as np
 
 # TrainVariables
 bodyStr = ''
@@ -157,19 +158,48 @@ createDataArray()
 
 y_train, y_test = data2, tdata2
 
-vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False)
+vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False,analyzer='word',ngram_range=(1,2),strip_accents='unicode',norm='l2')
 X_train = vectorizer.transform(data)
 X_test = vectorizer.transform(tdata)
 
-print(tdata[0])
-print(X_test[0])
-"""
-randomForestClassifier=RandomForestClassifier(n_estimators=20,random_state=0,verbose=10,n_jobs=2)
+#X_trainTest = vectorizer.transform(data).data[0]
+#X_testTest = vectorizer.transform(tdata)
+
+#print(X_testTest)
+#print(X_testTest.shape[0])
+
+X_testTest = []
+X_trainTest = []
+
+i = 0
+traintest = vectorizer.transform(data)
+
+while i < len(data):
+    X_trainTest.append(traintest[i].data[0])
+    i += 1
+
+
+i = 0
+testtest = vectorizer.transform(tdata)
+while i < len(tdata):
+    X_testTest.append(testtest[i].data[0])
+    i += 1
+
+
+randomForestClassifier=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
 randomForestClassifier.fit(X_train,y_train)
 
-y_predRF=randomForestClassifier.predict(X_test)
+y_predRF = randomForestClassifier.predict(X_test)
+
+X_trainTest = np.asarray(X_trainTest).reshape(-1,1)
+X_testTest = np.asarray(X_testTest).reshape(-1,1)
+
+randomForestClassifierTest=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
+randomForestClassifierTest.fit(X_trainTest,y_train)
+
+y_predRFTest = randomForestClassifier.predict(X_testTest)
 
 print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
-
+print("F-Score RandomForestTest:",metrics.f1_score(y_test, y_predRFTest,average='micro'))
 print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-"""
+print("ConfusionMatrix RandomForestTest:\n",metrics.confusion_matrix(y_test, y_predRFTest,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
