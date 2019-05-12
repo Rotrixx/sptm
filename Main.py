@@ -7,13 +7,8 @@ import argparse
 import random
 import timeit
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.naive_bayes import GaussianNB
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.naive_bayes import BernoulliNB
 from sklearn import tree
 from sklearn import metrics
-from sklearn.model_selection import train_test_split
-from sklearn.model_selection import cross_validate
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.tree import export_graphviz
@@ -91,7 +86,7 @@ def readTrainData():
     global data
     global isbnData
     # Read TrainData
-    with open('Data/blurbs_train2.txt','r') as file:
+    with open('Data/blurbs_train.txt','r') as file:
             for line in file:
                     if line.startswith('<book'):
                             bodyStr = ''
@@ -120,7 +115,7 @@ def readTrainData():
                     elif line.startswith('<topic d="0">'):
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
-                            categoryStr = categoryStr[13:]
+                            categoryStr = categoryStr[26:]
                             firstCategory = categoryStr
                             allCategoryStr.add(categoryStr)
                             categoryStr = ''
@@ -141,7 +136,7 @@ def readTestData():
     global tdata
     global tisbnData
     # Read TestData
-    with open('Data/blurbs_test.txt','r') as file:
+    with open('Data/blurbs_dev_participants.txt','r') as file:
             for line in file:
                     if line.startswith('<book'):
                             tbodyStr = ''
@@ -170,7 +165,7 @@ def readTestData():
                     elif line.startswith('<topic d="0">'):
                             tcategoryStr += line
                             tcategoryStr = tcategoryStr[:-9]
-                            tcategoryStr = tcategoryStr[13:]
+                            tcategoryStr = tcategoryStr[26:]
                             tfirstCategory = tcategoryStr
                             tallCategoryStr.add(tcategoryStr)
                             tcategoryStr = ''
@@ -202,6 +197,7 @@ def readDataOneFile():
                             allCategoryStr = set()
                             isbnStr = ''
                     elif line.startswith('</book>'):
+                            """
                             for i in allCategoryStr:
                                 if bodyStr == '':
                                     continue
@@ -214,7 +210,7 @@ def readDataOneFile():
                             if isbnStr.startswith('4'):
                                     continue
                             bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
-                            """
+                            
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
@@ -246,13 +242,6 @@ def readDataOneFile():
                             isbnStr = isbnStr[:-8]
                             isbnStr = isbnStr[6:]
 
-def splitDataTrainTest():
-    global X_train
-    global X_test
-    global y_train
-    global y_test
-    X_train, X_test, y_train, y_test = train_test_split(X,y,train_size=0.7)
-
 def splitter(array, size):
     helperArray = []
     while len(array) > size:
@@ -272,32 +261,6 @@ def splitData():
     print(len(tbookArray))
     print(len(bookArray))
 
-def loadDictFromFile():
-    global dictLU
-    global dictR
-    global dictKJ
-    global dictS
-    global dictGB
-    global dictGE
-    global dictK
-    global dictAG
-    with open('dictLU.txt','r') as file:
-            dictLU = json.load(file)
-    with open('dictR.txt','r') as file:
-            dictR = json.load(file)
-    with open('dictKJ.txt','r') as file:
-            dictKJ = json.load(file)
-    with open('dictS.txt','r') as file:
-            dictS = json.load(file)
-    with open('dictGB.txt','r') as file:
-            dictGB = json.load(file)
-    with open('dictGE.txt','r') as file:
-            dictGE = json.load(file)
-    with open('dictK.txt','r') as file:
-            dictK = json.load(file)
-    with open('dictAG.txt','r') as file:
-            dictAG = json.load(file)
-
 def addToDict(word):
         global curr
         global dictLU
@@ -311,42 +274,42 @@ def addToDict(word):
         global stopwords
         global allWords
 
-        if 'Literatur & Unterhaltung' in bookArray[curr][1] and word not in stopwords:
+        if 'Literatur & Unterhaltung' in bookArray[curr][5] and word not in stopwords:
                 if word in dictLU:
                         dictLU[word] += 1
                 else:
                         dictLU[word] = 1
-        if 'Ratgeber' in bookArray[curr][1] and word not in stopwords:
+        if 'Ratgeber' in bookArray[curr][5] and word not in stopwords:
                 if word in dictR:
                         dictR[word] += 1
                 else:
                         dictR[word] = 1
-        if 'Kinderbuch & Jugendbuch' in bookArray[curr][1] and word not in stopwords:
+        if 'Kinderbuch & Jugendbuch' in bookArray[curr][5] and word not in stopwords:
                 if word in dictKJ:
                         dictKJ[word] += 1
                 else:
                         dictKJ[word] = 1
-        if 'Sachbuch' in bookArray[curr][1] and word not in stopwords:
+        if 'Sachbuch' in bookArray[curr][5] and word not in stopwords:
                 if word in dictS:
                         dictS[word] += 1
                 else:
                         dictS[word] = 1
-        if 'Ganzheitliches Bewusstsein' in bookArray[curr][1] and word not in stopwords:
+        if 'Ganzheitliches Bewusstsein' in bookArray[curr][5] and word not in stopwords:
                 if word in dictGB:
                         dictGB[word] += 1
                 else:
                         dictGB[word] = 1
-        if 'Glaube & Ethik' in bookArray[curr][1] and word not in stopwords:
+        if 'Glaube & Ethik' in bookArray[curr][5] and word not in stopwords:
                 if word in dictGE:
                         dictGE[word] += 1
                 else:
                         dictGE[word] = 1
-        if 'Künste' in bookArray[curr][1] and word not in stopwords:
+        if 'Künste' in bookArray[curr][5] and word not in stopwords:
                 if word in dictK:
                         dictK[word] += 1
                 else:
                         dictK[word] = 1
-        if 'Architektur & Garten' in bookArray[curr][1] and word not in stopwords:
+        if 'Architektur & Garten' in bookArray[curr][5] and word not in stopwords:
                 if word in dictAG:
                         dictAG[word] += 1
                 else:
@@ -525,36 +488,18 @@ def createDataArray():
     global tisbnData
     global dataVec
     global tdataVec
-    """
-    for _ in bookArray:
-            dataVec.append(bookArray[currPos][0])
-            currPos += 1
-    # Creation of TestDataFrame
-    currPos = 0
-    for _ in tbookArray:
-            tdataVec.append(tbookArray[currPos][0])
-            currPos += 1
-    """
-    #dataVector = vectorizer.transform(dataVec)
-    #tdataVector = vectorizer.transform(tdataVec)
+
     currPos = 0
     # Creation of TrainDataFrame
     for _ in bookArray:
-            #wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            #vec = dataVector[currPos]
-            #print(vec)
             data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
     # Creation of TestDataFrame
     currPos = 0
     for _ in tbookArray:
-            # wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-            #vec = tdataVector[currPos]
-            #print(vec)
-            # tdata.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
             tisbnData.append(tbookArray[currPos][4])
             currPos += 1
@@ -582,22 +527,6 @@ def createDataFrames():
     X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
     y_test=tdataFrame['Genre']
 
-def createDataCrossVal():
-    global currPos
-    global bookArray
-    global tbookArray
-    global data
-    global tdata
-    global isbnData
-    global tisbnData
-    global genreData
-    for i in bookArray:
-            wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            data.append([wps,ns,rn,rv,ra,nc,nsym,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG])
-            genreData.append(bookArray[currPos][5])
-            isbnData.append(bookArray[currPos][4])
-            currPos += 1
-
 def trainClassifier():
     global X_train
     global X_test
@@ -606,11 +535,7 @@ def trainClassifier():
     global y_predRF
     global estimator
 
-    # RandomForestClassifier
-    #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,"Literatur & Unterhaltung":1},{0:1,"Ratgeber":3},{0:1,"Kinderbuch & Jugendbuch":3},{0:1,"Sachbuch":3},{0:1,"Ganzheitliches Bewusstsein":3},{0:1,"Glaube & Ethik":3},{0:1,"Künste":3},{0:1,"Architektur & Garten":3}])
-    #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:1,1:.3},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1},{0:1,1:1}])
-    #randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,class_weight=[{0:.3,1:1,2:1,3:1,4:1,5:1,6:1,7:1}])
-    randomForestClassifier=RandomForestClassifier(n_estimators=10,random_state=0,verbose=10,n_jobs=2)
+    randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,verbose=10,n_jobs=2)
     randomForestClassifier.fit(X_train,y_train)
 
     y_predRF=randomForestClassifier.predict(X_test)
@@ -628,20 +553,11 @@ def trainClassifier():
     """
 
     if verbose:
+        print(randomForestClassifier.feature_importances_)
+
         print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
 
         print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
-        
-def classifierCorssVal():
-    global X_train
-    global X_test
-    global y_test
-    global y_train
-    # RandomForestClassifier
-    randomForestClassifier=RandomForestClassifier(n_estimators=50,oob_score=True,random_state=0,class_weight="balanced")
-    crossVal = cross_validate(randomForestClassifier, data, genreData, cv=10,return_train_score=False)
-    if verbose == True:
-        print(crossVal['test_score'])
 
 def verboseOutput():
     global y_test
@@ -677,6 +593,32 @@ def verboseOutput():
     print("AG-fscore:",prfsLabel[2][7])
 
     with open("verboseResults.txt","w") as file:
+        file.write("LU-precision:" + str(prfsLabel[0][0]) + str("\n"))
+        file.write("R-precision:" + str(prfsLabel[0][1]) + str("\n"))
+        file.write("KJ-precision:" + str(prfsLabel[0][2]) + str("\n"))
+        file.write("S-precision:" + str(prfsLabel[0][3]) + str("\n"))
+        file.write("GB-precision:" + str(prfsLabel[0][4]) + str("\n"))
+        file.write("GE-precision:" + str(prfsLabel[0][5]) + str("\n"))
+        file.write("K-precision:" + str(prfsLabel[0][6]) + str("\n"))
+        file.write("AG-precision:" + str(prfsLabel[0][7]) + str("\n"))
+
+        file.write("LU-recall:" + str(prfsLabel[1][0]) + str("\n"))
+        file.write("R-recall:" + str(prfsLabel[1][1]) + str("\n"))
+        file.write("KJ-recall:" + str(prfsLabel[1][2]) + str("\n"))
+        file.write("S-recall:" + str(prfsLabel[1][3]) + str("\n"))
+        file.write("GB-recall:" + str(prfsLabel[1][4]) + str("\n"))
+        file.write("GE-recall:" + str(prfsLabel[1][5]) + str("\n"))
+        file.write("K-recall:" + str(prfsLabel[1][6]) + str("\n"))
+        file.write("AG-recall:" + str(prfsLabel[1][7]) + str("\n"))
+
+        file.write("LU-fscore:" + str(prfsLabel[2][0]) + str("\n"))
+        file.write("R-fscore:" + str(prfsLabel[2][1]) + str("\n"))
+        file.write("KJ-fscore:" + str(prfsLabel[2][2]) + str("\n"))
+        file.write("S-fscore:" + str(prfsLabel[2][3]) + str("\n"))
+        file.write("GB-fscore:" + str(prfsLabel[2][4]) + str("\n"))
+        file.write("GE-fscore:" + str(prfsLabel[2][5]) + str("\n"))
+        file.write("K-fscore:" + str(prfsLabel[2][6]) + str("\n"))
+        file.write("AG-fscore:" + str(prfsLabel[2][7]) + str("\n"))
         file.write("Precision RandomForest:" + str(prfs[0]) + str("\n"))
         file.write("Recall RandomForest:" + str(prfs[1]) + str("\n"))
         file.write("F-Score RandomForest:" + str(prfs[2]) + str("\n"))
@@ -700,50 +642,25 @@ def generateFinalOutputFile():
 
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="verbose", action="store_true")
-parser.add_argument("-f", help="fast test 1 run with dictfromFile",action="store_true")
 parser.add_argument("-x", help="n crossvalidation", action="store_true")
-parser.add_argument("-n", "--num", help="number of validations")
-parser.add_argument("-do", "--dataOutput", help="outputfile")
-parser.add_argument("-tr", "--traindata", help="traindatafile")
-parser.add_argument("-ts", "--testdata", help="testdatafile")
-parser.add_argument("-cv", help="10 crossvalidation", action="store_true")
-arg = vars(parser.parse_args())
+parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
 
 if args.v:
     verbose = True
-if args.f:
-    readTrainData()
-    readTestData()
-    loadDictFromFile()
-    createDataArray()
-    createDataFrames()
-    trainClassifier()
-    verboseOutput()
 if args.x:
     start = timeit.default_timer()
     readDataOneFile()
     stopWordListRead()
-    runNum = 0
-    runRange = int(arg["num"])
-    for runNum in range(runRange):
-        print("Starting Run: " + str(runNum + 1))
-        splitData()
-        createTempDict()
-        improveDict()
-        vectorizer = HashingVectorizer(stop_words=stopwords, alternate_sign=False)
-        createDataArray()
-        createDataFrames()
-        trainClassifier()
-        verboseOutput()
-        generateFinalOutputFile()
-    stop = timeit.default_timer()
-    print("Runntime: ", stop - start)
-if args.cv:
-    readDataOneFile()
-    stopWordListRead()
     splitData()
     createTempDict()
-    createDataCrossVal()
-    classifierCorssVal()
+    improveDict()
+    createDataArray()
+    createDataFrames()
+    trainClassifier()
     verboseOutput()
+    generateFinalOutputFile()
+    stop = timeit.default_timer()
+    print("Runntime: ", stop - start)
+if args.val:
+    print("ToDo")
