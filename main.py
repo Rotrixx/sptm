@@ -12,6 +12,10 @@ from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.tree import export_graphviz
+from sklearn.metrics import precision_recall_curve
+import matplotlib.pyplot as plt
+from inspect import signature
+from itertools import cycle
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -65,11 +69,13 @@ dictAG = {}
 stopwords = None
 estimator = None
 
+#labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","KÃ¼nste","Architektur & Garten"]
+
 def stopWordListRead():
+    global stopwords
     """
     Stopwordliste wird aus Datei(Pfad: Data/stopwords_german.txt) eingelesen.
     """
-    global stopwords
     with open('Data/stopwords_german.txt','r') as file:
         stopwords = json.load(file)
 
@@ -92,7 +98,7 @@ def readTrainData():
     bookArray[pos][3] = Alle Kategorien in set()
     bookArray[pos][4] = ISBN als String
     bookArray[pos][5] = Erste Kategorie als String
-    Leere Klappentexte und ISBN mit Startnummer 4 werden übersprungen. 
+    Leere Klappentexte und ISBN mit Startnummer 4 werden uebersprungen. 
     """
     with open('Data/blurbs_train.txt','r') as file:
             for line in file:
@@ -107,13 +113,13 @@ def readTrainData():
                     elif line.startswith('</book>'):
                             if multilabel:
                                 for i in allCategoryStr:
-                                    if  not bodyStr:
+                                    if bodyStr == '':
                                         continue
                                     if isbnStr.startswith('4'):
                                         continue
                                     bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
                             else:
-                                if not bodyStr:
+                                if bodyStr == '':
                                         continue
                                 if isbnStr.startswith('4'):
                                         continue
@@ -122,6 +128,8 @@ def readTrainData():
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
                             bodyStr = bodyStr[6:]
+                            if bodyStr == '':
+                                continue
                     elif line.startswith('<title>'):
                             titleStr += line
                             titleStr = titleStr[:-9]
@@ -161,7 +169,7 @@ def readTestData():
     tbookArray[pos][3] = Alle Kategorien in set()
     tbookArray[pos][4] = ISBN als String
     tbookArray[pos][5] = Erste Kategorie als String
-    Leere Klappentexte und ISBN mit Startnummer 4 werden übersprungen.
+    Leere Klappentexte und ISBN mit Startnummer 4 werden ?bersprungen.
 
     ToDo: Auf blurbs_dev_participants anpassen(Kategorien entfernen) 
     """
@@ -178,13 +186,13 @@ def readTestData():
                     elif line.startswith('</book>'):
                             if multilabel:
                                 for i in tallCategoryStr:
-                                    if not tbodyStr:
+                                    if tbodyStr == '':
                                         continue
                                     if tisbnStr.startswith('4'):
                                         continue
                                     tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
                             else:
-                                if not tbodyStr:
+                                if tbodyStr == '':
                                         continue
                                 if tisbnStr.startswith('4'):
                                         continue
@@ -193,6 +201,8 @@ def readTestData():
                             tbodyStr += line
                             tbodyStr = tbodyStr[:-8]
                             tbodyStr = tbodyStr[6:]
+                            if tbodyStr == '':
+                                continue
                     elif line.startswith('<title>'):
                             ttitleStr += line
                             ttitleStr = ttitleStr[:-9]
@@ -212,6 +222,73 @@ def readTestData():
                             tisbnStr += line
                             tisbnStr = tisbnStr[:-8]
                             tisbnStr = tisbnStr[6:]
+
+def readDataOneFile():
+    global bodyStr
+    global titleStr
+    global authorStr
+    global categoryStr
+    global firstCategory
+    global allCategoryStr
+    global isbnStr
+    global bookArray
+    global data
+    global isbnData
+    # Read TrainData
+    with open('Data/blurbs_train.txt','r') as file:
+            for line in file:
+                    if line.startswith('<book'):
+                            bodyStr = ''
+                            titleStr = ''
+                            authorStr = ''
+                            categoryStr = ''
+                            firstCategory = ''
+                            allCategoryStr = set()
+                            isbnStr = ''
+                    elif line.startswith('</book>'):
+                            if multilabel:
+                                for i in allCategoryStr:
+                                    if bodyStr == '':
+                                        continue
+                                    if isbnStr.startswith('4'):
+                                        continue
+                                    bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                            else:
+                                if bodyStr == '':
+                                        continue
+                                if isbnStr.startswith('4'):
+                                        continue
+                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))                            
+                    elif line.startswith('<body>'):
+                            bodyStr += line
+                            bodyStr = bodyStr[:-8]
+                            bodyStr = bodyStr[6:]
+                    elif line.startswith('<title>'):
+                            titleStr += line
+                            titleStr = titleStr[:-9]
+                            titleStr = titleStr[7:]
+                    elif line.startswith('<authors>'):
+                            authorStr += line
+                            authorStr = authorStr[:-11]
+                            authorStr = authorStr[9:]
+                    elif line.startswith('<topic d="0">'):
+                            categoryStr += line
+                            categoryStr = categoryStr[:-9]
+                            categoryStr = categoryStr[13:]
+                            firstCategory = categoryStr
+                            allCategoryStr.add(categoryStr)
+                            categoryStr = ''
+                    elif line.startswith('<topic d="0" label'):
+                            categoryStr += line
+                            categoryStr = categoryStr[:-9]
+                            categoryStr = categoryStr[26:]
+                            firstCategory = categoryStr
+                            allCategoryStr.add(categoryStr)
+                            categoryStr = ''
+                    elif line.startswith('<isbn>'):
+                            isbnStr += line
+                            isbnStr = isbnStr[:-8]
+                            isbnStr = isbnStr[6:]
 
 def splitter(array, size):
     """
@@ -253,10 +330,10 @@ def addToDict(word):
         global stopwords
         global allWords
         """
-        Erstellung eines Wörterbucheintrages(Wort:Wert) für das mitgegebene Wort.
-        Wörter die in der Stopwordliste auftreten werden gelöscht.
-        Falls das Wort bereits im Wörterbuch steht, wird der Wert um eins erhöht.
-        Erstellung eines set() mit allen Wörtern.
+        Erstellung eines W?rterbucheintrages(Wort:Wert) f?r das mitgegebene Wort.
+        W?rter die in der Stopwordliste auftreten werden gel?scht.
+        Falls das Wort bereits im W?rterbuch steht, wird der Wert um eins erh?ht.
+        Erstellung eines set() mit allen W?rtern.
         """
 
         if 'Literatur & Unterhaltung' in bookArray[curr][5] and word not in stopwords:
@@ -372,14 +449,14 @@ def createTempDict():
             curr += 1
 
 def featurize(text):
-    """
-    Erstellung verschiedener Features:
+        """
+        Erstellung verschiedener Features:
         Woerter pro Satz
         Anzahl Saetze
         relative Haeufigkeiten von Nomen,Verben,Adjektiven
-        Anzahl ausgewaehlten Symbolen(€ # $ % § & * " - : ; , )
+        Anzahl ausgewaehlten Symbolen(? # $ % ? & * " - : ; , )
         Genrewoerterbuchuebereinstimmungsraten
-    """
+        """
         j = 0
         k = 0
         nNouns = 0
@@ -465,11 +542,11 @@ def featurize(text):
         gdrK = grK / allHits
         gdrAG = grAG / allHits
 
-        nSymE = text.count('€')
+        nSymE = text.count('â‚¬')
         nSymH = text.count('#')
         nSymD = text.count('$')
         nSymP = text.count('%')
-        nSymPa = text.count('§')
+        nSymPa = text.count('Â§')
         nSymA = text.count('&')
         nSymS = text.count('*')
         nSymQ = text.count('"')
@@ -487,20 +564,19 @@ def createDataArray():
     global tdata
     global isbnData
     global tisbnData
-    global dataVec
-    global tdataVec
     """
     Erstellung eines Array mit den Featuren und Genre, zur Uebergabe an createDataFrame()
     """
+
     currPos = 0
-    # TrainDataArray
+    # Creation of TrainDataFrame
     for _ in bookArray:
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
             data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
+    # Creation of TestDataFrame
     currPos = 0
-    # TestDataArray
     for _ in tbookArray:
             wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
             tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
@@ -604,7 +680,7 @@ def verboseOutput():
     print("K-fscore:",prfsLabel[2][6])
     print("AG-fscore:",prfsLabel[2][7])
 
-    with open("OuputData/verboseResults.txt","w") as file:
+    with open("verboseResults.txt","w") as file:
         file.write("LU-precision:" + str(prfsLabel[0][0]) + str("\n"))
         file.write("R-precision:" + str(prfsLabel[0][1]) + str("\n"))
         file.write("KJ-precision:" + str(prfsLabel[0][2]) + str("\n"))
@@ -647,7 +723,7 @@ def generateFinalOutputFile():
     """
 
     j = 0
-    with open("OuputData/finalOut.txt","w") as file:
+    with open("finalOut.txt","w") as file:
         for i in tisbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
@@ -664,7 +740,7 @@ Parser zur Ausfuehrung ueber das Terminal mit zusaetzlichen Angaben
 parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
-parser.add_argument("-x", help="execute with trainfile only", action="store_true")
+parser.add_argument("-x", help="n crossvalidation", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
 
@@ -674,7 +750,7 @@ if args.m:
     multilabel = True
 if args.x:
     start = timeit.default_timer()
-    readTrainData()
+    readDataOneFile()
     stopWordListRead()
     splitData()
     createTempDict()
