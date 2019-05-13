@@ -12,6 +12,10 @@ from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.tree import export_graphviz
+from sklearn.metrics import precision_recall_curve
+import matplotlib.pyplot as plt
+from inspect import signature
+from itertools import cycle
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -46,6 +50,7 @@ allWords = set()
 
 # Other
 verbose = False
+multilabel = False
 curr = 0
 X_train = None
 X_test = None
@@ -97,7 +102,19 @@ def readTrainData():
                             allCategoryStr = set()
                             isbnStr = ''
                     elif line.startswith('</book>'):
-                            bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
+                            if multilabel:
+                                for i in allCategoryStr:
+                                    if bodyStr == '':
+                                        continue
+                                    if isbnStr.startswith('4'):
+                                        continue
+                                    bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                            else:
+                                if bodyStr == '':
+                                        continue
+                                if isbnStr.startswith('4'):
+                                        continue
+                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
@@ -147,7 +164,19 @@ def readTestData():
                             tallCategoryStr = set()
                             tisbnStr = ''
                     elif line.startswith('</book>'):
-                            tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+                            if multilabel:
+                                for i in tallCategoryStr:
+                                    if tbodyStr == '':
+                                        continue
+                                    if tisbnStr.startswith('4'):
+                                        continue
+                                    tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
+                            else:
+                                if tbodyStr == '':
+                                        continue
+                                if tisbnStr.startswith('4'):
+                                        continue
+                                tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
                     elif line.startswith('<body>'):
                             tbodyStr += line
                             tbodyStr = tbodyStr[:-8]
@@ -197,20 +226,19 @@ def readDataOneFile():
                             allCategoryStr = set()
                             isbnStr = ''
                     elif line.startswith('</book>'):
-                            """
-                            for i in allCategoryStr:
+                            if multilabel:
+                                for i in allCategoryStr:
+                                    if bodyStr == '':
+                                        continue
+                                    if isbnStr.startswith('4'):
+                                        continue
+                                    bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                            else:
                                 if bodyStr == '':
-                                    continue
+                                        continue
                                 if isbnStr.startswith('4'):
-                                    continue
-                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
-                            """
-                            if bodyStr == '':
-                                    continue
-                            if isbnStr.startswith('4'):
-                                    continue
-                            bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
-                            
+                                        continue
+                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))                            
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
@@ -626,6 +654,8 @@ def verboseOutput():
 
 def generateFinalOutputFile():
     global tisbnData
+    global y_test
+    global X_test
     global y_predRF
     global estimator
 
@@ -634,6 +664,7 @@ def generateFinalOutputFile():
         for i in tisbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
+
     export_graphviz(estimator, out_file='tree.dot', 
                 feature_names = ['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],
                 class_names = ["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"],
@@ -641,13 +672,16 @@ def generateFinalOutputFile():
                 precision = 2, filled = True)
 
 parser = argparse.ArgumentParser(description='sptm')
-parser.add_argument("-v", help="verbose", action="store_true")
+parser.add_argument("-v", help="activate verbose output", action="store_true")
+parser.add_argument("-m", help="activate multilabel classification", action="store_true")
 parser.add_argument("-x", help="n crossvalidation", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
 
 if args.v:
     verbose = True
+if args.m:
+    multilabel = True
 if args.x:
     start = timeit.default_timer()
     readDataOneFile()
