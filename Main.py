@@ -576,7 +576,7 @@ def verboseOutput():
     global y_test
     global y_predRF
     """
-    Zusaetzliche Valierungsausgabe in Terminal und Datei(verboseOutput.txt)
+    Zusaetzliche Valierungsausgabe in Terminal und Datei(OuputData/verboseOutput.txt)
     """
     prfs = metrics.precision_recall_fscore_support(y_test, y_predRF, average='micro')
     print(prfs[0],prfs[1],prfs[2],prfs[3])
@@ -608,7 +608,7 @@ def verboseOutput():
     print("K-fscore:",prfsLabel[2][6])
     print("AG-fscore:",prfsLabel[2][7])
 
-    with open("verboseResults.txt","w") as file:
+    with open("OuputData/verboseResults.txt","w") as file:
         file.write("LU-precision:" + str(prfsLabel[0][0]) + str("\n"))
         file.write("R-precision:" + str(prfsLabel[0][1]) + str("\n"))
         file.write("KJ-precision:" + str(prfsLabel[0][2]) + str("\n"))
@@ -651,7 +651,7 @@ def generateFinalOutputFile():
     """
 
     j = 0
-    with open("finalOut.txt","w") as file:
+    with open("OuputData/finalOut.txt","w") as file:
         for i in tisbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
