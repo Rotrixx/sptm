@@ -12,10 +12,6 @@ from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.tree import export_graphviz
-from sklearn.metrics import precision_recall_curve
-import matplotlib.pyplot as plt
-from inspect import signature
-from itertools import cycle
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
