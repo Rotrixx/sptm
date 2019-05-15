@@ -11,14 +11,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
-<<<<<<< HEAD
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.tree import export_graphviz
-from sklearn.metrics import precision_recall_curve
-from inspect import signature
-from itertools import cycle
-=======
->>>>>>> 3d682df2c64920c3840e6d90fdf965f5d550c26e
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -70,11 +62,7 @@ dictGE = {}
 dictK = {}
 dictAG = {}
 stopwords = None
-<<<<<<< HEAD
-estimator = None
 nlp = spacy.load('de')
-=======
->>>>>>> 3d682df2c64920c3840e6d90fdf965f5d550c26e
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
