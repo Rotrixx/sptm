@@ -10,12 +10,6 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
-from sklearn.feature_extraction.text import HashingVectorizer
-from sklearn.tree import export_graphviz
-from sklearn.metrics import precision_recall_curve
-import matplotlib.pyplot as plt
-from inspect import signature
-from itertools import cycle
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -67,7 +61,6 @@ dictGE = {}
 dictK = {}
 dictAG = {}
 stopwords = None
-estimator = None
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
@@ -441,8 +434,6 @@ def featurize(text):
                         nAdjectives += 1
                 elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
                         nVerbs += 1
-                elif i[1] == 'SYM':
-                        nSym += 1
 
                 word = i[0].lower()
                 if word in dictLU:
@@ -562,21 +553,18 @@ def trainClassifier():
     global y_test
     global y_train
     global y_predRF
-    global estimator
     """
     RandomForest Klassifikator trainieren und predicten.
     """
 
-    randomForestClassifier=RandomForestClassifier(n_estimators=50,random_state=0,verbose=10,n_jobs=2)
+    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=40,min_samples_leaf=1,bootstrap=False,criterion='gini',verbose=10,n_jobs=2)
     randomForestClassifier.fit(X_train,y_train)
 
     y_predRF=randomForestClassifier.predict(X_test)
 
-    estimator = randomForestClassifier.estimators_[2]
-
     """
     gridSearchForest = RandomForestClassifier()
-    params = {"n_estimators":[50,60,70],"max_depth": [5,8,15],"min_samples_leaf":[1,2,4]}
+    params = {"n_estimators":[50,100],"max_depth": [8,15,20,30,40,50],"min_samples_leaf":[1,2,3,4],"bootstrap":[True,False],"criterion":["gini","entropy"]}
     clf = GridSearchCV(gridSearchForest,param_grid=params,cv=5)
     clf.fit(X_train,y_train)
 
@@ -674,12 +662,6 @@ def generateFinalOutputFile():
         for i in tisbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
-
-    export_graphviz(estimator, out_file='tree.dot', 
-                feature_names = ['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],
-                class_names = ["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"],
-                rounded = True, proportion = False, 
-                precision = 2, filled = True)
 
 """
 Parser zur Ausfuehrung ueber das Terminal mit zusaetzlichen Angaben
