@@ -12,10 +12,6 @@ from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.feature_extraction.text import HashingVectorizer
 from sklearn.tree import export_graphviz
-from sklearn.metrics import precision_recall_curve
-import matplotlib.pyplot as plt
-from inspect import signature
-from itertools import cycle
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -66,6 +62,7 @@ dictGB = {}
 dictGE = {}
 dictK = {}
 dictAG = {}
+authorDict = {}
 stopwords = None
 estimator = None
 
@@ -138,6 +135,9 @@ def readTrainData():
                             authorStr += line
                             authorStr = authorStr[:-11]
                             authorStr = authorStr[9:]
+                            firstComma = authorStr.find(',')
+                            if firstComma != -1:
+                                authorStr = authorStr[firstComma-1:]
                     elif line.startswith('<topic d="0">'):
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
@@ -218,6 +218,9 @@ def readTestData():
                             tauthorStr += line
                             tauthorStr = tauthorStr[:-11]
                             tauthorStr = tauthorStr[9:]
+                            firstComma = authorStr.find(',')
+                            if firstComma != -1:
+                                authorStr = authorStr[firstComma-1:]
                     elif line.startswith('<topic d="0">'):
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
@@ -378,10 +381,20 @@ def improveDict():
 
 def createTempDict():
     global bookArray
-    global curr
+    global authorDict
     """
     Erstellung eines temporaeren Woerterbuches fuer Nomen,Verben und Adjektive.
     Alle Buchstaben werden kleingeschrieben. 
+
+    Autorenwoerterbuch
+    1 = Literatur & Unterhaltung
+    2 = Ratgeber
+    4 = Kinderbuch & Jugendbuch
+    8 = Sachbuch
+    16 = Ganzheitliches Bewusstsein
+    32 = Glaube & Ethik
+    64 = Künste
+    128 = Architektur & Garten
     """
     for book in bookArray:
             blob = TextBlobDE(book[0])
@@ -393,9 +406,37 @@ def createTempDict():
                             addToDict(i[0].lower())
                     elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
                             addToDict(i[0].lower())
-            curr += 1
 
-def featurize(text):
+            if book[2] not in authorDict:
+                authorDict[book[2]] = 0
+
+            if book[5] == 'Literatur & Unterhaltung':
+                authorDict[book[2]] += 1
+            if book[5] == 'Ratgeber':
+                authorDict[book[2]] += 2
+            if book[5] == 'Kinderbuch & Jugendbuch':
+                authorDict[book[2]] += 4
+            if book[5] == 'Sachbuch':
+                authorDict[book[2]] += 8
+            if book[5] == 'Ganzheitliches Bewusstsein':
+                authorDict[book[2]] += 16
+            if book[5] == 'Glaube & Ethik':
+                authorDict[book[2]] += 32
+            if book[5] == 'Künste':
+                authorDict[book[2]] += 64
+            if book[5] == 'Architektur & Garten':
+                authorDict[book[2]] += 128
+
+def featurize(text,author):
+        #global dictLU
+        #global dictR
+        #global dictKJ
+        #global dictS
+        #global dictGB
+        #global dictGE
+        #global dictK
+        #global dictAG
+        #global authorDict
         """
         Erstellung verschiedener Features:
         Woerter pro Satz
@@ -489,6 +530,11 @@ def featurize(text):
         gdrK = grK / allHits
         gdrAG = grAG / allHits
 
+        if author in authorDict:
+                auth = authorDict[author]
+        else:
+                auth = 0
+
         nSymE = text.count('€')
         nSymH = text.count('#')
         nSymD = text.count('$')
@@ -501,7 +547,7 @@ def featurize(text):
         nSymDd = text.count(':')
         nSymSc = text.count(';')
 
-        return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
+        return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG,auth
 
 def createDataArray():
     global currPos
@@ -518,15 +564,15 @@ def createDataArray():
     currPos = 0
     # Creation of TrainDataFrame
     for _ in bookArray:
-            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,auth = featurize(bookArray[currPos][0],bookArray[currPos][2])
+            data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,auth,bookArray[currPos][5]])
             isbnData.append(bookArray[currPos][4])
             currPos += 1
     # Creation of TestDataFrame
     currPos = 0
     for _ in tbookArray:
-            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-            tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,auth = featurize(tbookArray[currPos][0],bookArray[currPos][2])
+            tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,auth,tbookArray[currPos][5]])
             tisbnData.append(tbookArray[currPos][4])
             currPos += 1
 
@@ -543,18 +589,20 @@ def createDataFrames():
     """
 
     # TrainDataFrame
-    dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
+    dataFrame=pd.DataFrame(data,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Author','Genre'],dtype=float)
 
     # TestDataFrame
-    tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre'],dtype=float)
+    tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Author','Genre'],dtype=float)
 
     # TrainData
-    X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Author']]
     y_train=dataFrame['Genre']
 
     # TestData
-    X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Author']]
     y_test=tdataFrame['Genre']
+
+    print(dataFrame[:10])
 
 def trainClassifier():
     global X_train
@@ -676,7 +724,7 @@ def generateFinalOutputFile():
             j += 1
 
     export_graphviz(estimator, out_file='tree.dot', 
-                feature_names = ['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG'],
+                feature_names = ['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Author'],
                 class_names = ["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"],
                 rounded = True, proportion = False, 
                 precision = 2, filled = True)
