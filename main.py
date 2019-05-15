@@ -6,6 +6,7 @@ import json
 import argparse
 import random
 import timeit
+import spacy
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn import metrics
@@ -61,6 +62,7 @@ dictGE = {}
 dictK = {}
 dictAG = {}
 stopwords = None
+nlp = spacy.load('de')
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
@@ -275,7 +277,6 @@ def addToDict(word):
         Falls das Wort bereits im W?rterbuch steht, wird der Wert um eins erh?ht.
         Erstellung eines set() mit allen W?rtern.
         """
-
         if 'Literatur & Unterhaltung' in bookArray[curr][5] and word not in stopwords:
                 if word in dictLU:
                         dictLU[word] += 1
@@ -372,6 +373,7 @@ def improveDict():
 def createTempDict():
     global bookArray
     global curr
+    global nlp
     """
     Erstellung eines temporaeren Woerterbuches fuer Nomen,Verben und Adjektive.
     Alle Buchstaben werden kleingeschrieben. 
@@ -385,7 +387,12 @@ def createTempDict():
                     elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
                             addToDict(i[0].lower())
                     elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                            addToDict(i[0].lower())
+                            wordStr = str(i[0])
+                            word = nlp(wordStr)
+                            for token in word:
+                                    word = token.lemma_
+                                    print(word)
+                            addToDict(word.lower())
             curr += 1
 
 def featurize(text):
@@ -433,9 +440,17 @@ def featurize(text):
                 elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
                         nAdjectives += 1
                 elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
+                        wordStr = str(i[0])
+                        word = nlp(wordStr)
+                        for token in word:
+                                word = token.lemma_
                         nVerbs += 1
 
-                word = i[0].lower()
+                if i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
+                        word = word.lower()
+                else:
+                        word = i[0].lower()
+
                 if word in dictLU:
                         grLU += dictLU[word]
                         allHits += 1
