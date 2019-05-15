@@ -117,13 +117,13 @@ def readTrainData():
                                         continue
                                     if isbnStr.startswith('4'):
                                         continue
-                                    bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                                    bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
                             else:
                                 if bodyStr == '':
                                         continue
                                 if isbnStr.startswith('4'):
                                         continue
-                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
+                                bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
                     elif line.startswith('<body>'):
                             bodyStr += line
                             bodyStr = bodyStr[:-8]
@@ -139,6 +139,13 @@ def readTrainData():
                             authorStr = authorStr[:-11]
                             authorStr = authorStr[9:]
                     elif line.startswith('<topic d="0">'):
+                            categoryStr += line
+                            categoryStr = categoryStr[:-9]
+                            categoryStr = categoryStr[13:]
+                            firstCategory = categoryStr
+                            allCategoryStr.add(categoryStr)
+                            categoryStr = ''
+                    elif line.startswith('<topic d="0" label'):
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
                             categoryStr = categoryStr[26:]
@@ -190,13 +197,13 @@ def readTestData():
                                         continue
                                     if tisbnStr.startswith('4'):
                                         continue
-                                    tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
+                                    tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
                             else:
                                 if tbodyStr == '':
                                         continue
                                 if tisbnStr.startswith('4'):
                                         continue
-                                tbookArray.append((tbodyStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+                                tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
                     elif line.startswith('<body>'):
                             tbodyStr += line
                             tbodyStr = tbodyStr[:-8]
@@ -212,66 +219,6 @@ def readTestData():
                             tauthorStr = tauthorStr[:-11]
                             tauthorStr = tauthorStr[9:]
                     elif line.startswith('<topic d="0">'):
-                            tcategoryStr += line
-                            tcategoryStr = tcategoryStr[:-9]
-                            tcategoryStr = tcategoryStr[26:]
-                            tfirstCategory = tcategoryStr
-                            tallCategoryStr.add(tcategoryStr)
-                            tcategoryStr = ''
-                    elif line.startswith('<isbn>'):
-                            tisbnStr += line
-                            tisbnStr = tisbnStr[:-8]
-                            tisbnStr = tisbnStr[6:]
-
-def readDataOneFile():
-    global bodyStr
-    global titleStr
-    global authorStr
-    global categoryStr
-    global firstCategory
-    global allCategoryStr
-    global isbnStr
-    global bookArray
-    global data
-    global isbnData
-    # Read TrainData
-    with open('Data/blurbs_train.txt','r') as file:
-            for line in file:
-                    if line.startswith('<book'):
-                            bodyStr = ''
-                            titleStr = ''
-                            authorStr = ''
-                            categoryStr = ''
-                            firstCategory = ''
-                            allCategoryStr = set()
-                            isbnStr = ''
-                    elif line.startswith('</book>'):
-                            if multilabel:
-                                for i in allCategoryStr:
-                                    if bodyStr == '':
-                                        continue
-                                    if isbnStr.startswith('4'):
-                                        continue
-                                    bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
-                            else:
-                                if bodyStr == '':
-                                        continue
-                                if isbnStr.startswith('4'):
-                                        continue
-                                bookArray.append((bodyStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))                            
-                    elif line.startswith('<body>'):
-                            bodyStr += line
-                            bodyStr = bodyStr[:-8]
-                            bodyStr = bodyStr[6:]
-                    elif line.startswith('<title>'):
-                            titleStr += line
-                            titleStr = titleStr[:-9]
-                            titleStr = titleStr[7:]
-                    elif line.startswith('<authors>'):
-                            authorStr += line
-                            authorStr = authorStr[:-11]
-                            authorStr = authorStr[9:]
-                    elif line.startswith('<topic d="0">'):
                             categoryStr += line
                             categoryStr = categoryStr[:-9]
                             categoryStr = categoryStr[13:]
@@ -286,9 +233,9 @@ def readDataOneFile():
                             allCategoryStr.add(categoryStr)
                             categoryStr = ''
                     elif line.startswith('<isbn>'):
-                            isbnStr += line
-                            isbnStr = isbnStr[:-8]
-                            isbnStr = isbnStr[6:]
+                            tisbnStr += line
+                            tisbnStr = tisbnStr[:-8]
+                            tisbnStr = tisbnStr[6:]
 
 def splitter(array, size):
     """
@@ -750,7 +697,7 @@ if args.m:
     multilabel = True
 if args.x:
     start = timeit.default_timer()
-    readDataOneFile()
+    readTrainData()
     stopWordListRead()
     splitData()
     createTempDict()
