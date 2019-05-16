@@ -392,7 +392,8 @@ def createTempDict():
                                     for token in word:
                                             word = token.lemma_
                                             addToDict(word.lower())
-                            addToDict(i[0].lower())
+                            else:
+                                    addToDict(i[0].lower())
                     elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
                             if lemmatizeAdjectives == True:
                                     wordStr = str(i[0])
@@ -400,7 +401,8 @@ def createTempDict():
                                     for token in word:
                                             word = token.lemma_
                                             addToDict(word.lower())
-                            addToDict(i[0].lower())
+                            else:
+                                    addToDict(i[0].lower())
                     elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
                             if lemmatizeVerbs == True:
                                     wordStr = str(i[0])
