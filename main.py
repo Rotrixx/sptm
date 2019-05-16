@@ -65,7 +65,11 @@ dictGE = {}
 dictK = {}
 dictAG = {}
 stopwords = None
-nlp = spacy.load('de')
+nlp = spacy.load('de_core_news_sm')
+
+nounsList = ['NN','NNS','NNP','NNPS']
+adjectiveList = ['JJ','JJR','JJS']
+verbsList = ['VB','VBZ','VBP','VBD','VBN','VBG']
 
 #labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]
 
@@ -99,61 +103,59 @@ def readTrainData():
     Leere Klappentexte und ISBN mit Startnummer 4 werden uebersprungen. 
     """
     with open('Data/blurbs_train.txt','r') as file:
-            for line in file:
-                    if line.startswith('<book'):
-                            bodyStr = ''
-                            titleStr = ''
-                            authorStr = ''
-                            categoryStr = ''
-                            firstCategory = ''
-                            allCategoryStr = set()
-                            isbnStr = ''
-                    elif line.startswith('</book>'):
-                            if multilabel:
-                                for i in allCategoryStr:
-                                    if bodyStr == '':
-                                        continue
-                                    if isbnStr.startswith('4'):
-                                        continue
-                                    bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
-                            else:
-                                if bodyStr == '':
-                                        continue
-                                if isbnStr.startswith('4'):
-                                        continue
-                                bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
-                    elif line.startswith('<body>'):
-                            bodyStr += line
-                            bodyStr = bodyStr[:-8]
-                            bodyStr = bodyStr[6:]
-                            if bodyStr == '':
-                                continue
-                    elif line.startswith('<title>'):
-                            titleStr += line
-                            titleStr = titleStr[:-9]
-                            titleStr = titleStr[7:]
-                    elif line.startswith('<authors>'):
-                            authorStr += line
-                            authorStr = authorStr[:-11]
-                            authorStr = authorStr[9:]
-                    elif line.startswith('<topic d="0">'):
-                            categoryStr += line
-                            categoryStr = categoryStr[:-9]
-                            categoryStr = categoryStr[13:]
-                            firstCategory = categoryStr
-                            allCategoryStr.add(categoryStr)
-                            categoryStr = ''
-                    elif line.startswith('<topic d="0" label'):
-                            categoryStr += line
-                            categoryStr = categoryStr[:-9]
-                            categoryStr = categoryStr[26:]
-                            firstCategory = categoryStr
-                            allCategoryStr.add(categoryStr)
-                            categoryStr = ''
-                    elif line.startswith('<isbn>'):
-                            isbnStr += line
-                            isbnStr = isbnStr[:-8]
-                            isbnStr = isbnStr[6:]
+        for line in file:
+            if line.startswith('<book'):
+                bodyStr = ''
+                titleStr = ''
+                authorStr = ''
+                categoryStr = ''
+                firstCategory = ''
+                allCategoryStr = set()
+                isbnStr = ''
+            elif line.startswith('</book>'):
+                if multilabel:
+                    for i in allCategoryStr:
+                        if not bodyStr:
+                            continue
+                        if isbnStr.startswith('4'):
+                            continue
+                        bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
+                else:
+                    if not bodyStr:
+                        continue
+                    if isbnStr.startswith('4'):
+                        continue
+                    bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
+            elif line.startswith('<body>'):
+                bodyStr += line
+                bodyStr = bodyStr[:-8]
+                bodyStr = bodyStr[6:]
+            elif line.startswith('<title>'):
+                titleStr += line
+                titleStr = titleStr[:-9]
+                titleStr = titleStr[7:]
+            elif line.startswith('<authors>'):
+                authorStr += line
+                authorStr = authorStr[:-11]
+                authorStr = authorStr[9:]
+            elif line.startswith('<topic d="0">'):
+                categoryStr += line
+                categoryStr = categoryStr[:-9]
+                categoryStr = categoryStr[13:]
+                firstCategory = categoryStr
+                allCategoryStr.add(categoryStr)
+                categoryStr = ''
+            elif line.startswith('<topic d="0" label'):
+                categoryStr += line
+                categoryStr = categoryStr[:-9]
+                categoryStr = categoryStr[26:]
+                firstCategory = categoryStr
+                allCategoryStr.add(categoryStr)
+                categoryStr = ''
+            elif line.startswith('<isbn>'):
+                isbnStr += line
+                isbnStr = isbnStr[:-8]
+                isbnStr = isbnStr[6:]
 
 def readTestData():
     global tbodySt
@@ -179,61 +181,59 @@ def readTestData():
     ToDo: Auf blurbs_dev_participants anpassen(Kategorien entfernen) 
     """
     with open('Data/blurbs_dev_participants.txt','r') as file:
-            for line in file:
-                    if line.startswith('<book'):
-                            tbodyStr = ''
-                            ttitleStr = ''
-                            tauthorStr = ''
-                            tcategoryStr = ''
-                            tfirstCategory = ''
-                            tallCategoryStr = set()
-                            tisbnStr = ''
-                    elif line.startswith('</book>'):
-                            if multilabel:
-                                for i in tallCategoryStr:
-                                    if tbodyStr == '':
-                                        continue
-                                    if tisbnStr.startswith('4'):
-                                        continue
-                                    tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
-                            else:
-                                if tbodyStr == '':
-                                        continue
-                                if tisbnStr.startswith('4'):
-                                        continue
-                                tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
-                    elif line.startswith('<body>'):
-                            tbodyStr += line
-                            tbodyStr = tbodyStr[:-8]
-                            tbodyStr = tbodyStr[6:]
-                            if tbodyStr == '':
-                                continue
-                    elif line.startswith('<title>'):
-                            ttitleStr += line
-                            ttitleStr = ttitleStr[:-9]
-                            ttitleStr = ttitleStr[7:]
-                    elif line.startswith('<authors>'):
-                            tauthorStr += line
-                            tauthorStr = tauthorStr[:-11]
-                            tauthorStr = tauthorStr[9:]
-                    elif line.startswith('<topic d="0">'):
-                            categoryStr += line
-                            categoryStr = categoryStr[:-9]
-                            categoryStr = categoryStr[13:]
-                            firstCategory = categoryStr
-                            allCategoryStr.add(categoryStr)
-                            categoryStr = ''
-                    elif line.startswith('<topic d="0" label'):
-                            categoryStr += line
-                            categoryStr = categoryStr[:-9]
-                            categoryStr = categoryStr[26:]
-                            firstCategory = categoryStr
-                            allCategoryStr.add(categoryStr)
-                            categoryStr = ''
-                    elif line.startswith('<isbn>'):
-                            tisbnStr += line
-                            tisbnStr = tisbnStr[:-8]
-                            tisbnStr = tisbnStr[6:]
+        for line in file:
+            if line.startswith('<book'):
+                tbodyStr = ''
+                ttitleStr = ''
+                tauthorStr = ''
+                tcategoryStr = ''
+                tfirstCategory = ''
+                tallCategoryStr = set()
+                tisbnStr = ''
+            elif line.startswith('</book>'):
+                if multilabel:
+                    for i in tallCategoryStr:
+                        if not tbodyStr:
+                            continue
+                        if tisbnStr.startswith('4'):
+                            continue
+                        tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
+                else:
+                    if not tbodyStr:
+                        continue
+                    if tisbnStr.startswith('4'):
+                        continue
+                    tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+            elif line.startswith('<body>'):
+                tbodyStr += line
+                tbodyStr = tbodyStr[:-8]
+                tbodyStr = tbodyStr[6:]
+            elif line.startswith('<title>'):
+                ttitleStr += line
+                ttitleStr = ttitleStr[:-9]
+                ttitleStr = ttitleStr[7:]
+            elif line.startswith('<authors>'):
+                tauthorStr += line
+                tauthorStr = tauthorStr[:-11]
+                tauthorStr = tauthorStr[9:]
+            elif line.startswith('<topic d="0">'):
+                categoryStr += line
+                categoryStr = categoryStr[:-9]
+                categoryStr = categoryStr[13:]
+                firstCategory = categoryStr
+                allCategoryStr.add(categoryStr)
+                categoryStr = ''
+            elif line.startswith('<topic d="0" label'):
+                categoryStr += line
+                categoryStr = categoryStr[:-9]
+                categoryStr = categoryStr[26:]
+                firstCategory = categoryStr
+                allCategoryStr.add(categoryStr)
+                categoryStr = ''
+            elif line.startswith('<isbn>'):
+                tisbnStr += line
+                tisbnStr = tisbnStr[:-8]
+                tisbnStr = tisbnStr[6:]
 
 def splitter(array, size):
     """
@@ -263,64 +263,64 @@ def splitData():
     print(len(bookArray))
 
 def addToDict(word):
-        global curr
-        global dictLU
-        global dictR
-        global dictKJ
-        global dictS
-        global dictGB
-        global dictGE
-        global dictK
-        global dictAG
-        global stopwords
-        global allWords
-        """
-        Erstellung eines W?rterbucheintrages(Wort:Wert) f?r das mitgegebene Wort.
-        W?rter die in der Stopwordliste auftreten werden gel?scht.
-        Falls das Wort bereits im W?rterbuch steht, wird der Wert um eins erh?ht.
-        Erstellung eines set() mit allen W?rtern.
-        """
-        if 'Literatur & Unterhaltung' in bookArray[curr][5] and word not in stopwords:
-                if word in dictLU:
-                        dictLU[word] += 1
-                else:
-                        dictLU[word] = 1
-        if 'Ratgeber' in bookArray[curr][5] and word not in stopwords:
-                if word in dictR:
-                        dictR[word] += 1
-                else:
-                        dictR[word] = 1
-        if 'Kinderbuch & Jugendbuch' in bookArray[curr][5] and word not in stopwords:
-                if word in dictKJ:
-                        dictKJ[word] += 1
-                else:
-                        dictKJ[word] = 1
-        if 'Sachbuch' in bookArray[curr][5] and word not in stopwords:
-                if word in dictS:
-                        dictS[word] += 1
-                else:
-                        dictS[word] = 1
-        if 'Ganzheitliches Bewusstsein' in bookArray[curr][5] and word not in stopwords:
-                if word in dictGB:
-                        dictGB[word] += 1
-                else:
-                        dictGB[word] = 1
-        if 'Glaube & Ethik' in bookArray[curr][5] and word not in stopwords:
-                if word in dictGE:
-                        dictGE[word] += 1
-                else:
-                        dictGE[word] = 1
-        if 'Künste' in bookArray[curr][5] and word not in stopwords:
-                if word in dictK:
-                        dictK[word] += 1
-                else:
-                        dictK[word] = 1
-        if 'Architektur & Garten' in bookArray[curr][5] and word not in stopwords:
-                if word in dictAG:
-                        dictAG[word] += 1
-                else:
-                        dictAG[word] = 1
-        allWords.add(word)
+    global curr
+    global dictLU
+    global dictR
+    global dictKJ
+    global dictS
+    global dictGB
+    global dictGE
+    global dictK
+    global dictAG
+    global stopwords
+    global allWords
+    """
+    Erstellung eines W?rterbucheintrages(Wort:Wert) f?r das mitgegebene Wort.
+    W?rter die in der Stopwordliste auftreten werden gel?scht.
+    Falls das Wort bereits im W?rterbuch steht, wird der Wert um eins erh?ht.
+    Erstellung eines set() mit allen W?rtern.
+    """
+    if bookArray[curr][5] == 'Literatur & Unterhaltung' and word not in stopwords:
+        if word in dictLU:
+            dictLU[word] += 1
+        else:
+            dictLU[word] = 1
+    if bookArray[curr][5] == 'Ratgeber' and word not in stopwords:
+        if word in dictR:
+            dictR[word] += 1
+        else:
+            dictR[word] = 1
+    if bookArray[curr][5] == 'Kinderbuch & Jugendbuch' and word not in stopwords:
+        if word in dictKJ:
+            dictKJ[word] += 1
+        else:
+            dictKJ[word] = 1
+    if bookArray[curr][5] == 'Sachbuch' and word not in stopwords:
+        if word in dictS:
+            dictS[word] += 1
+        else:
+            dictS[word] = 1
+    if bookArray[curr][5] == 'Ganzheitliches Bewusstsein' and word not in stopwords:
+        if word in dictGB:
+            dictGB[word] += 1
+        else:
+            dictGB[word] = 1
+    if bookArray[curr][5] == 'Glaube & Ethik' and word not in stopwords:
+        if word in dictGE:
+            dictGE[word] += 1
+        else:
+            dictGE[word] = 1
+    if bookArray[curr][5] == 'Künste' and word not in stopwords:
+        if word in dictK:
+            dictK[word] += 1
+        else:
+            dictK[word] = 1
+    if bookArray[curr][5] == 'Architektur & Garten' and word not in stopwords:
+        if word in dictAG:
+            dictAG[word] += 1
+        else:
+            dictAG[word] = 1
+    allWords.add(word)
 
 def improveDict():
     global dictLU
@@ -375,6 +375,9 @@ def improveDict():
 
 def createTempDict():
     global bookArray
+    global nounsList
+    global verbsList
+    global adjectiveList
     global curr
     global nlp
     """
@@ -382,169 +385,166 @@ def createTempDict():
     Alle Buchstaben werden kleingeschrieben. 
     """
     for book in bookArray:
-            blob = TextBlobDE(book[0])
-            textTockens = blob.tags
-            for i in textTockens:
-                    if i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
-                            if lemmatizeNouns == True:
-                                    wordStr = str(i[0])
-                                    word = nlp(wordStr)
-                                    for token in word:
-                                            word = token.lemma_
-                                            addToDict(word.lower())
-                            else:
-                                    addToDict(i[0].lower())
-                    elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
-                            if lemmatizeAdjectives == True:
-                                    wordStr = str(i[0])
-                                    word = nlp(wordStr)
-                                    for token in word:
-                                            word = token.lemma_
-                                            addToDict(word.lower())
-                            else:
-                                    addToDict(i[0].lower())
-                    elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                            if lemmatizeVerbs == True:
-                                    wordStr = str(i[0])
-                                    word = nlp(wordStr)
-                                    for token in word:
-                                            word = token.lemma_
-                                            addToDict(word.lower())
-                            else:
-                                    addToDict(i[0].lower())    
-            curr += 1
-
-def featurize(text):
-        """
-        Erstellung verschiedener Features:
-        Woerter pro Satz
-        Anzahl Saetze
-        relative Haeufigkeiten von Nomen,Verben,Adjektiven
-        Anzahl ausgewaehlten Symbolen(? # $ % ? & * " - : ; , )
-        Genrewoerterbuchuebereinstimmungsraten
-        """
-        j = 0
-        k = 0
-        nNouns = 0
-        nVerbs = 0
-        nAdjectives = 0
-        nCommas = text.count(',')
-        tockens = 0
-        blob = TextBlobDE(text)
-        for sentence in blob.sentences:
-                k += 1
-                for word in sentence.words:
-                        j += 1
-
-        if k == 0:
-                k = 1
-
-        j = j / k
-
-        grLU = 0
-        grR = 0
-        grKJ = 0
-        grS = 0
-        grGB = 0
-        grGE = 0
-        grK = 0
-        grAG = 0
-        allHits = 0
-
+        blob = TextBlobDE(book[0])
         textTockens = blob.tags
         for i in textTockens:
-                tockens += 1
-                if i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
-                        if lemmatizeNouns == True:
-                                wordStr = str(i[0])
-                                word = nlp(wordStr)
-                                for token in word:
-                                        word = token.lemma_
-                        nNouns += 1
-                elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
-                        if lemmatizeAdjectives == True:
-                                 wordStr = str(i[0])
-                                 word = nlp(wordStr)
-                                 for token in word:
-                                         word = token.lemma_
-                        nAdjectives += 1
-                elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                        if lemmatizeVerbs == True:
-                                wordStr = str(i[0])
-                                word = nlp(wordStr)
-                                for token in word:
-                                        word = token.lemma_
-                        nVerbs += 1
-
-                if lemmatizeVerbs == True or lemmatizeNouns == True or lemmatizeAdjectives == True:
-                        if i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                                word = word.lower()
-                        elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
-                                word = word.lower()
-                        elif i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
-                                word = word.lower()
-                        else:
-                                word = i[0].lower()
+            if i[1] in nounsList:
+                if lemmatizeNouns:
+                    wordStr = str(i[0])
+                    word = nlp(wordStr)
+                    for token in word:
+                        word = token.lemma_
+                    addToDict(word.lower())
                 else:
-                        word = i[0].lower()
+                    addToDict(i[0].lower())
+            if i[1] in adjectiveList:
+                if lemmatizeAdjectives:
+                    wordStr = str(i[0])
+                    word = nlp(wordStr)
+                    for token in word:
+                        word = token.lemma_
+                    addToDict(word.lower())
+                else:
+                    addToDict(i[0].lower())
+            if i[1] in verbsList:
+                if lemmatizeVerbs:
+                    wordStr = str(i[0])
+                    word = nlp(wordStr)
+                    for token in word:
+                        word = token.lemma_
+                    addToDict(word.lower())
+                else:
+                    addToDict(i[0].lower())    
+        curr += 1
 
-                if word in dictLU:
-                        grLU += dictLU[word]
-                        allHits += 1
-                if word in dictR:
-                        grR += dictR[word]
-                        allHits += 1
-                if word in dictKJ:
-                        grKJ += dictKJ[word]
-                        allHits += 1
-                if word in dictS:
-                        grS += dictS[word]
-                        allHits += 1
-                if word in dictGB:
-                        grGB += dictGB[word]
-                        allHits += 1
-                if word in dictGE:
-                        grGE += dictGE[word]
-                        allHits += 1
-                if word in dictK:
-                        grK += dictK[word]
-                        allHits += 1
-                if word in dictAG:
-                        grAG += dictAG[word]
-                        allHits += 1
+def featurize(text):
+    """
+    Erstellung verschiedener Features:
+    Woerter pro Satz
+    Anzahl Saetze
+    relative Haeufigkeiten von Nomen,Verben,Adjektiven
+    Anzahl ausgewaehlten Symbolen(? # $ % ? & * " - : ; , )
+    Genrewoerterbuchuebereinstimmungsraten
+    """
+    j = 0
+    k = 0
+    nNouns = 0
+    nVerbs = 0
+    nAdjectives = 0
+    nCommas = text.count(',')
+    tockens = 0
+    blob = TextBlobDE(text)
+    for sentence in blob.sentences:
+        k += 1
+        for word in sentence.words:
+            j += 1
 
-        if tockens == 0:
-                tockens = 1
+    if k == 0:
+        k = 1
 
-        rNouns = nNouns / tockens
-        rVerbs = nVerbs / tockens
-        rAdjectives = nAdjectives / tockens
+    j = j / k
 
-        if allHits == 0:
-                allHits = 1
+    grLU = 0
+    grR = 0
+    grKJ = 0
+    grS = 0
+    grGB = 0
+    grGE = 0
+    grK = 0
+    grAG = 0
+    allHits = 0
 
-        gdrLU = grLU / allHits
-        gdrR = grR / allHits
-        gdrKJ = grKJ / allHits
-        gdrS = grS / allHits
-        gdrGB = grGB / allHits
-        gdrGE = grGE / allHits
-        gdrK = grK / allHits
-        gdrAG = grAG / allHits
+    textTockens = blob.tags
+    for i in textTockens:
+        tockens += 1
+        if i[1] in nounsList:
+            if lemmatizeNouns:
+                wordStr = str(i[0])
+                word = nlp(wordStr)
+                for token in word:
+                    word = token.lemma_
+            nNouns += 1
+        elif i[1] in adjectiveList:
+            if lemmatizeAdjectives:
+                wordStr = str(i[0])
+                word = nlp(wordStr)
+                for token in word:
+                    word = token.lemma_
+            nAdjectives += 1
+        elif i[1] in verbsList:
+            if lemmatizeVerbs:
+                wordStr = str(i[0])
+                word = nlp(wordStr)
+                for token in word:
+                    word = token.lemma_
+            nVerbs += 1
 
-        nSymE = text.count('€')
-        nSymH = text.count('#')
-        nSymD = text.count('$')
-        nSymP = text.count('%')
-        nSymPa = text.count('§')
-        nSymA = text.count('&')
-        nSymS = text.count('*')
-        nSymQ = text.count('"')
-        nSymDa = text.count('-')
-        nSymDd = text.count(':')
-        nSymSc = text.count(';')
+        if lemmatizeVerbs and i[1] in verbsList:
+            word = word.lower()
+        elif lemmatizeAdjectives and i[1] in adjectiveList:
+            word = word.lower()
+        elif lemmatizeNouns and i[1] in nounsList:
+            word = word.lower()
+        else:
+            word = i[0].lower()
 
-        return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
+        if word in dictLU:
+            grLU += dictLU[word]
+            allHits += 1
+        if word in dictR:
+            grR += dictR[word]
+            allHits += 1
+        if word in dictKJ:
+            grKJ += dictKJ[word]
+            allHits += 1
+        if word in dictS:
+            grS += dictS[word]
+            allHits += 1
+        if word in dictGB:
+            grGB += dictGB[word]
+            allHits += 1
+        if word in dictGE:
+            grGE += dictGE[word]
+            allHits += 1
+        if word in dictK:
+            grK += dictK[word]
+            allHits += 1
+        if word in dictAG:
+            grAG += dictAG[word]
+            allHits += 1
+
+    if tockens == 0:
+        tockens = 1
+
+    rNouns = nNouns / tockens
+    rVerbs = nVerbs / tockens
+    rAdjectives = nAdjectives / tockens
+
+    if allHits == 0:
+        allHits = 1
+
+    gdrLU = grLU / allHits
+    gdrR = grR / allHits
+    gdrKJ = grKJ / allHits
+    gdrS = grS / allHits
+    gdrGB = grGB / allHits
+    gdrGE = grGE / allHits
+    gdrK = grK / allHits
+    gdrAG = grAG / allHits
+
+    nSymE = text.count('€')
+    nSymH = text.count('#')
+    nSymD = text.count('$')
+    nSymP = text.count('%')
+    nSymPa = text.count('§')
+    nSymA = text.count('&')
+    nSymS = text.count('*')
+    nSymQ = text.count('"')
+    nSymDa = text.count('-')
+    nSymDd = text.count(':')
+    nSymSc = text.count(';')
+
+    return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
 
 def createDataArray():
     global currPos
@@ -561,17 +561,17 @@ def createDataArray():
     currPos = 0
     # Creation of TrainDataFrame
     for _ in bookArray:
-            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-            data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
-            isbnData.append(bookArray[currPos][4])
-            currPos += 1
+        wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
+        data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
+        isbnData.append(bookArray[currPos][4])
+        currPos += 1
     # Creation of TestDataFrame
     currPos = 0
     for _ in tbookArray:
-            wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-            tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
-            tisbnData.append(tbookArray[currPos][4])
-            currPos += 1
+        wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
+        tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
+        tisbnData.append(tbookArray[currPos][4])
+        currPos += 1
 
 def createDataFrames():
     global data
@@ -744,6 +744,7 @@ if args.x:
     splitData()
     createTempDict()
     improveDict()
+    print(dictGB)
     createDataArray()
     createDataFrames()
     trainClassifier()
