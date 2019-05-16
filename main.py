@@ -11,6 +11,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import cross_val_score
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -523,14 +524,14 @@ def featurize(text):
     if allHits == 0:
         allHits = 1
 
-    gdrLU = grLU / allHits
-    gdrR = grR / allHits
-    gdrKJ = grKJ / allHits
-    gdrS = grS / allHits
-    gdrGB = grGB / allHits
-    gdrGE = grGE / allHits
-    gdrK = grK / allHits
-    gdrAG = grAG / allHits
+    gdrLU = grLU# / allHits
+    gdrR = grR# / allHits
+    gdrKJ = grKJ# / allHits
+    gdrS = grS# / allHits
+    gdrGB = grGB #/ allHits
+    gdrGE = grGE# / allHits
+    gdrK = grK# / allHits
+    gdrAG = grAG# / allHits
 
     nSymE = text.count('€')
     nSymH = text.count('#')
@@ -609,14 +610,18 @@ def trainClassifier():
     RandomForest Klassifikator trainieren und predicten.
     """
 
-    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=40,min_samples_leaf=1,bootstrap=False,criterion='gini',verbose=10,n_jobs=2)
+    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=50,min_samples_leaf=1,bootstrap=False,criterion='gini',verbose=10,n_jobs=2)
     randomForestClassifier.fit(X_train,y_train)
+
+    crossVal = cross_val_score(randomForestClassifier,X_train,y_train,cv=10,scoring='f1_micro')
+    print(crossVal)
+    print("10-Cross:",crossVal.mean())
 
     y_predRF=randomForestClassifier.predict(X_test)
 
     """
     gridSearchForest = RandomForestClassifier()
-    params = {"n_estimators":[50,100],"max_depth": [8,15,20,30,40,50],"min_samples_leaf":[1,2,3,4],"bootstrap":[True,False],"criterion":["gini","entropy"]}
+    params = {"n_estimators":[100],"max_depth": [20,30,40,50],"min_samples_leaf":[1,2],"bootstrap":[False]}
     clf = GridSearchCV(gridSearchForest,param_grid=params,cv=5)
     clf.fit(X_train,y_train)
 
@@ -744,7 +749,6 @@ if args.x:
     splitData()
     createTempDict()
     improveDict()
-    print(dictGB)
     createDataArray()
     createDataFrames()
     trainClassifier()
