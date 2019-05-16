@@ -44,6 +44,9 @@ tisbnData = []
 allWords = set()
 
 # Other
+lemmatizeVerbs = False
+lemmatizeNouns = False
+lemmatizeAdjectives = False
 verbose = False
 multilabel = False
 curr = 0
@@ -383,16 +386,30 @@ def createTempDict():
             textTockens = blob.tags
             for i in textTockens:
                     if i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
+                            if lemmatizeNouns == True:
+                                    wordStr = str(i[0])
+                                    word = nlp(wordStr)
+                                    for token in word:
+                                            word = token.lemma_
+                                            addToDict(word.lower())
                             addToDict(i[0].lower())
                     elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
+                            if lemmatizeAdjectives == True:
+                                    wordStr = str(i[0])
+                                    word = nlp(wordStr)
+                                    for token in word:
+                                            word = token.lemma_
+                                            addToDict(word.lower())
                             addToDict(i[0].lower())
                     elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                            wordStr = str(i[0])
-                            word = nlp(wordStr)
-                            for token in word:
-                                    word = token.lemma_
-                                    print(word)
-                            addToDict(word.lower())
+                            if lemmatizeVerbs == True:
+                                    wordStr = str(i[0])
+                                    word = nlp(wordStr)
+                                    for token in word:
+                                            word = token.lemma_
+                                            addToDict(word.lower())
+                            else:
+                                    addToDict(i[0].lower())    
             curr += 1
 
 def featurize(text):
@@ -436,18 +453,36 @@ def featurize(text):
         for i in textTockens:
                 tockens += 1
                 if i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
+                        if lemmatizeNouns == True:
+                                wordStr = str(i[0])
+                                word = nlp(wordStr)
+                                for token in word:
+                                        word = token.lemma_
                         nNouns += 1
                 elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
+                        if lemmatizeAdjectives == True:
+                                 wordStr = str(i[0])
+                                 word = nlp(wordStr)
+                                 for token in word:
+                                         word = token.lemma_
                         nAdjectives += 1
                 elif i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                        wordStr = str(i[0])
-                        word = nlp(wordStr)
-                        for token in word:
-                                word = token.lemma_
+                        if lemmatizeVerbs == True:
+                                wordStr = str(i[0])
+                                word = nlp(wordStr)
+                                for token in word:
+                                        word = token.lemma_
                         nVerbs += 1
 
-                if i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
-                        word = word.lower()
+                if lemmatizeVerbs == True or lemmatizeNouns == True or lemmatizeAdjectives == True:
+                        if i[1] == 'VB' or i[1] == 'VBZ' or i[1] == 'VBP' or i[1] == 'VBD' or i[1] == 'VBN' or i[1] == 'VBG':
+                                word = word.lower()
+                        elif i[1] == 'JJ' or i[1] == 'JJR' or i[1] == 'JJS':
+                                word = word.lower()
+                        elif i[1] == 'NN' or i[1] == 'NNS' or i[1] == 'NNP' or i[1] == 'NNPS':
+                                word = word.lower()
+                        else:
+                                word = i[0].lower()
                 else:
                         word = i[0].lower()
 
@@ -682,12 +717,20 @@ def generateFinalOutputFile():
 Parser zur Ausfuehrung ueber das Terminal mit zusaetzlichen Angaben
 """
 parser = argparse.ArgumentParser(description='sptm')
+parser.add_argument("-lv", help="activate verb lemmatizing", action="store_true")
+parser.add_argument("-ln", help="activate noun lemmatizing", action="store_true")
+parser.add_argument("-la", help="activate adjective lemmatizing", action="store_true")
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
 parser.add_argument("-x", help="n crossvalidation", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
-
+if args.lv:
+    lemmatizeVerbs = True
+if args.ln:
+    lemmatizeNouns = True
+if args.la:
+    lemmatizeAdjectives = True
 if args.v:
     verbose = True
 if args.m:
