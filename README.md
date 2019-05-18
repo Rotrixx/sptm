@@ -1,6 +1,6 @@
 # Software Project 
 
-## Discription
+## Description
 
 The goal of this project is to classify books in a genre using a maschine learning algorithm.
 
