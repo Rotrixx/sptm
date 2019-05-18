@@ -12,6 +12,7 @@ from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
+from multiprocessing import Pool
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -427,6 +428,7 @@ def featurize(text):
     Anzahl ausgewaehlten Symbolen(? # $ % ? & * " - : ; , )
     Genrewoerterbuchuebereinstimmungsraten
     """
+    text = text[0]
     j = 0
     k = 0
     nNouns = 0
@@ -545,33 +547,38 @@ def featurize(text):
     nSymDd = text.count(':')
     nSymSc = text.count(';')
 
-    return j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG
+    return [j,k,rNouns,rVerbs,rAdjectives,nCommas,nSymE,nSymH,nSymD,nSymP,nSymPa,nSymA,nSymS,nSymQ,nSymDa,nSymDd,nSymSc,gdrLU,gdrR,gdrKJ,gdrS,gdrGB,gdrGE,gdrK,gdrAG]
 
-def createDataArray():
+def createTrainDataArray():
     global currPos
     global bookArray
-    global tbookArray
-    global data
-    global tdata
     global isbnData
-    global tisbnData
+    global data
     """
     Erstellung eines Array mit den Featuren und Genre, zur Uebergabe an createDataFrame()
     """
 
     currPos = 0
     # Creation of TrainDataFrame
-    for _ in bookArray:
-        wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(bookArray[currPos][0])
-        data.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,bookArray[currPos][5]])
-        isbnData.append(bookArray[currPos][4])
+    with Pool(4) as pool:
+        data = pool.map(featurize, bookArray)
+    list(data)
+    for book in bookArray:
+        data[currPos].append(book[5])
         currPos += 1
+
+def createTestDataArray():
+    global currPos
+    global tdata
+    global tbookArray
+    global tisbnData
     # Creation of TestDataFrame
     currPos = 0
-    for _ in tbookArray:
-        wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG = featurize(tbookArray[currPos][0])
-        tdata.append([wps,ns,rn,rv,ra,nc,nsyme,nsymH,nsymD,nsymp,nsympa,nsyma,nsyms,nsymQ,nsymda,nsymdd,nsymsc,rLU,rR,rKJ,rS,rGB,rGE,rK,rAG,tbookArray[currPos][5]])
-        tisbnData.append(tbookArray[currPos][4])
+    with Pool(4) as pool:
+        tdata = pool.map(featurize, tbookArray)
+    list(tdata)
+    for book in tbookArray:
+        tdata[currPos].append(book[5])
         currPos += 1
 
 def createDataFrames():
@@ -729,7 +736,8 @@ parser.add_argument("-ln", help="activate noun lemmatizing", action="store_true"
 parser.add_argument("-la", help="activate adjective lemmatizing", action="store_true")
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
-parser.add_argument("-x", help="n crossvalidation", action="store_true")
+parser.add_argument("-x", help="simulation of real use", action="store_true")
+parser.add_argument("-x10", help="10 cross val with all train data", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
 if args.lv:
@@ -742,15 +750,36 @@ if args.v:
     verbose = True
 if args.m:
     multilabel = True
+if args.x10:
+    start = timeit.default_timer()
+    readTrainData()
+    stopWordListRead()
+    print("Done reading files.", timeit.default_timer() - start)
+    createTempDict()
+    improveDict()
+    print("Done creating dictionary.", timeit.default_timer() - start)
+    createTrainDataArray()
+    createDataFrames()
+    print("Done creating DataFrame.", timeit.default_timer() - start)
+    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=50,min_samples_leaf=1,bootstrap=False,criterion='gini',n_jobs=2)
+    crossVal = cross_val_score(randomForestClassifier,X_train,y_train,cv=10,scoring='f1_micro')
+    print(crossVal)
+    print("10-Cross:",crossVal.mean())
+    stop = timeit.default_timer()
+    print("Runntime: ", stop - start)
 if args.x:
     start = timeit.default_timer()
     readTrainData()
     stopWordListRead()
     splitData()
+    print("Done reading files.", timeit.default_timer() - start)
     createTempDict()
     improveDict()
-    createDataArray()
+    print("Done creating dictionary.", timeit.default_timer() - start)
+    createTrainDataArray()
+    createTestDataArray()
     createDataFrames()
+    print("Done creating DataFrame.", timeit.default_timer() - start)
     trainClassifier()
     verboseOutput()
     generateFinalOutputFile()
@@ -761,10 +790,14 @@ if args.val:
     readTrainData()
     readTestData()
     stopWordListRead()
+    print("Done reading files.", timeit.default_timer() - start)
     createTempDict()
     improveDict()
-    createDataArray()
+    print("Done creating dictionary.", timeit.default_timer() - start)
+    createTrainDataArray()
+    createTestDataArray()
     createDataFrames()
+    print("Done creating DataFrame.", timeit.default_timer() - start)
     trainClassifier()
     verboseOutput()
     generateFinalOutputFile()
