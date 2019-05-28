@@ -1,2 +1,3 @@
-for n in range(25):
-	print(n)
+import numpy as np
+
+print(np.log(2))
