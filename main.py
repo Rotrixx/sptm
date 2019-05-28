@@ -898,6 +898,7 @@ if args.x10:
     crossVal = cross_val_predict(randomForestClassifier,X_train,y_train,cv=10)
     print(crossVal)
     print("10-Cross:",metrics.f1_score(y_test, crossVal,average='micro'))
+    print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, crossVal,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
     stop = timeit.default_timer()
     print("Runntime: ", stop - start)
 if args.x:
