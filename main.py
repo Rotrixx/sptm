@@ -13,6 +13,7 @@ from sklearn import tree
 from sklearn import metrics
 from sklearn.model_selection import GridSearchCV
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import cross_val_predict
 from multiprocessing import Pool
 
 pd.set_option('display.max_rows', 500)
@@ -98,12 +99,12 @@ def readTrainData():
     """
     Trainingsdaten werden aus Datei(Pfad: Data/blurbs_train.txt)eingelesen und in Array gespeichert.
     bookArray[pos][0] = Klappentext als String
-    bookArray[pos][1] = Title als String 
+    bookArray[pos][1] = Title als String
     bookArray[pos][2] = Autor als String
     bookArray[pos][3] = Alle Kategorien in set()
     bookArray[pos][4] = ISBN als String
     bookArray[pos][5] = Erste Kategorie als String
-    Leere Klappentexte und ISBN mit Startnummer 4 werden uebersprungen. 
+    Leere Klappentexte und ISBN mit Startnummer 4 werden uebersprungen.
     """
     with open('Data/blurbs_train.txt','r') as file:
         for line in file:
@@ -170,18 +171,18 @@ def readTestData():
     global tisbnStr
     global tbookArray
     global tdata
-    global tisbnData
+    global isbnData
     """
     Noch zu klassifizerende Testdaten werden aus Datei(Pfad: Data/blurbs_dev_participants.txt)eingelesen und in Array gespeichert.
     tbookArray[pos][0] = Klappentext als String
-    tbookArray[pos][1] = Title als String 
+    tbookArray[pos][1] = Title als String
     tbookArray[pos][2] = Autor als String
     tbookArray[pos][3] = Alle Kategorien in set()
     tbookArray[pos][4] = ISBN als String
     tbookArray[pos][5] = Erste Kategorie als String
     Leere Klappentexte und ISBN mit Startnummer 4 werden ?bersprungen.
 
-    ToDo: Auf blurbs_dev_participants anpassen(Kategorien entfernen) 
+    ToDo: Auf blurbs_dev_participants anpassen(Kategorien entfernen)
     """
     with open('Data/blurbs_dev_participants.txt','r') as file:
         for line in file:
@@ -196,17 +197,11 @@ def readTestData():
             elif line.startswith('</book>'):
                 if multilabel:
                     for i in tallCategoryStr:
-                        if not tbodyStr:
-                            continue
-                        if tisbnStr.startswith('4'):
-                            continue
                         tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,i))
+                        isbnData.append(tisbnStr)
                 else:
-                    if not tbodyStr:
-                        continue
-                    if tisbnStr.startswith('4'):
-                        continue
                     tbookArray.append((tbodyStr + ' ' + ttitleStr,ttitleStr,tauthorStr,tallCategoryStr,tisbnStr,tfirstCategory))
+                    isbnData.append(tisbnStr)
             elif line.startswith('<body>'):
                 tbodyStr += line
                 tbodyStr = tbodyStr[:-8]
@@ -253,6 +248,7 @@ def splitter(array, size):
 def splitData():
     global bookArray
     global tbookArray
+    global isbnData
     """
     Daten werden aufgeteilt in Trainings- und Testdaten.
     (10,000 Training)
@@ -264,6 +260,8 @@ def splitData():
     bookArray = helper[0]
     print(len(tbookArray))
     print(len(bookArray))
+    for i in tbookArray:
+        isbnData.append(i[4])
 
 def addToDict(word):
     global curr
@@ -385,7 +383,7 @@ def createTempDict():
     global nlp
     """
     Erstellung eines temporaeren Woerterbuches fuer Nomen,Verben und Adjektive.
-    Alle Buchstaben werden kleingeschrieben. 
+    Alle Buchstaben werden kleingeschrieben.
     """
     for book in bookArray:
         blob = TextBlobDE(book[0])
@@ -417,7 +415,7 @@ def createTempDict():
                         word = token.lemma_
                     addToDict(word.lower())
                 else:
-                    addToDict(i[0].lower())    
+                    addToDict(i[0].lower())
         curr += 1
 
 def featurize(text):
@@ -702,7 +700,6 @@ def createTestDataArray():
     global currPos
     global tdata
     global tbookArray
-    global tisbnData
     # Creation of TestDataFrame
     currPos = 0
     with Pool(4) as pool:
@@ -731,11 +728,11 @@ def createDataFrames():
     tdataFrame=pd.DataFrame(tdata,columns=['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','Genre','LUdistToGenreWordsPerSentence','LUdistToGenreNumberSentences','LUdistToGenrePercentageNouns','LUdistToGenrePercentageVerbs','LUdistToGenrePercentageAdjectives','LUdistToGenreNumberCommas','LUdistToGenreNumberSymbols€','LUdistToGenreNumberSymbolsH','LUdistToGenreNumberSymbolsD','LUdistToGenreNumberSymbols%','LUdistToGenreNumberSymbols§','LUdistToGenreNumberSymbols&','LUdistToGenreNumberSymbols*','LUdistToGenreNumberSymbolsQ','LUdistToGenreNumberSymbols-','LUdistToGenreNumberSymbols:','LUdistToGenreNumberSymbols;','LUdistToGenreGenreRateLU','LUdistToGenreGenreRateR','LUdistToGenreGenreRateKJ','LUdistToGenreGenreRateS','LUdistToGenreGenreRateGB','LUdistToGenreGenreRateGE','LUdistToGenreGenreRateK','LUdistToGenreGenreRateAG','RdistToGenreWordsPerSentence','RdistToGenreNumberSentences','RdistToGenrePercentageNouns','RdistToGenrePercentageVerbs','RdistToGenrePercentageAdjectives','RdistToGenreNumberCommas','RdistToGenreNumberSymbols€','RdistToGenreNumberSymbolsH','RdistToGenreNumberSymbolsD','RdistToGenreNumberSymbols%','RdistToGenreNumberSymbols§','RdistToGenreNumberSymbols&','RdistToGenreNumberSymbols*','RdistToGenreNumberSymbolsQ','RdistToGenreNumberSymbols-','RdistToGenreNumberSymbols:','RdistToGenreNumberSymbols;','RdistToGenreGenreRateLU','RdistToGenreGenreRateR','RdistToGenreGenreRateKJ','RdistToGenreGenreRateS','RdistToGenreGenreRateGB','RdistToGenreGenreRateGE','RdistToGenreGenreRateK','RdistToGenreGenreRateAG','KJdistToGenreWordsPerSentence','KJdistToGenreNumberSentences','KJdistToGenrePercentageNouns','KJdistToGenrePercentageVerbs','KJdistToGenrePercentageAdjectives','KJdistToGenreNumberCommas','KJdistToGenreNumberSymbols€','KJdistToGenreNumberSymbolsH','KJdistToGenreNumberSymbolsD','KJdistToGenreNumberSymbols%','KJdistToGenreNumberSymbols§','KJdistToGenreNumberSymbols&','KJdistToGenreNumberSymbols*','KJdistToGenreNumberSymbolsQ','KJdistToGenreNumberSymbols-','KJdistToGenreNumberSymbols:','KJdistToGenreNumberSymbols;','KJdistToGenreGenreRateLU','KJdistToGenreGenreRateR','KJdistToGenreGenreRateKJ','KJdistToGenreGenreRateS','KJdistToGenreGenreRateGB','KJdistToGenreGenreRateGE','KJdistToGenreGenreRateK','KJdistToGenreGenreRateAG','SdistToGenreWordsPerSentence','SdistToGenreNumberSentences','SdistToGenrePercentageNouns','SdistToGenrePercentageVerbs','SdistToGenrePercentageAdjectives','SdistToGenreNumberCommas','SdistToGenreNumberSymbols€','SdistToGenreNumberSymbolsH','SdistToGenreNumberSymbolsD','SdistToGenreNumberSymbols%','SdistToGenreNumberSymbols§','SdistToGenreNumberSymbols&','SdistToGenreNumberSymbols*','SdistToGenreNumberSymbolsQ','SdistToGenreNumberSymbols-','SdistToGenreNumberSymbols:','SdistToGenreNumberSymbols;','SdistToGenreGenreRateLU','SdistToGenreGenreRateR','SdistToGenreGenreRateKJ','SdistToGenreGenreRateS','SdistToGenreGenreRateGB','SdistToGenreGenreRateGE','SdistToGenreGenreRateK','SdistToGenreGenreRateAG','GBdistToGenreWordsPerSentence','GBdistToGenreNumberSentences','GBdistToGenrePercentageNouns','GBdistToGenrePercentageVerbs','GBdistToGenrePercentageAdjectives','GBdistToGenreNumberCommas','GBdistToGenreNumberSymbols€','GBdistToGenreNumberSymbolsH','GBdistToGenreNumberSymbolsD','GBdistToGenreNumberSymbols%','GBdistToGenreNumberSymbols§','GBdistToGenreNumberSymbols&','GBdistToGenreNumberSymbols*','GBdistToGenreNumberSymbolsQ','GBdistToGenreNumberSymbols-','GBdistToGenreNumberSymbols:','GBdistToGenreNumberSymbols;','GBdistToGenreGenreRateLU','GBdistToGenreGenreRateR','GBdistToGenreGenreRateKJ','GBdistToGenreGenreRateS','GBdistToGenreGenreRateGB','GBdistToGenreGenreRateGE','GBdistToGenreGenreRateK','GBdistToGenreGenreRateAG','GEdistToGenreWordsPerSentence','GEdistToGenreNumberSentences','GEdistToGenrePercentageNouns','GEdistToGenrePercentageVerbs','GEdistToGenrePercentageAdjectives','GEdistToGenreNumberCommas','GEdistToGenreNumberSymbols€','GEdistToGenreNumberSymbolsH','GEdistToGenreNumberSymbolsD','GEdistToGenreNumberSymbols%','GEdistToGenreNumberSymbols§','GEdistToGenreNumberSymbols&','GEdistToGenreNumberSymbols*','GEdistToGenreNumberSymbolsQ','GEdistToGenreNumberSymbols-','GEdistToGenreNumberSymbols:','GEdistToGenreNumberSymbols;','GEdistToGenreGenreRateLU','GEdistToGenreGenreRateR','GEdistToGenreGenreRateKJ','GEdistToGenreGenreRateS','GEdistToGenreGenreRateGB','GEdistToGenreGenreRateGE','GEdistToGenreGenreRateK','GEdistToGenreGenreRateAG','KdistToGenreWordsPerSentence','KdistToGenreNumberSentences','KdistToGenrePercentageNouns','KdistToGenrePercentageVerbs','KdistToGenrePercentageAdjectives','KdistToGenreNumberCommas','KdistToGenreNumberSymbols€','KdistToGenreNumberSymbolsH','KdistToGenreNumberSymbolsD','KdistToGenreNumberSymbols%','KdistToGenreNumberSymbols§','KdistToGenreNumberSymbols&','KdistToGenreNumberSymbols*','KdistToGenreNumberSymbolsQ','KdistToGenreNumberSymbols-','KdistToGenreNumberSymbols:','KdistToGenreNumberSymbols;','KdistToGenreGenreRateLU','KdistToGenreGenreRateR','KdistToGenreGenreRateKJ','KdistToGenreGenreRateS','KdistToGenreGenreRateGB','KdistToGenreGenreRateGE','KdistToGenreGenreRateK','KdistToGenreGenreRateAG','AGdistToGenreWordsPerSentence','AGdistToGenreNumberSentences','AGdistToGenrePercentageNouns','AGdistToGenrePercentageVerbs','AGdistToGenrePercentageAdjectives','AGdistToGenreNumberCommas','AGdistToGenreNumberSymbols€','AGdistToGenreNumberSymbolsH','AGdistToGenreNumberSymbolsD','AGdistToGenreNumberSymbols%','AGdistToGenreNumberSymbols§','AGdistToGenreNumberSymbols&','AGdistToGenreNumberSymbols*','AGdistToGenreNumberSymbolsQ','AGdistToGenreNumberSymbols-','AGdistToGenreNumberSymbols:','AGdistToGenreNumberSymbols;','AGdistToGenreGenreRateLU','AGdistToGenreGenreRateR','AGdistToGenreGenreRateKJ','AGdistToGenreGenreRateS','AGdistToGenreGenreRateGB','AGdistToGenreGenreRateGE','AGdistToGenreGenreRateK','AGdistToGenreGenreRateAG','minDistToGenreWordsPerSentence','minDistToGenreNumberSentences','minDistToGenrePercentageNouns','minDistToGenrePercentageVerbs','minDistToGenrePercentageAdjectives','minDistToGenreNumberCommas','minDistToGenreNumberSymbols€','minDistToGenreNumberSymbolsH','minDistToGenreNumberSymbolsD','minDistToGenreNumberSymbols%','minDistToGenreNumberSymbols§','minDistToGenreNumberSymbols&','minDistToGenreNumberSymbols*','minDistToGenreNumberSymbolsQ','minDistToGenreNumberSymbols-','minDistToGenreNumberSymbols:','minDistToGenreNumberSymbols;','minDistToGenreGenreRateLU','minDistToGenreGenreRateR','minDistToGenreGenreRateKJ','minDistToGenreGenreRateS','minDistToGenreGenreRateGB','minDistToGenreGenreRateGE','minDistToGenreGenreRateK','minDistToGenreGenreRateAG'],dtype=float)
 
     # TrainData
-    X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_train=dataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','LUdistToGenreWordsPerSentence','LUdistToGenreNumberSentences','LUdistToGenrePercentageNouns','LUdistToGenrePercentageVerbs','LUdistToGenrePercentageAdjectives','LUdistToGenreNumberCommas','LUdistToGenreNumberSymbols€','LUdistToGenreNumberSymbolsH','LUdistToGenreNumberSymbolsD','LUdistToGenreNumberSymbols%','LUdistToGenreNumberSymbols§','LUdistToGenreNumberSymbols&','LUdistToGenreNumberSymbols*','LUdistToGenreNumberSymbolsQ','LUdistToGenreNumberSymbols-','LUdistToGenreNumberSymbols:','LUdistToGenreNumberSymbols;','LUdistToGenreGenreRateLU','LUdistToGenreGenreRateR','LUdistToGenreGenreRateKJ','LUdistToGenreGenreRateS','LUdistToGenreGenreRateGB','LUdistToGenreGenreRateGE','LUdistToGenreGenreRateK','LUdistToGenreGenreRateAG','RdistToGenreWordsPerSentence','RdistToGenreNumberSentences','RdistToGenrePercentageNouns','RdistToGenrePercentageVerbs','RdistToGenrePercentageAdjectives','RdistToGenreNumberCommas','RdistToGenreNumberSymbols€','RdistToGenreNumberSymbolsH','RdistToGenreNumberSymbolsD','RdistToGenreNumberSymbols%','RdistToGenreNumberSymbols§','RdistToGenreNumberSymbols&','RdistToGenreNumberSymbols*','RdistToGenreNumberSymbolsQ','RdistToGenreNumberSymbols-','RdistToGenreNumberSymbols:','RdistToGenreNumberSymbols;','RdistToGenreGenreRateLU','RdistToGenreGenreRateR','RdistToGenreGenreRateKJ','RdistToGenreGenreRateS','RdistToGenreGenreRateGB','RdistToGenreGenreRateGE','RdistToGenreGenreRateK','RdistToGenreGenreRateAG','KJdistToGenreWordsPerSentence','KJdistToGenreNumberSentences','KJdistToGenrePercentageNouns','KJdistToGenrePercentageVerbs','KJdistToGenrePercentageAdjectives','KJdistToGenreNumberCommas','KJdistToGenreNumberSymbols€','KJdistToGenreNumberSymbolsH','KJdistToGenreNumberSymbolsD','KJdistToGenreNumberSymbols%','KJdistToGenreNumberSymbols§','KJdistToGenreNumberSymbols&','KJdistToGenreNumberSymbols*','KJdistToGenreNumberSymbolsQ','KJdistToGenreNumberSymbols-','KJdistToGenreNumberSymbols:','KJdistToGenreNumberSymbols;','KJdistToGenreGenreRateLU','KJdistToGenreGenreRateR','KJdistToGenreGenreRateKJ','KJdistToGenreGenreRateS','KJdistToGenreGenreRateGB','KJdistToGenreGenreRateGE','KJdistToGenreGenreRateK','KJdistToGenreGenreRateAG','SdistToGenreWordsPerSentence','SdistToGenreNumberSentences','SdistToGenrePercentageNouns','SdistToGenrePercentageVerbs','SdistToGenrePercentageAdjectives','SdistToGenreNumberCommas','SdistToGenreNumberSymbols€','SdistToGenreNumberSymbolsH','SdistToGenreNumberSymbolsD','SdistToGenreNumberSymbols%','SdistToGenreNumberSymbols§','SdistToGenreNumberSymbols&','SdistToGenreNumberSymbols*','SdistToGenreNumberSymbolsQ','SdistToGenreNumberSymbols-','SdistToGenreNumberSymbols:','SdistToGenreNumberSymbols;','SdistToGenreGenreRateLU','SdistToGenreGenreRateR','SdistToGenreGenreRateKJ','SdistToGenreGenreRateS','SdistToGenreGenreRateGB','SdistToGenreGenreRateGE','SdistToGenreGenreRateK','SdistToGenreGenreRateAG','GBdistToGenreWordsPerSentence','GBdistToGenreNumberSentences','GBdistToGenrePercentageNouns','GBdistToGenrePercentageVerbs','GBdistToGenrePercentageAdjectives','GBdistToGenreNumberCommas','GBdistToGenreNumberSymbols€','GBdistToGenreNumberSymbolsH','GBdistToGenreNumberSymbolsD','GBdistToGenreNumberSymbols%','GBdistToGenreNumberSymbols§','GBdistToGenreNumberSymbols&','GBdistToGenreNumberSymbols*','GBdistToGenreNumberSymbolsQ','GBdistToGenreNumberSymbols-','GBdistToGenreNumberSymbols:','GBdistToGenreNumberSymbols;','GBdistToGenreGenreRateLU','GBdistToGenreGenreRateR','GBdistToGenreGenreRateKJ','GBdistToGenreGenreRateS','GBdistToGenreGenreRateGB','GBdistToGenreGenreRateGE','GBdistToGenreGenreRateK','GBdistToGenreGenreRateAG','GEdistToGenreWordsPerSentence','GEdistToGenreNumberSentences','GEdistToGenrePercentageNouns','GEdistToGenrePercentageVerbs','GEdistToGenrePercentageAdjectives','GEdistToGenreNumberCommas','GEdistToGenreNumberSymbols€','GEdistToGenreNumberSymbolsH','GEdistToGenreNumberSymbolsD','GEdistToGenreNumberSymbols%','GEdistToGenreNumberSymbols§','GEdistToGenreNumberSymbols&','GEdistToGenreNumberSymbols*','GEdistToGenreNumberSymbolsQ','GEdistToGenreNumberSymbols-','GEdistToGenreNumberSymbols:','GEdistToGenreNumberSymbols;','GEdistToGenreGenreRateLU','GEdistToGenreGenreRateR','GEdistToGenreGenreRateKJ','GEdistToGenreGenreRateS','GEdistToGenreGenreRateGB','GEdistToGenreGenreRateGE','GEdistToGenreGenreRateK','GEdistToGenreGenreRateAG','KdistToGenreWordsPerSentence','KdistToGenreNumberSentences','KdistToGenrePercentageNouns','KdistToGenrePercentageVerbs','KdistToGenrePercentageAdjectives','KdistToGenreNumberCommas','KdistToGenreNumberSymbols€','KdistToGenreNumberSymbolsH','KdistToGenreNumberSymbolsD','KdistToGenreNumberSymbols%','KdistToGenreNumberSymbols§','KdistToGenreNumberSymbols&','KdistToGenreNumberSymbols*','KdistToGenreNumberSymbolsQ','KdistToGenreNumberSymbols-','KdistToGenreNumberSymbols:','KdistToGenreNumberSymbols;','KdistToGenreGenreRateLU','KdistToGenreGenreRateR','KdistToGenreGenreRateKJ','KdistToGenreGenreRateS','KdistToGenreGenreRateGB','KdistToGenreGenreRateGE','KdistToGenreGenreRateK','KdistToGenreGenreRateAG','AGdistToGenreWordsPerSentence','AGdistToGenreNumberSentences','AGdistToGenrePercentageNouns','AGdistToGenrePercentageVerbs','AGdistToGenrePercentageAdjectives','AGdistToGenreNumberCommas','AGdistToGenreNumberSymbols€','AGdistToGenreNumberSymbolsH','AGdistToGenreNumberSymbolsD','AGdistToGenreNumberSymbols%','AGdistToGenreNumberSymbols§','AGdistToGenreNumberSymbols&','AGdistToGenreNumberSymbols*','AGdistToGenreNumberSymbolsQ','AGdistToGenreNumberSymbols-','AGdistToGenreNumberSymbols:','AGdistToGenreNumberSymbols;','AGdistToGenreGenreRateLU','AGdistToGenreGenreRateR','AGdistToGenreGenreRateKJ','AGdistToGenreGenreRateS','AGdistToGenreGenreRateGB','AGdistToGenreGenreRateGE','AGdistToGenreGenreRateK','AGdistToGenreGenreRateAG','minDistToGenreWordsPerSentence','minDistToGenreNumberSentences','minDistToGenrePercentageNouns','minDistToGenrePercentageVerbs','minDistToGenrePercentageAdjectives','minDistToGenreNumberCommas','minDistToGenreNumberSymbols€','minDistToGenreNumberSymbolsH','minDistToGenreNumberSymbolsD','minDistToGenreNumberSymbols%','minDistToGenreNumberSymbols§','minDistToGenreNumberSymbols&','minDistToGenreNumberSymbols*','minDistToGenreNumberSymbolsQ','minDistToGenreNumberSymbols-','minDistToGenreNumberSymbols:','minDistToGenreNumberSymbols;','minDistToGenreGenreRateLU','minDistToGenreGenreRateR','minDistToGenreGenreRateKJ','minDistToGenreGenreRateS','minDistToGenreGenreRateGB','minDistToGenreGenreRateGE','minDistToGenreGenreRateK','minDistToGenreGenreRateAG']]
     y_train=dataFrame['Genre']
 
     # TestData
-    X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG']]
+    X_test=tdataFrame[['WordsPerSentence','NumberSentences','PercentageNouns','PercentageVerbs','PercentageAdjectives','NumberCommas','NumberSymbols€','NumberSymbolsH','NumberSymbolsD','NumberSymbols%','NumberSymbols§','NumberSymbols&','NumberSymbols*','NumberSymbolsQ','NumberSymbols-','NumberSymbols:','NumberSymbols;','GenreRateLU','GenreRateR','GenreRateKJ','GenreRateS','GenreRateGB','GenreRateGE','GenreRateK','GenreRateAG','LUdistToGenreWordsPerSentence','LUdistToGenreNumberSentences','LUdistToGenrePercentageNouns','LUdistToGenrePercentageVerbs','LUdistToGenrePercentageAdjectives','LUdistToGenreNumberCommas','LUdistToGenreNumberSymbols€','LUdistToGenreNumberSymbolsH','LUdistToGenreNumberSymbolsD','LUdistToGenreNumberSymbols%','LUdistToGenreNumberSymbols§','LUdistToGenreNumberSymbols&','LUdistToGenreNumberSymbols*','LUdistToGenreNumberSymbolsQ','LUdistToGenreNumberSymbols-','LUdistToGenreNumberSymbols:','LUdistToGenreNumberSymbols;','LUdistToGenreGenreRateLU','LUdistToGenreGenreRateR','LUdistToGenreGenreRateKJ','LUdistToGenreGenreRateS','LUdistToGenreGenreRateGB','LUdistToGenreGenreRateGE','LUdistToGenreGenreRateK','LUdistToGenreGenreRateAG','RdistToGenreWordsPerSentence','RdistToGenreNumberSentences','RdistToGenrePercentageNouns','RdistToGenrePercentageVerbs','RdistToGenrePercentageAdjectives','RdistToGenreNumberCommas','RdistToGenreNumberSymbols€','RdistToGenreNumberSymbolsH','RdistToGenreNumberSymbolsD','RdistToGenreNumberSymbols%','RdistToGenreNumberSymbols§','RdistToGenreNumberSymbols&','RdistToGenreNumberSymbols*','RdistToGenreNumberSymbolsQ','RdistToGenreNumberSymbols-','RdistToGenreNumberSymbols:','RdistToGenreNumberSymbols;','RdistToGenreGenreRateLU','RdistToGenreGenreRateR','RdistToGenreGenreRateKJ','RdistToGenreGenreRateS','RdistToGenreGenreRateGB','RdistToGenreGenreRateGE','RdistToGenreGenreRateK','RdistToGenreGenreRateAG','KJdistToGenreWordsPerSentence','KJdistToGenreNumberSentences','KJdistToGenrePercentageNouns','KJdistToGenrePercentageVerbs','KJdistToGenrePercentageAdjectives','KJdistToGenreNumberCommas','KJdistToGenreNumberSymbols€','KJdistToGenreNumberSymbolsH','KJdistToGenreNumberSymbolsD','KJdistToGenreNumberSymbols%','KJdistToGenreNumberSymbols§','KJdistToGenreNumberSymbols&','KJdistToGenreNumberSymbols*','KJdistToGenreNumberSymbolsQ','KJdistToGenreNumberSymbols-','KJdistToGenreNumberSymbols:','KJdistToGenreNumberSymbols;','KJdistToGenreGenreRateLU','KJdistToGenreGenreRateR','KJdistToGenreGenreRateKJ','KJdistToGenreGenreRateS','KJdistToGenreGenreRateGB','KJdistToGenreGenreRateGE','KJdistToGenreGenreRateK','KJdistToGenreGenreRateAG','SdistToGenreWordsPerSentence','SdistToGenreNumberSentences','SdistToGenrePercentageNouns','SdistToGenrePercentageVerbs','SdistToGenrePercentageAdjectives','SdistToGenreNumberCommas','SdistToGenreNumberSymbols€','SdistToGenreNumberSymbolsH','SdistToGenreNumberSymbolsD','SdistToGenreNumberSymbols%','SdistToGenreNumberSymbols§','SdistToGenreNumberSymbols&','SdistToGenreNumberSymbols*','SdistToGenreNumberSymbolsQ','SdistToGenreNumberSymbols-','SdistToGenreNumberSymbols:','SdistToGenreNumberSymbols;','SdistToGenreGenreRateLU','SdistToGenreGenreRateR','SdistToGenreGenreRateKJ','SdistToGenreGenreRateS','SdistToGenreGenreRateGB','SdistToGenreGenreRateGE','SdistToGenreGenreRateK','SdistToGenreGenreRateAG','GBdistToGenreWordsPerSentence','GBdistToGenreNumberSentences','GBdistToGenrePercentageNouns','GBdistToGenrePercentageVerbs','GBdistToGenrePercentageAdjectives','GBdistToGenreNumberCommas','GBdistToGenreNumberSymbols€','GBdistToGenreNumberSymbolsH','GBdistToGenreNumberSymbolsD','GBdistToGenreNumberSymbols%','GBdistToGenreNumberSymbols§','GBdistToGenreNumberSymbols&','GBdistToGenreNumberSymbols*','GBdistToGenreNumberSymbolsQ','GBdistToGenreNumberSymbols-','GBdistToGenreNumberSymbols:','GBdistToGenreNumberSymbols;','GBdistToGenreGenreRateLU','GBdistToGenreGenreRateR','GBdistToGenreGenreRateKJ','GBdistToGenreGenreRateS','GBdistToGenreGenreRateGB','GBdistToGenreGenreRateGE','GBdistToGenreGenreRateK','GBdistToGenreGenreRateAG','GEdistToGenreWordsPerSentence','GEdistToGenreNumberSentences','GEdistToGenrePercentageNouns','GEdistToGenrePercentageVerbs','GEdistToGenrePercentageAdjectives','GEdistToGenreNumberCommas','GEdistToGenreNumberSymbols€','GEdistToGenreNumberSymbolsH','GEdistToGenreNumberSymbolsD','GEdistToGenreNumberSymbols%','GEdistToGenreNumberSymbols§','GEdistToGenreNumberSymbols&','GEdistToGenreNumberSymbols*','GEdistToGenreNumberSymbolsQ','GEdistToGenreNumberSymbols-','GEdistToGenreNumberSymbols:','GEdistToGenreNumberSymbols;','GEdistToGenreGenreRateLU','GEdistToGenreGenreRateR','GEdistToGenreGenreRateKJ','GEdistToGenreGenreRateS','GEdistToGenreGenreRateGB','GEdistToGenreGenreRateGE','GEdistToGenreGenreRateK','GEdistToGenreGenreRateAG','KdistToGenreWordsPerSentence','KdistToGenreNumberSentences','KdistToGenrePercentageNouns','KdistToGenrePercentageVerbs','KdistToGenrePercentageAdjectives','KdistToGenreNumberCommas','KdistToGenreNumberSymbols€','KdistToGenreNumberSymbolsH','KdistToGenreNumberSymbolsD','KdistToGenreNumberSymbols%','KdistToGenreNumberSymbols§','KdistToGenreNumberSymbols&','KdistToGenreNumberSymbols*','KdistToGenreNumberSymbolsQ','KdistToGenreNumberSymbols-','KdistToGenreNumberSymbols:','KdistToGenreNumberSymbols;','KdistToGenreGenreRateLU','KdistToGenreGenreRateR','KdistToGenreGenreRateKJ','KdistToGenreGenreRateS','KdistToGenreGenreRateGB','KdistToGenreGenreRateGE','KdistToGenreGenreRateK','KdistToGenreGenreRateAG','AGdistToGenreWordsPerSentence','AGdistToGenreNumberSentences','AGdistToGenrePercentageNouns','AGdistToGenrePercentageVerbs','AGdistToGenrePercentageAdjectives','AGdistToGenreNumberCommas','AGdistToGenreNumberSymbols€','AGdistToGenreNumberSymbolsH','AGdistToGenreNumberSymbolsD','AGdistToGenreNumberSymbols%','AGdistToGenreNumberSymbols§','AGdistToGenreNumberSymbols&','AGdistToGenreNumberSymbols*','AGdistToGenreNumberSymbolsQ','AGdistToGenreNumberSymbols-','AGdistToGenreNumberSymbols:','AGdistToGenreNumberSymbols;','AGdistToGenreGenreRateLU','AGdistToGenreGenreRateR','AGdistToGenreGenreRateKJ','AGdistToGenreGenreRateS','AGdistToGenreGenreRateGB','AGdistToGenreGenreRateGE','AGdistToGenreGenreRateK','AGdistToGenreGenreRateAG','minDistToGenreWordsPerSentence','minDistToGenreNumberSentences','minDistToGenrePercentageNouns','minDistToGenrePercentageVerbs','minDistToGenrePercentageAdjectives','minDistToGenreNumberCommas','minDistToGenreNumberSymbols€','minDistToGenreNumberSymbolsH','minDistToGenreNumberSymbolsD','minDistToGenreNumberSymbols%','minDistToGenreNumberSymbols§','minDistToGenreNumberSymbols&','minDistToGenreNumberSymbols*','minDistToGenreNumberSymbolsQ','minDistToGenreNumberSymbols-','minDistToGenreNumberSymbols:','minDistToGenreNumberSymbols;','minDistToGenreGenreRateLU','minDistToGenreGenreRateR','minDistToGenreGenreRateKJ','minDistToGenreGenreRateS','minDistToGenreGenreRateGB','minDistToGenreGenreRateGE','minDistToGenreGenreRateK','minDistToGenreGenreRateAG']]
     y_test=tdataFrame['Genre']
 
     with open("verboseTrainDataFrame.txt","w") as file:
@@ -766,10 +763,10 @@ def trainClassifier():
     print(clf.best_score_)
     """
 
+    print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
+
     if verbose:
         print(randomForestClassifier.feature_importances_)
-
-        print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
 
         print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
 
@@ -842,18 +839,16 @@ def verboseOutput():
         file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
 
 def generateFinalOutputFile():
-    global tisbnData
-    global y_test
-    global X_test
+    global isbnData
     global y_predRF
-    global estimator
     """
-    Ausgabe Ergebnis-Datei und Baum 
+    Ausgabe Ergebnis-Datei und Baum
     """
 
     j = 0
     with open("OutputData/finalOut.txt","w") as file:
-        for i in tisbnData:
+        file.write("subtask: 1\n")
+        for i in isbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
 
@@ -895,10 +890,9 @@ if args.x10:
     createDataFrames()
     print("Done creating DataFrame.", timeit.default_timer() - start)
     randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=50,min_samples_leaf=1,bootstrap=False,criterion='gini',n_jobs=2)
-    crossVal = cross_val_predict(randomForestClassifier,X_train,y_train,cv=10)
+    crossVal = cross_val_score(randomForestClassifier,X_train,y_train,cv=10,scoring='f1_micro')
     print(crossVal)
-    print("10-Cross:",metrics.f1_score(y_test, crossVal,average='micro'))
-    print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, crossVal,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
+    print("10-Cross:",np.mean(crossVal))
     stop = timeit.default_timer()
     print("Runntime: ", stop - start)
 if args.x:
@@ -906,6 +900,7 @@ if args.x:
     readTrainData()
     stopWordListRead()
     splitData()
+    print(isbnData)
     print("Done reading files.", timeit.default_timer() - start)
     createTempDict()
     improveDict()
@@ -935,11 +930,14 @@ if args.val:
     print("Done creating dictionary.", timeit.default_timer() - start)
     createTrainDataArray()
     createTestDataArray()
-    meanLU,meanR,meanKJ,meanS,meanGB,meanGE,meanK,meanAG = meanFeatureAll() # to add for test data
+    meanLU,meanR,meanKJ,meanS,meanGB,meanGE,meanK,meanAG = meanFeatureAll()
+    for row in data:
+        meanFeatures(row)
+    for row in tdata:
+        meanFeatures(row)
     createDataFrames()
     print("Done creating DataFrame.", timeit.default_timer() - start)
     trainClassifier()
-    verboseOutput()
     generateFinalOutputFile()
     stop = timeit.default_timer()
     print("Runntime: ", stop - start)

@@ -1,36 +1,27 @@
-LU-precision:0.8458559256390396
-R-precision:0.7223198594024605
-KJ-precision:0.8283752860411899
-S-precision:0.6666666666666666
-GB-precision:0.7743589743589744
-GE-precision:0.8660714285714286
-K-precision:0.8571428571428571
-AG-precision:0.9230769230769231
-LU-recall:0.9333333333333333
-R-recall:0.8074656188605108
-KJ-recall:0.616695059625213
-S-recall:0.6277128547579299
-GB-recall:0.6565217391304348
-GE-recall:0.6736111111111112
-K-recall:0.4186046511627907
-AG-recall:0.2926829268292683
-LU-fscore:0.8874441284030882
-R-fscore:0.7625231910946196
-KJ-fscore:0.7070312500000001
-S-fscore:0.646603611349957
-GB-fscore:0.7105882352941177
-GE-fscore:0.7578125
-K-fscore:0.5625000000000001
-AG-fscore:0.4444444444444444
-Precision RandomForest:0.803694636100601
-Recall RandomForest:0.803694636100601
-F-Score RandomForest:0.803694636100601
-ConfusionMatrix RandomForest:
-[[2184    9   66   77    2    2    0    0]
- [  24  411    2   48   23    1    0    0]
- [ 192   12  362   18    0    1    1    1]
- [ 143   57    6  376   11    6    0    0]
- [   6   58    1   11  151    3    0    0]
- [  13    6    0   20    8   97    0    0]
- [  13    3    0    9    0    0   18    0]
- [   7   13    0    5    0    2    2   12]]
+LU-precision:0.0
+R-precision:0.0
+KJ-precision:0.0
+S-precision:0.0
+GB-precision:0.0
+GE-precision:0.0
+K-precision:0.0
+AG-precision:0.0
+LU-recall:0.0
+R-recall:0.0
+KJ-recall:0.0
+S-recall:0.0
+GB-recall:0.0
+GE-recall:0.0
+K-recall:0.0
+AG-recall:0.0
+LU-fscore:0.0
+R-fscore:0.0
+KJ-fscore:0.0
+S-fscore:0.0
+GB-fscore:0.0
+GE-fscore:0.0
+K-fscore:0.0
+AG-fscore:0.0
+Precision RandomForest:0.0
+Recall RandomForest:0.0
+F-Score RandomForest:0.0
