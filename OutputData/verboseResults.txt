@@ -1,27 +1,36 @@
-LU-precision:0.0
-R-precision:0.0
-KJ-precision:0.0
-S-precision:0.0
-GB-precision:0.0
-GE-precision:0.0
-K-precision:0.0
-AG-precision:0.0
-LU-recall:0.0
-R-recall:0.0
-KJ-recall:0.0
-S-recall:0.0
-GB-recall:0.0
-GE-recall:0.0
-K-recall:0.0
-AG-recall:0.0
-LU-fscore:0.0
-R-fscore:0.0
-KJ-fscore:0.0
-S-fscore:0.0
-GB-fscore:0.0
-GE-fscore:0.0
-K-fscore:0.0
-AG-fscore:0.0
-Precision RandomForest:0.0
-Recall RandomForest:0.0
-F-Score RandomForest:0.0
+LU-precision:0.8381984987489575
+R-precision:0.7559055118110236
+KJ-precision:0.8808290155440415
+S-precision:0.667953667953668
+GB-precision:0.8024691358024691
+GE-precision:0.8541666666666666
+K-precision:0.8571428571428571
+AG-precision:1.0
+LU-recall:0.9463276836158192
+R-recall:0.768
+KJ-recall:0.648854961832061
+S-recall:0.6200716845878136
+GB-recall:0.6914893617021277
+GE-recall:0.640625
+K-recall:0.3157894736842105
+AG-recall:0.3888888888888889
+LU-fscore:0.8889871738168952
+R-fscore:0.761904761904762
+KJ-fscore:0.7472527472527472
+S-fscore:0.6431226765799256
+GB-fscore:0.7428571428571429
+GE-fscore:0.7321428571428571
+K-fscore:0.46153846153846156
+AG-fscore:0.56
+Precision RandomForest:0.81005859375
+Recall RandomForest:0.81005859375
+F-Score RandomForest:0.81005859375
+ConfusionMatrix RandomForest:
+[[1005    4   20   30    1    2    0    0]
+ [  16  192    3   27   10    2    0    0]
+ [  78    5  170    8    0    1    0    0]
+ [  78   25    0  173    2    0    1    0]
+ [   5   18    0    4   65    2    0    0]
+ [   9    3    0    8    3   41    0    0]
+ [   5    2    0    6    0    0    6    0]
+ [   3    5    0    3    0    0    0    7]]

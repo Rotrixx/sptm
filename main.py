@@ -119,16 +119,20 @@ def readTrainData():
             elif line.startswith('</book>'):
                 if multilabel:
                     for i in allCategoryStr:
+                        #"""
                         if not bodyStr:
                             continue
                         if isbnStr.startswith('4'):
                             continue
+                        #"""
                         bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,i))
                 else:
+                    #"""
                     if not bodyStr:
                         continue
                     if isbnStr.startswith('4'):
                         continue
+                    #"""
                     bookArray.append((bodyStr + ' ' + titleStr,titleStr,authorStr,allCategoryStr,isbnStr,firstCategory))
             elif line.startswith('<body>'):
                 bodyStr += line
@@ -255,7 +259,7 @@ def splitData():
     (Rest   Test)
     """
     random.shuffle(bookArray)
-    helper = splitter(bookArray,10000)
+    helper = splitter(bookArray,13400)
     tbookArray = helper[1]
     bookArray = helper[0]
     print(len(tbookArray))
@@ -357,22 +361,40 @@ def improveDict():
         if word in dictAG:
             counter += 1
 
+        """
         if word in dictLU:
-            dictLU[word] = np.log(dictLU[word])/counter
+            dictLU[word] = (np.log(1.5*dictLU[word])/(np.exp(np.log10(counter*4))))
         if word in dictR:
-            dictR[word] = np.log(dictR[word])/counter
+            dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
         if word in dictKJ:
-            dictKJ[word] = np.log(dictKJ[word])/counter
+            dictKJ[word] = (np.log(1.5*dictKJ[word])/(np.exp(np.log10(counter*4))))
         if word in dictS:
-            dictS[word] = np.log(dictS[word])/counter
+            dictS[word] = (np.log(1.5*dictS[word])/(np.exp(np.log10(counter*4))))
         if word in dictGB:
-            dictGB[word] = np.log(dictGB[word])/counter
+            dictGB[word] = (np.log(1.5*dictGB[word])/(np.exp(np.log10(counter*4))))
         if word in dictGE:
-            dictGE[word] = np.log(dictGE[word])/counter
+            dictGE[word] = (np.log(1.5*dictGE[word])/(np.exp(np.log10(counter*4))))
         if word in dictK:
-            dictK[word] = np.log(dictK[word])/counter
+            dictK[word] = (np.log(1.5*dictK[word])/(np.exp(np.log10(counter*4))))
         if word in dictAG:
-            dictAG[word] = np.log(dictAG[word])/counter
+            dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
+        """
+        if word in dictLU:
+            dictLU[word] = (np.log(1.5*dictLU[word])/(np.exp(counter)/(np.exp(counter)+1)))
+        if word in dictR:
+            dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
+        if word in dictKJ:
+            dictKJ[word] = (np.log(1.5*dictKJ[word])/(np.exp(np.log10(counter*4))))
+        if word in dictS:
+            dictS[word] = (np.log(1.5*dictS[word])/(np.exp(np.log10(counter*4))))
+        if word in dictGB:
+            dictGB[word] = (np.log(1.5*dictGB[word])/(np.exp(np.log10(counter*4))))
+        if word in dictGE:
+            dictGE[word] = (np.log(1.5*dictGE[word])/(np.exp(np.log10(counter*4))))
+        if word in dictK:
+            dictK[word] = (np.log(1.5*dictK[word])/(np.exp(np.log10(counter*4))))
+        if word in dictAG:
+            dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
 
 def createTempDict():
     global bookArray
@@ -748,26 +770,23 @@ def trainClassifier():
     RandomForest Klassifikator trainieren und predicten.
     """
 
-    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=50,min_samples_leaf=1,bootstrap=False,criterion='gini',verbose=10,n_jobs=2)
+    randomForestClassifier=RandomForestClassifier(n_estimators=100,max_depth=50,min_samples_leaf=1,bootstrap=False,criterion='gini',n_jobs=2)
     randomForestClassifier.fit(X_train,y_train)
 
     y_predRF=randomForestClassifier.predict(X_test)
 
     """
     gridSearchForest = RandomForestClassifier()
-    params = {"n_estimators":[100],"max_depth": [20,30,40,50],"min_samples_leaf":[1,2],"bootstrap":[False]}
+    params = {"n_estimators":[100],"max_depth": [50],"min_samples_leaf":[1],"bootstrap":[False],"criterion":['gini'],"n_jobs":[2],"random_state":[2,21,24,42,72]}
     clf = GridSearchCV(gridSearchForest,param_grid=params,cv=5)
     clf.fit(X_train,y_train)
 
     print(clf.best_params_)
     print(clf.best_score_)
     """
-
     print("F-Score RandomForest:",metrics.f1_score(y_test, y_predRF,average='micro'))
 
     if verbose:
-        print(randomForestClassifier.feature_importances_)
-
         print("ConfusionMatrix RandomForest:\n",metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"]))
 
 def verboseOutput():
@@ -776,36 +795,38 @@ def verboseOutput():
     """
     Zusaetzliche Valierungsausgabe in Terminal und Datei(OuputData/verboseOutput.txt)
     """
-    prfs = metrics.precision_recall_fscore_support(y_test, y_predRF, average='micro')
-    print(prfs[0],prfs[1],prfs[2],prfs[3])
-    prfsLabel = metrics.precision_recall_fscore_support(y_test, y_predRF, average=None,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])
-    print("LU-precision:",prfsLabel[0][0])
-    print("R-precision:",prfsLabel[0][1])
-    print("KJ-precision:",prfsLabel[0][2])
-    print("S-precision:",prfsLabel[0][3])
-    print("GB-precision:",prfsLabel[0][4])
-    print("GE-precision:",prfsLabel[0][5])
-    print("K-precision:",prfsLabel[0][6])
-    print("AG-precision:",prfsLabel[0][7])
+    if verbose:
+        prfs = metrics.precision_recall_fscore_support(y_test, y_predRF, average='micro')
+        print(prfs[0],prfs[1],prfs[2],prfs[3])
+        prfsLabel = metrics.precision_recall_fscore_support(y_test, y_predRF, average=None,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])
+        print("LU-precision:",prfsLabel[0][0])
+        print("R-precision:",prfsLabel[0][1])
+        print("KJ-precision:",prfsLabel[0][2])
+        print("S-precision:",prfsLabel[0][3])
+        print("GB-precision:",prfsLabel[0][4])
+        print("GE-precision:",prfsLabel[0][5])
+        print("K-precision:",prfsLabel[0][6])
+        print("AG-precision:",prfsLabel[0][7])
 
-    print("LU-recall:",prfsLabel[1][0])
-    print("R-recall:",prfsLabel[1][1])
-    print("KJ-recall:",prfsLabel[1][2])
-    print("S-recall:",prfsLabel[1][3])
-    print("GB-recall:",prfsLabel[1][4])
-    print("GE-recall:",prfsLabel[1][5])
-    print("K-recall:",prfsLabel[1][6])
-    print("AG-recall:",prfsLabel[1][7])
+        print("LU-recall:",prfsLabel[1][0])
+        print("R-recall:",prfsLabel[1][1])
+        print("KJ-recall:",prfsLabel[1][2])
+        print("S-recall:",prfsLabel[1][3])
+        print("GB-recall:",prfsLabel[1][4])
+        print("GE-recall:",prfsLabel[1][5])
+        print("K-recall:",prfsLabel[1][6])
+        print("AG-recall:",prfsLabel[1][7])
 
-    print("LU-fscore:",prfsLabel[2][0])
-    print("R-fscore:",prfsLabel[2][1])
-    print("KJ-fscore:",prfsLabel[2][2])
-    print("S-fscore:",prfsLabel[2][3])
-    print("GB-fscore:",prfsLabel[2][4])
-    print("GE-fscore:",prfsLabel[2][5])
-    print("K-fscore:",prfsLabel[2][6])
-    print("AG-fscore:",prfsLabel[2][7])
+        print("LU-fscore:",prfsLabel[2][0])
+        print("R-fscore:",prfsLabel[2][1])
+        print("KJ-fscore:",prfsLabel[2][2])
+        print("S-fscore:",prfsLabel[2][3])
+        print("GB-fscore:",prfsLabel[2][4])
+        print("GE-fscore:",prfsLabel[2][5])
+        print("K-fscore:",prfsLabel[2][6])
+        print("AG-fscore:",prfsLabel[2][7])
 
+    """
     with open("OutputData/verboseResults.txt","w") as file:
         file.write("LU-precision:" + str(prfsLabel[0][0]) + str("\n"))
         file.write("R-precision:" + str(prfsLabel[0][1]) + str("\n"))
@@ -837,6 +858,7 @@ def verboseOutput():
         file.write("Recall RandomForest:" + str(prfs[1]) + str("\n"))
         file.write("F-Score RandomForest:" + str(prfs[2]) + str("\n"))
         file.write("ConfusionMatrix RandomForest:\n" + str(metrics.confusion_matrix(y_test, y_predRF,labels=["Literatur & Unterhaltung","Ratgeber","Kinderbuch & Jugendbuch","Sachbuch","Ganzheitliches Bewusstsein","Glaube & Ethik","Künste","Architektur & Garten"])) + str("\n"))
+    """
 
 def generateFinalOutputFile():
     global isbnData
@@ -847,7 +869,7 @@ def generateFinalOutputFile():
 
     j = 0
     with open("OutputData/finalOut.txt","w") as file:
-        file.write("subtask: 1\n")
+        file.write("subtask_a\n")
         for i in isbnData:
             file.write(i + str("\t") + str(y_predRF[j]) + str("\n"))
             j += 1
@@ -862,6 +884,7 @@ parser.add_argument("-la", help="activate adjective lemmatizing", action="store_
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
 parser.add_argument("-x", help="simulation of real use", action="store_true")
+parser.add_argument("-rx", help="simulation of real use recursivly", action="store_true")
 parser.add_argument("-x10", help="10 cross val with all train data", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 args = parser.parse_args()
@@ -900,7 +923,6 @@ if args.x:
     readTrainData()
     stopWordListRead()
     splitData()
-    print(isbnData)
     print("Done reading files.", timeit.default_timer() - start)
     createTempDict()
     improveDict()
@@ -916,7 +938,8 @@ if args.x:
     print("Done creating DataFrame.", timeit.default_timer() - start)
     trainClassifier()
     verboseOutput()
-    generateFinalOutputFile()
+    print("Min LU: ", min(dictLU.items(), key=lambda x: x[1]))
+    print("Max LU: ", max(dictLU.items(), key=lambda x: x[1]))
     stop = timeit.default_timer()
     print("Runntime: ", stop - start)
 if args.val:
@@ -939,5 +962,40 @@ if args.val:
     print("Done creating DataFrame.", timeit.default_timer() - start)
     trainClassifier()
     generateFinalOutputFile()
+    stop = timeit.default_timer()
+    print("Runntime: ", stop - start)
+if args.rx:
+    start = timeit.default_timer()
+    fscores =[]
+    readTrainData()
+    stopWordListRead()
+    splitData()
+    tbookArrayRec = splitter(tbookArray,100)
+    for part in tbookArrayRec:
+        tbookArray = part
+        print("Done reading files.", timeit.default_timer() - start)
+        createTempDict()
+        improveDict()
+        print("Done creating dictionary.", timeit.default_timer() - start)
+        createTrainDataArray()
+        createTestDataArray()
+        meanLU,meanR,meanKJ,meanS,meanGB,meanGE,meanK,meanAG = meanFeatureAll()
+        for row in data:
+            meanFeatures(row)
+        for row in tdata:
+            meanFeatures(row)
+        createDataFrames()
+        print("Done creating DataFrame.", timeit.default_timer() - start)
+        trainClassifier()
+        recCounter = 0
+        for i in part:
+            i = list(i)
+            i[5] = y_predRF[recCounter]
+            recCounter += 1
+            i = tuple(i)
+            bookArray.append(i)
+        fscores.append(metrics.f1_score(y_test, y_predRF,average='micro'))
+        curr = 0
+    print("Recursive F-Score: ", np.mean(fscores))
     stop = timeit.default_timer()
     print("Runntime: ", stop - start)
