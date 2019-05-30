@@ -327,6 +327,12 @@ def addToDict(word):
             dictAG[word] = 1
     allWords.add(word)
 
+def sig(x):
+    return (np.exp(x)/(np.exp(x)+1))
+
+def gomp(x,a,b,c):
+    return (a*np.exp(1)**(-(b*np.exp(1)))**(-(c*x)))
+
 def improveDict():
     global dictLU
     global dictR
@@ -361,9 +367,9 @@ def improveDict():
         if word in dictAG:
             counter += 1
 
-        """
+        #"""
         if word in dictLU:
-            dictLU[word] = (np.log(1.5*dictLU[word])/(np.exp(np.log10(counter*4))))
+            dictLU[word] = (np.log(1.5*dictLU[word])/(sig(counter)))
         if word in dictR:
             dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
         if word in dictKJ:
@@ -380,21 +386,22 @@ def improveDict():
             dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
         """
         if word in dictLU:
-            dictLU[word] = (np.log(1.5*dictLU[word])/(np.exp(counter)/(np.exp(counter)+1)))
+            dictLU[word] = (np.log(1.5*dictLU[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictR:
-            dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
+            dictR[word] = (np.log(1.5*dictR[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictKJ:
-            dictKJ[word] = (np.log(1.5*dictKJ[word])/(np.exp(np.log10(counter*4))))
+            dictKJ[word] = (np.log(1.5*dictKJ[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictS:
-            dictS[word] = (np.log(1.5*dictS[word])/(np.exp(np.log10(counter*4))))
+            dictS[word] = (np.log(1.5*dictS[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictGB:
-            dictGB[word] = (np.log(1.5*dictGB[word])/(np.exp(np.log10(counter*4))))
+            dictGB[word] = (np.log(1.5*dictGB[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictGE:
-            dictGE[word] = (np.log(1.5*dictGE[word])/(np.exp(np.log10(counter*4))))
+            dictGE[word] = (np.log(1.5*dictGE[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictK:
-            dictK[word] = (np.log(1.5*dictK[word])/(np.exp(np.log10(counter*4))))
+            dictK[word] = (np.log(1.5*dictK[word])/(gomp(counter,(np.exp(1)/2),1,2)))
         if word in dictAG:
-            dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
+            dictAG[word] = (np.log(1.5*dictAG[word])/(gomp(counter,(np.exp(1)/2),1,2)))
+        """
 
 def createTempDict():
     global bookArray
