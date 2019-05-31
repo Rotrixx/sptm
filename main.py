@@ -48,6 +48,8 @@ tisbnData = []
 allWords = set()
 
 # Other
+useSigmoid = False
+useGomp = False
 lemmatizeVerbs = False
 lemmatizeNouns = False
 lemmatizeAdjectives = False
@@ -367,41 +369,57 @@ def improveDict():
         if word in dictAG:
             counter += 1
 
-        #"""
-        if word in dictLU:
-            dictLU[word] = (np.log(1.5*dictLU[word])/(sig(counter)))
-        if word in dictR:
-            dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
-        if word in dictKJ:
-            dictKJ[word] = (np.log(1.5*dictKJ[word])/(np.exp(np.log10(counter*4))))
-        if word in dictS:
-            dictS[word] = (np.log(1.5*dictS[word])/(np.exp(np.log10(counter*4))))
-        if word in dictGB:
-            dictGB[word] = (np.log(1.5*dictGB[word])/(np.exp(np.log10(counter*4))))
-        if word in dictGE:
-            dictGE[word] = (np.log(1.5*dictGE[word])/(np.exp(np.log10(counter*4))))
-        if word in dictK:
-            dictK[word] = (np.log(1.5*dictK[word])/(np.exp(np.log10(counter*4))))
-        if word in dictAG:
-            dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
-        """
-        if word in dictLU:
-            dictLU[word] = (np.log(1.5*dictLU[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictR:
-            dictR[word] = (np.log(1.5*dictR[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictKJ:
-            dictKJ[word] = (np.log(1.5*dictKJ[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictS:
-            dictS[word] = (np.log(1.5*dictS[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictGB:
-            dictGB[word] = (np.log(1.5*dictGB[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictGE:
-            dictGE[word] = (np.log(1.5*dictGE[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictK:
-            dictK[word] = (np.log(1.5*dictK[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        if word in dictAG:
-            dictAG[word] = (np.log(1.5*dictAG[word])/(gomp(counter,(np.exp(1)/2),1,2)))
-        """
+        if useSigmoid:        
+            if word in dictLU:
+                dictLU[word] = (np.log(1.5*dictLU[word])/(sig(counter)))
+            if word in dictR:
+                dictR[word] = (np.log(1.5*dictR[word])/(sig(counter)))
+            if word in dictKJ:
+                dictKJ[word] = (np.log(1.5*dictKJ[word])/(sig(counter)))
+            if word in dictS:
+                dictS[word] = (np.log(1.5*dictS[word])/(sig(counter)))
+            if word in dictGB:
+                dictGB[word] = (np.log(1.5*dictGB[word])/(sig(counter)))
+            if word in dictGE:
+                dictGE[word] = (np.log(1.5*dictGE[word])/(sig(counter)))
+            if word in dictK:
+                dictK[word] = (np.log(1.5*dictK[word])/(sig(counter)))
+            if word in dictAG:
+                dictAG[word] = (np.log(1.5*dictAG[word])/(sig(counter)))
+        elif useGomp:
+            if word in dictLU:
+                dictLU[word] = (np.log(1.5*dictLU[word])/(gomp(counter,1,1,2)))
+            if word in dictR:
+                dictR[word] = (np.log(1.5*dictR[word])/(gomp(counter,1,1,2)))
+            if word in dictKJ:
+                dictKJ[word] = (np.log(1.5*dictKJ[word])/(gomp(counter,1,1,2)))
+            if word in dictS:
+                dictS[word] = (np.log(1.5*dictS[word])/(gomp(counter,1,1,2)))
+            if word in dictGB:
+                dictGB[word] = (np.log(1.5*dictGB[word])/(gomp(counter,1,1,2)))
+            if word in dictGE:
+                dictGE[word] = (np.log(1.5*dictGE[word])/(gomp(counter,1,1,2)))
+            if word in dictK:
+                dictK[word] = (np.log(1.5*dictK[word])/(gomp(counter,1,1,2)))
+            if word in dictAG:
+                dictAG[word] = (np.log(1.5*dictAG[word])/(gomp(counter,1,1,2)))
+        else:
+            if word in dictLU:
+                dictLU[word] = (np.log(1.5*dictLU[word])/(sig(counter)))
+            if word in dictR:
+                dictR[word] = (np.log(1.5*dictR[word])/(np.exp(np.log10(counter*4))))
+            if word in dictKJ:
+                dictKJ[word] = (np.log(1.5*dictKJ[word])/(np.exp(np.log10(counter*4))))
+            if word in dictS:
+                dictS[word] = (np.log(1.5*dictS[word])/(np.exp(np.log10(counter*4))))
+            if word in dictGB:
+                dictGB[word] = (np.log(1.5*dictGB[word])/(np.exp(np.log10(counter*4))))
+            if word in dictGE:
+                dictGE[word] = (np.log(1.5*dictGE[word])/(np.exp(np.log10(counter*4))))
+            if word in dictK:
+                dictK[word] = (np.log(1.5*dictK[word])/(np.exp(np.log10(counter*4))))
+            if word in dictAG:
+                dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
 
 def createTempDict():
     global bookArray
@@ -888,6 +906,8 @@ parser = argparse.ArgumentParser(description='sptm')
 parser.add_argument("-lv", help="activate verb lemmatizing", action="store_true")
 parser.add_argument("-ln", help="activate noun lemmatizing", action="store_true")
 parser.add_argument("-la", help="activate adjective lemmatizing", action="store_true")
+parser.add_argument("-sig", help="use sigmoid", action="store_true")
+parser.add_argument("-gomp", help="use gompertz", action="store_true")
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
 parser.add_argument("-x", help="simulation of real use", action="store_true")
@@ -899,6 +919,10 @@ if args.lv:
     lemmatizeVerbs = True
 if args.ln:
     lemmatizeNouns = True
+if args.sig:
+    useSigmoid = True
+if args.gomp:
+    useGomp = True
 if args.la:
     lemmatizeAdjectives = True
 if args.v:
