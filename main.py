@@ -40,6 +40,7 @@ allWords = set()
 # Other
 useSigmoid = False
 useGomp = False
+useOldRec = False
 lemmatizeVerbs = False
 lemmatizeNouns = False
 lemmatizeAdjectives = False
@@ -69,6 +70,8 @@ nlp = spacy.load('de_core_news_sm')
 nounsList = ['NN', 'NNS', 'NNP', 'NNPS']
 adjectiveList = ['JJ', 'JJR', 'JJS']
 verbsList = ['VB', 'VBZ', 'VBP', 'VBD', 'VBN', 'VBG']
+
+phraseList = ['NP','PP','VP','ADVP','ADJP','PNP','SBAR','PRT']
 
 #labels=["Literatur & Unterhaltung", "Ratgeber", "Kinderbuch & Jugendbuch", "Sachbuch", "Ganzheitliches Bewusstsein", "Glaube & Ethik", "Künste", "Architektur & Garten"]
 
@@ -346,6 +349,23 @@ def improveDict():
                 dictK[word] =improvedGomp(dictK[word], counter)
             if word in dictAG:
                 dictAG[word] = improvedGomp(dictAG[word], counter)
+        elif useOldRec:
+            if word in dictLU:
+                dictLU[word] = (np.log(1.5*dictLU[word])/(counter))
+            if word in dictR:
+                dictR[word] = (np.log(1.5*dictR[word])/(counter))
+            if word in dictKJ:
+                dictKJ[word] = (np.log(1.5*dictKJ[word])/(counter))
+            if word in dictS:
+                dictS[word] = (np.log(1.5*dictS[word])/(counter))
+            if word in dictGB:
+                dictGB[word] = (np.log(1.5*dictGB[word])/(counter))
+            if word in dictGE:
+                dictGE[word] = (np.log(1.5*dictGE[word])/(counter))
+            if word in dictK:
+                dictK[word] = (np.log(1.5*dictK[word])/(counter))
+            if word in dictAG:
+                dictAG[word] = (np.log(1.5*dictAG[word])/(counter))
         else:
             if word in dictLU:
                 dictLU[word] = (np.log(1.5*dictLU[word])/(sig(counter)))
@@ -369,6 +389,7 @@ def createTempDict():
     global nounsList
     global verbsList
     global adjectiveList
+    global phraseList
     global curr
     global nlp
     """
@@ -379,6 +400,7 @@ def createTempDict():
         blob = TextBlobDE(book[0])
         textTockens = blob.tags
         for i in textTockens:
+            word = i[0].lower()
             if i[1] in nounsList:
                 if lemmatizeNouns:
                     wordStr = str(i[0])
@@ -387,7 +409,7 @@ def createTempDict():
                         word = token.lemma_
                     addToDict(word.lower())
                 else:
-                    addToDict(i[0].lower())
+                    addToDict(word)
             if i[1] in adjectiveList:
                 if lemmatizeAdjectives:
                     wordStr = str(i[0])
@@ -396,7 +418,7 @@ def createTempDict():
                         word = token.lemma_
                     addToDict(word.lower())
                 else:
-                    addToDict(i[0].lower())
+                    addToDict(word)
             if i[1] in verbsList:
                 if lemmatizeVerbs:
                     wordStr = str(i[0])
@@ -405,7 +427,7 @@ def createTempDict():
                         word = token.lemma_
                     addToDict(word.lower())
                 else:
-                    addToDict(i[0].lower())
+                    addToDict(word)
         curr += 1
 
 def featurize(text):
@@ -769,6 +791,56 @@ def multiOutPrep(outLine, threshhold):
         lineOutput = multiOutPrep(outLine, newthresh)
     return lineOutput
 
+def multiOutPrep2(outLine, threshhold):
+    lineOutput = []
+    outLine = list(outLine)
+    maxT = max(outLine)
+    for j in outLine:
+        if outLine.index(j) == 0 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Architektur & Garten')
+        if outLine.index(j) == 1 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Ganzheitliches Bewusstsein')
+        if outLine.index(j) == 2 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Glaube & Ethik')
+        if outLine.index(j) == 3 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Kinderbuch & Jugendbuch')
+        if outLine.index(j) == 4 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Künste')
+        if outLine.index(j) == 5 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Literatur & Unterhaltung')
+        if outLine.index(j) == 6 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Ratgeber')
+        if outLine.index(j) == 7 and j >= (maxT - threshhold) and j >= 0.2:
+            lineOutput.append('Sachbuch')
+    return lineOutput
+
+def multiOutPrep3(outLine, threshhold):
+    lineOutput = []
+    outLineList = list(outLine)
+    maxT = list(outLine)
+    maxT.sort(reverse=True)
+    currVal = 0
+    for j in maxT:
+        if currVal < threshhold:
+            if outLineList.index(j) == 0:
+                lineOutput.append('Architektur & Garten')
+            if outLineList.index(j) == 1:
+                lineOutput.append('Ganzheitliches Bewusstsein')
+            if outLineList.index(j) == 2:
+                lineOutput.append('Glaube & Ethik')
+            if outLineList.index(j) == 3:
+                lineOutput.append('Kinderbuch & Jugendbuch')
+            if outLineList.index(j) == 4:
+                lineOutput.append('Künste')
+            if outLineList.index(j) == 5:
+                lineOutput.append('Literatur & Unterhaltung')
+            if outLineList.index(j) == 6:
+                lineOutput.append('Ratgeber')
+            if outLineList.index(j) == 7:
+                lineOutput.append('Sachbuch')
+            currVal += j
+    return lineOutput
+
 def trainClassifier():
     global X_train
     global X_test
@@ -787,8 +859,9 @@ def trainClassifier():
         y_predRF = []
         y_predProb=randomForestClassifier.predict_proba(X_test)
         for i in y_predProb:
-            y_predRF.append(multiOutPrep(i, 0.7))
-            print(i)
+            #y_predRF.append(multiOutPrep(i, 0.7))
+            #y_predRF.append(multiOutPrep2(i, 0.2))
+            y_predRF.append(multiOutPrep3(i, 0.6))
             currPos += 1
     else:
         y_predRF=randomForestClassifier.predict(X_test)
@@ -910,6 +983,7 @@ parser.add_argument("-ln", help="activate noun lemmatizing", action="store_true"
 parser.add_argument("-la", help="activate adjective lemmatizing", action="store_true")
 parser.add_argument("-sig", help="use sigmoid", action="store_true")
 parser.add_argument("-gomp", help="use gompertz", action="store_true")
+parser.add_argument("-old", help="use old/simple function", action="store_true")
 parser.add_argument("-v", help="activate verbose output", action="store_true")
 parser.add_argument("-m", help="activate multilabel classification", action="store_true")
 parser.add_argument("-x", help="simulation of real use", action="store_true")
@@ -928,6 +1002,8 @@ if args.sig:
     useSigmoid = True
 if args.gomp:
     useGomp = True
+if args.old:
+    useOldRec = True
 if args.la:
     lemmatizeAdjectives = True
 if args.v:
