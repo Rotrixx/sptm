@@ -116,23 +116,13 @@ def readData(dataFile):
                 allCategoryStr = set()
                 isbnStr = ''
             elif line.startswith('</book>'):
-                if multilabel:
-                    for i in allCategoryStr:
-                        #"""
-                        if not bodyStr:
-                            continue
-                        if isbnStr.startswith('4'):
-                            continue
-                        #"""
-                        array.append((bodyStr + ' ' + titleStr, titleStr, authorStr, allCategoryStr, isbnStr, i))
-                else:
-                    #"""
-                    if not bodyStr:
-                        continue
-                    if isbnStr.startswith('4'):
-                        continue
-                    #"""
-                    array.append((bodyStr + ' ' + titleStr, titleStr, authorStr, allCategoryStr, isbnStr, firstCategory))
+                #"""
+                if not bodyStr:
+                    continue
+                if isbnStr.startswith('4'):
+                    continue
+                #"""
+                array.append((bodyStr + ' ' + titleStr, titleStr, authorStr, allCategoryStr, isbnStr, firstCategory))
             elif line.startswith('<body>'):
                 bodyStr += line
                 bodyStr = bodyStr[:-8]
@@ -195,6 +185,15 @@ def splitData():
     print(len(bookArray))
     for i in tbookArray:
         isbnData.append(i[4])
+
+    
+    if multilabel:
+        array = []
+        for book in bookArray:
+            for i in book[3]:
+                array.append((book[0], book[1], book[2], 0, book[4], i))
+    bookArray = array
+
     j = 0
     with open("../evaluation/input/gold.txt", "w") as file:
         file.write("subtask_a\n")
@@ -859,9 +858,9 @@ def trainClassifier():
         y_predRF = []
         y_predProb=randomForestClassifier.predict_proba(X_test)
         for i in y_predProb:
-            #y_predRF.append(multiOutPrep(i, 0.7))
-            #y_predRF.append(multiOutPrep2(i, 0.2))
-            y_predRF.append(multiOutPrep3(i, 0.6))
+            y_predRF.append(multiOutPrep(i, 0.7))
+            #y_predRF.append(multiOutPrep2(i, 0.1))
+            #y_predRF.append(multiOutPrep3(i, 0.6))
             currPos += 1
     else:
         y_predRF=randomForestClassifier.predict(X_test)
