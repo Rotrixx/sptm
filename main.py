@@ -36,6 +36,8 @@ tdata = []
 tisbnData = []
 
 allWords = set()
+allBiWords = set()
+allAuthors = set()
 
 # Other
 useSigmoid = False
@@ -296,6 +298,7 @@ def addToBiDict(word):
     global biDictGE
     global biDictK
     global biDictAG
+    global allBiWords
     """
     Erstellung eines W?rterbucheintrages(Wort:Wert) f?r das mitgegebene Wort.
     W?rter die in der Stopwordliste auftreten werden gel?scht.
@@ -342,6 +345,7 @@ def addToBiDict(word):
             biDictAG[word] += 1
         else:
             biDictAG[word] = 1
+    allBiWords.add(word)
 
 def sig(x):
     return np.exp(x) / np.exp(x)+1
@@ -367,7 +371,28 @@ def improveDict():
     global dictGE
     global dictK
     global dictAG
+
+    global biDictLU
+    global biDictR
+    global biDictKJ
+    global biDictS
+    global biDictGB
+    global biDictGE
+    global biDictK
+    global biDictAG
+
+    global auDictLU
+    global auDictR
+    global auDictKJ
+    global auDictS
+    global auDictGB
+    global auDictGE
+    global auDictK
+    global auDictAG
+
     global allWords
+    global allBiWords
+    global allAuthors
     """
     Gewichtung der Woerter in den Woerterbuechern
     ToDo Array mit allen Woerterbuechern erstellen und rueber-iterieren
@@ -461,6 +486,78 @@ def improveDict():
             if word in dictAG:
                 dictAG[word] = (np.log(1.5*dictAG[word])/(np.exp(np.log10(counter*4))))
 
+    for word in allBiWords:
+        counter = 0
+        if word in biDictLU:
+            counter += 1
+        if word in biDictR:
+            counter += 1
+        if word in biDictKJ:
+            counter += 1
+        if word in biDictS:
+            counter += 1
+        if word in biDictGB:
+            counter += 1
+        if word in biDictGE:
+            counter += 1
+        if word in biDictK:
+            counter += 1
+        if word in biDictAG:
+            counter += 1
+
+        if word in biDictLU:
+            biDictLU[word] = improvedGomp(biDictLU[word],(counter))
+        if word in biDictR:
+            biDictR[word] = improvedGomp(biDictR[word],(counter))
+        if word in biDictKJ:
+            biDictKJ[word] = improvedGomp(biDictKJ[word],(counter))
+        if word in biDictS:
+            biDictS[word] = improvedGomp(biDictS[word],(counter))
+        if word in biDictGB:
+            biDictGB[word] = improvedGomp(biDictGB[word],(counter))
+        if word in biDictGE:
+            biDictGE[word] = improvedGomp(biDictGE[word],(counter))
+        if word in biDictK:
+            biDictK[word] = improvedGomp(biDictK[word],(counter))
+        if word in biDictAG:
+            biDictAG[word] = improvedGomp(biDictAG[word],(counter))
+
+    for authorD in allAuthors:
+        counter = 0
+        if authorD in auDictLU:
+            counter += 1
+        if authorD in auDictR:
+            counter += 1
+        if authorD in auDictKJ:
+            counter += 1
+        if authorD in auDictS:
+            counter += 1
+        if authorD in auDictGB:
+            counter += 1
+        if authorD in auDictGE:
+            counter += 1
+        if authorD in auDictK:
+            counter += 1
+        if authorD in auDictAG:
+            counter += 1
+
+        if authorD in auDictLU:
+            auDictLU[authorD] = improvedGomp(auDictLU[authorD],(counter))
+        if authorD in auDictR:
+            auDictR[authorD] = improvedGomp(auDictR[authorD],(counter))
+        if authorD in auDictKJ:
+            auDictKJ[authorD] = improvedGomp(auDictKJ[authorD],(counter))
+        if authorD in auDictS:
+            auDictS[authorD] = improvedGomp(auDictS[authorD],(counter))
+        if authorD in auDictGB:
+            auDictGB[authorD] = improvedGomp(auDictGB[authorD],(counter))
+        if authorD in auDictGE:
+            auDictGE[authorD] = improvedGomp(auDictGE[authorD],(counter))
+        if authorD in auDictK:
+            auDictK[authorD] = improvedGomp(auDictK[authorD],(counter))
+        if authorD in auDictAG:
+            auDictAG[authorD] = improvedGomp(auDictAG[authorD],(counter))
+
 def addToAuthorDict(author):
     global curr
     global auDictLU
@@ -471,6 +568,7 @@ def addToAuthorDict(author):
     global auDictGE
     global auDictK
     global auDictAG
+    global allAuthors
 
     if bookArray[curr][5] == 'Literatur & Unterhaltung':
         if author in auDictLU:
@@ -512,6 +610,7 @@ def addToAuthorDict(author):
             auDictAG[author] += 1
         else:
             auDictAG[author] = 1
+    allAuthors.add(author)
 
 def createTempDict():
     global bookArray
@@ -540,8 +639,9 @@ def createTempDict():
                 else:
                     addToDict(word)
                 try:
-                    biGram1 = textTockens[textTockens.index(i) - 1]
-                    biGram2 = textTockens[textTockens.index(i) + 1]
+                    pos = textTockens.index(i)
+                    biGram1 = str(textTockens[pos - 1][0] + ' ' +  i[0])
+                    biGram2 = str(i[0] + ' ' +  textTockens[pos + 1][0])
                 except:
                     pass
                 addToBiDict(biGram1)
@@ -557,8 +657,9 @@ def createTempDict():
                 else:
                     addToDict(word)
                 try:
-                    biGram1 = textTockens[textTockens.index(i) - 1]
-                    biGram2 = textTockens[textTockens.index(i) + 1]
+                    pos = textTockens.index(i)
+                    biGram1 = str(textTockens[pos - 1][0] + ' ' + i[0])
+                    biGram2 = str(i[0] + ' ' + textTockens[pos + 1][0])
                 except:
                     pass
                 addToBiDict(biGram1)
@@ -574,14 +675,17 @@ def createTempDict():
                 else:
                     addToDict(word)
                 try:
-                    biGram1 = textTockens[textTockens.index(i) - 1]
-                    biGram2 = textTockens[textTockens.index(i) + 1]
+                    pos = textTockens.index(i)
+                    biGram1 = str(textTockens[pos - 1][0] + ' ' +  i[0])
+                    biGram2 = str(i[0] + ' ' +  textTockens[pos + 1][0])
                 except:
                     pass
                 addToBiDict(biGram1)
                 addToBiDict(biGram2)
 
-        for author in book[2]:
+        authorsList = str(book[2])
+        authorsListStrs = authorsList.split(",")
+        for author in authorsListStrs:
             if author == "":
                 continue
             addToAuthorDict(author)
@@ -1366,6 +1470,10 @@ if args.x:
     trainClassifier()
     print("Min LU: ",  min(dictLU.items(),  key=lambda x: x[1]))
     print("Max LU: ",  max(dictLU.items(),  key=lambda x: x[1]))
+    print("MinBi LU: ",  min(biDictLU.items(),  key=lambda x: x[1]))
+    print("MaxBi LU: ",  max(biDictLU.items(),  key=lambda x: x[1]))
+    print("MinAu LU: ",  min(auDictLU.items(),  key=lambda x: x[1]))
+    print("MaxAu LU: ",  max(auDictLU.items(),  key=lambda x: x[1]))
     generateFinalOutputFile()
     stop = timeit.default_timer()
     print("Runntime: ",  stop - start)
