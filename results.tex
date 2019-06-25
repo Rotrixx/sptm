@@ -9,42 +9,42 @@
 
 CutOff describes a value which sets all dictionary entries to zero if they are smaller than the CutOff value.\\
 
-\begin{tabular}{ | l | c | c | c |}
+\begin{tabular}{ | p{0.8\linewidth} | c | c | c |}
 	\hline
 	Method & Precision & Recall & F1-Score\\
 	\hline
 	\hline
-	All Features + MultiOut2(0.12) + Gomp + CutOff(1) && 0.8023 && 0.7991 && 0.8007\\
+	All Features + MultiOut2(0.12) + Gomp + CutOff(1) & 0.8023 & 0.7991 & 0.8007\\
 	\hline
-	All Features + MultiOut2(0.12) + Sig + CutOff(1) && 0.7910 && 0.7955 && 0.7872\\
+	All Features + MultiOut2(0.12) + Sig + CutOff(1) & 0.7910 & 0.7955 & 0.7872\\
 	\hline
-	All Features + MultiOut2(0.12) + Old + CutOff(1) && 0.7064 && 0.7283 && 0.7172\\
+	All Features + MultiOut2(0.12) + Old + CutOff(1) & 0.7064 & 0.7283 & 0.7172\\
 	\hline
-	All Features + MultiOut2(0.12) + SigLog + CutOff(1) && 0.7118 && 0.7574 && 0.7339\\
+	All Features + MultiOut2(0.12) + SigLog + CutOff(1) &0.7118 &0.7574 &0.7339\\
 	\hline
-	All Features + MultiOut2(0.10) + Gomp + CutOff(0) && 0.8187 && 0.7897 && 0.8039\\
+	All Features + MultiOut2(0.10) + Gomp + CutOff(0) &0.8187 &0.7897 &0.8039\\
 	\hline
-	All Features + MultiOut2(0.10) + Gomp + CutOff(1) && 0.8084 && 0.7964 && 0.8023\\
+	All Features + MultiOut2(0.10) + Gomp + CutOff(1) &0.8084 &0.7964 &0.8023\\
 	\hline
-	All Features + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) && 0.8264 && 0.7789 && 0.8019\\
+	All Features + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) &0.8264 &0.7789 &0.8019\\
 	\hline
-	All Features + MultiOut3(0.6) + Gomp + CutOff(0) && 0.7868 && 0.8076 && 0.7971\\
+	All Features + MultiOut3(0.6) + Gomp + CutOff(0) &0.7868 &0.8076 &0.7971\\
 	\hline
-	All Features(only unigrams) + MultiOut3(0.7) + Gomp + CutOff(0) && 0.7604 && 0.8296 && 0.7935\\
+	All Features(only unigrams) + MultiOut3(0.7) + Gomp + CutOff(0) &0.7604 &0.8296 &0.7935\\
 	\hline
-	All Features(only unigrams) + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) && 0.8252 && 0.7789 && 0.8014\\
+	All Features(only unigrams) + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) &0.8252 &0.7789 &0.8014\\
 	\hline
-	All Features - nearest Centroid + MultiOut2(0.1) + Gomp + CutOff(0) && 0.7806 && 0.7946 && 0.7876\\
+	All Features - nearest Centroid + MultiOut2(0.1) + Gomp + CutOff(0) &0.7806 &0.7946 &0.7876\\
 	\hline
-	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0) && 0.8175 && 0.7874 && 0.8022\\
+	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0) &0.8175 &0.7874 &0.8022\\
 	\hline
-	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0.56) && 0.8162 && 0.7946 && 0.8053\\
+	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8162 &0.7946 &0.8053\\
 	\hline
-	All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) && 0.8186 && 0.7951 && 0.8066\\
+	All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8186 &0.7951 &0.8066\\
 	\hline
-	MultiLabelInput + All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) && 0.8071 && 0.8108 && 0.8089\\
+	MultiLabelInput + All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8071 &0.8108 &0.8089\\
 	\hline
-	10-Cross-Validation All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) && NA && NA && 0.9789\\
+	10-Cross-Validation All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &NA &NA &0.9789\\
 \end{tabular}
 
 \end{document}
