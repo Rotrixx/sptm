@@ -34,11 +34,15 @@ CutOff describes a value which sets all dictionary entries to zero if they are s
 	\hline
 	All Features(only unigrams) + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) && 0.8252 && 0.7789 && 0.8014\\
 	\hline
-	All Features - nearest Zentroid + MultiOut2(0.1) + Gomp + CutOff(0) && 0.7806 && 0.7946 && 0.7876\\
+	All Features - nearest Centroid + MultiOut2(0.1) + Gomp + CutOff(0) && 0.7806 && 0.7946 && 0.7876\\
 	\hline
 	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0) && 0.8175 && 0.7874 && 0.8022\\
 	\hline
 	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0.56) && 0.8162 && 0.7946 && 0.8053\\
+	\hline
+	All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) && 0.8186 && 0.7951 && 0.8066\\
+	\hline
+	10-Cross-Validation All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) && NA && NA && 0.9789\\
 \end{tabular}
 
 \end{document}
