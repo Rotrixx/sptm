@@ -1,4 +1,5 @@
 import json
+import os
 import argparse
 import random
 import timeit
@@ -242,7 +243,6 @@ def splitData():
     for i in tbookArray:
         isbnData.append(i[4])
 
-
     if multilabel:
         array = []
         for book in bookArray:
@@ -260,6 +260,35 @@ def splitData():
                 labelStr +=  str("\t") + str(k)
             file.write(i + str(labelStr) + str("\n"))
             j += 1
+
+def cutout(array, idx):
+    return array[:idx] + array[idx + 1:]
+
+def splitDataCrossVal():
+    global bookArray
+    global tbookArray
+    global isbnData
+    """
+    Daten werden aufgeteilt in Trainings- und Testdaten.
+    (10, 000 Training)
+    (Rest   Test)
+    """
+    if shuffle:
+        random.shuffle(bookArray)
+    helper = splitter(bookArray, len(bookArray) // 10)
+
+    testSplit = [helper[0],helper[1],helper[2],helper[3],helper[4],helper[5],helper[6],helper[7],helper[8],helper[9]]
+    trainSplit = [cutout(helper,0),cutout(helper,1),cutout(helper,2),cutout(helper,3),cutout(helper,4),cutout(helper,5),cutout(helper,6),cutout(helper,7),cutout(helper,8),cutout(helper,9),]
+
+    if multilabel:
+        for part in trainSplit:
+            array = []
+            for book in part:
+                for i in book[3]:
+                    array.append((book[0], book[1], book[2], 0, book[4], i))
+            trainSplit = array
+
+    return testSplit, trainSplit
 
 def addToDict(word):
     global curr
@@ -2099,20 +2128,47 @@ if args.x10:
     start = timeit.default_timer()
     bookArray = readData('Data/blurbs_train_all.txt')
     stopWordListRead()
+    testSplits, trainSplits = splitDataCrossVal()
+    print(len(testSplits[5]))
     print("Done reading files.",  timeit.default_timer() - start)
+    run = 9
+    tbookArray= testSplits[run]
+    trainArray = trainSplits[run]
+    bookArray = []
+    for array in trainArray:
+        for book in array:
+            bookArray.append(book)
     createTempDict()
     improveDict()
     print("Done creating dictionary.",  timeit.default_timer() - start)
     createTrainDataArray()
+    createTestDataArray()
+    weightTrainData()
     meanLU, meanR, meanKJ, meanS, meanGB, meanGE, meanK, meanAG = meanFeatureAll()
     for row in data:
         meanFeatures(row)
+    for row in tdata:
+        meanFeatures(row)
     createDataFrames()
     print("Done creating DataFrame.",  timeit.default_timer() - start)
-    randomForestClassifier=RandomForestClassifier(n_estimators=100, max_depth=50, min_samples_leaf=1, bootstrap=False, criterion='gini', n_jobs=2)
-    crossVal = cross_val_score(randomForestClassifier, X_train, y_train, cv=10, scoring='f1_micro')
-    print(crossVal)
-    print("10-Cross:", np.mean(crossVal))
+    trainClassifier()
+    print("Min LU: ",  min(dictLU.items(),  key=lambda x: x[1]))
+    print("Max LU: ",  max(dictLU.items(),  key=lambda x: x[1]))
+    for i in tbookArray:
+        isbnData.append(i[4])
+    j = 0
+    with open("../evaluation/input/gold.txt", "w") as file:
+        file.write("subtask_a\n")
+        for i in isbnData:
+            labelStr = ''
+            labels = tbookArray[j][3]
+            for k in labels:
+                labelStr +=  str("\t") + str(k)
+            file.write(i + str(labelStr) + str("\n"))
+            j += 1
+    generateFinalOutputFile()
+    os.system('python ../evaluation/evaluate.py ../evaluation/input/ ../evaluation/output/')
+    os.system('cat ../evaluation/output/scores.html')
     stop = timeit.default_timer()
     print("Runntime: ",  stop - start)
 if args.x:
@@ -2184,6 +2240,8 @@ if args.val:
     print("Done creating DataFrame.",  timeit.default_timer() - start)
     trainClassifier()
     generateFinalOutputFile()
+    os.system('python ../evaluation/evaluate.py ../evaluation/input/ ../evaluation/output/')
+    os.system('cat ../evaluation/output/scores.html')
     stop = timeit.default_timer()
     print("Runntime: ",  stop - start)
 if args.rx:
