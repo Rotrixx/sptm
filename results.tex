@@ -7,46 +7,57 @@
 
 \section{Results}
 
-CutOff describes a value which sets all dictionary entries to zero if they are smaller than the CutOff value.\\
+\textbf{CO} describes a cut off value which sets all dictionary entries to zero if they are smaller than the cut off value.\\
+\textbf{DF1/DF2/DF3/DF4} are the dictionary Functions, where \textbf{DF1} uses the Gompertz-fuctions, \textbf{DF2} uses the Sigmoid-function, \textbf{DF3} uses a simple logarithmic function and \textbf{DF4} uses a combination of logarithmic and Sigmoid-function.
+The \textbf{MO1/MO2/MO3} are functions used to get multiple Outputs based on their probabilities.
+For all runs we just used one genre to train with per book unless spezified. We added the title to the blurb to get more words and this way more information. All features where used insite a mean-feature per genre.\\
+
+\begin{itemize}
+    \item \textbf{SI} - sentence information (words per sentence and number od sentences)
+    \item \textbf{RFWC} - relative frequences of word classes (noun, verb, adjective)
+    \item \textbf{\#S} - number of chosen Symbols (? \# \$ \% \& \" : ; , -)
+    \item \textbf{GWBCR-1} - genre wordbook correspondence rate (1Grams)
+    \item \textbf{GWBCR-15} - genre wordbook correspondence rate (1-5Grams)
+    \item \textbf{1GWBCR-15} - genre wordbook correspondence rate (1-5Grams) all in Grams in one wordbook
+    \item \textbf{MF} - mean features (distance for each feature to each optimal genre of the feature)
+\end{itemize}
 
 \begin{tabular}{ | p{0.8\linewidth} | c | c | c |}
 	\hline
 	Method & Precision & Recall & F1-Score\\
 	\hline
 	\hline
-	All Features + MultiOut2(0.12) + Gomp + CutOff(1) & 0.8023 & 0.7991 & 0.8007\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.12) + DF1 + CO(1) & 0.8023 & 0.7991 & 0.8007\\
 	\hline
-	All Features + MultiOut2(0.12) + Sig + CutOff(1) & 0.7910 & 0.7955 & 0.7872\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.12) + DF2 + CO(1) & 0.7910 & 0.7955 & 0.7872\\
 	\hline
-	All Features + MultiOut2(0.12) + Old + CutOff(1) & 0.7064 & 0.7283 & 0.7172\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.12) + DF3 + CO(1) & 0.7064 & 0.7283 & 0.7172\\
 	\hline
-	All Features + MultiOut2(0.12) + SigLog + CutOff(1) &0.7118 &0.7574 &0.7339\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.12) + DF4 + CO(1) &0.7118 &0.7574 &0.7339\\
 	\hline
-	All Features + MultiOut2(0.10) + Gomp + CutOff(0) &0.8187 &0.7897 &0.8039\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0) &0.8187 &0.7897 &0.8039\\
 	\hline
-	All Features + MultiOut2(0.10) + Gomp + CutOff(1) &0.8084 &0.7964 &0.8023\\
+	SI + RFWC + \#S + GWBCR-15 + MF + MO2(0.1) + DF1 + CO(1) &0.8084 &0.7964 &0.8023\\
 	\hline
-	All Features + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) &0.8264 &0.7789 &0.8019\\
+	SI + RFWC + \#S + GWBCR-15 + MF + MO1(0.7,0.1) + DF1 + CO(0) &0.8264 &0.7789 &0.8019\\
 	\hline
-	All Features + MultiOut3(0.6) + Gomp + CutOff(0) &0.7868 &0.8076 &0.7971\\
+    SI + RFWC + \#S + GWBCR-15 + MF + MO3(0.6) + DF1 + CO(0) &0.7868 &0.8076 &0.7971\\
 	\hline
-	All Features(only unigrams) + MultiOut3(0.7) + Gomp + CutOff(0) &0.7604 &0.8296 &0.7935\\
+	SI + RFWC + \#S + GWBCR-1 + MF + MO3(0.7) + DF1 + CO(0) &0.7604 &0.8296 &0.7935\\
 	\hline
-	All Features(only unigrams) + MultiOut1(0.70,0.10(step)) + Gomp + CutOff(0) &0.8252 &0.7789 &0.8014\\
+    SI + RFWC + \#S + GWBCR-1 + MF + MO1(0.7,0.1) + DF1 + CO(0) &0.8252 &0.7789 &0.8014\\
 	\hline
-	All Features - nearest Centroid + MultiOut2(0.1) + Gomp + CutOff(0) &0.7806 &0.7946 &0.7876\\
+	SI + RFWC + \#S + GWBCR-15 + MO2(0.1) + DF1 + CO(0) &0.7806 &0.7946 &0.7876\\
 	\hline
-	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0) &0.8175 &0.7874 &0.8022\\
+    SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0) &0.8175 &0.7874 &0.8022\\
 	\hline
-	All Features(all in one WB) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8162 &0.7946 &0.8053\\
+    SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8162 &0.7946 &0.8053\\
 	\hline
-	All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8186 &0.7951 &0.8066\\
+    SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8186 &0.7951 &0.8066\\
 	\hline
-	MultiLabelInput + All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &0.8071 &0.8108 &0.8089\\
+    MultiLabelInput + SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8071 &0.8108 &0.8089\\
 	\hline
-	10-Cross-Validation(scikit-learn) + All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) &NA &NA &0.9789\\
-	\hline
-	10-Cross-Validation(10 runs) + All Features(all in one WB, all Feature in Nearest Centroid) + MultiOut2(0.1) + Gomp + CutOff(0.56) & 0.8172 & 0.7991 &0.8080\\
+    10-Cross-Validation + SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) & 0.8172 & 0.7991 &0.8080\\
 	\hline
 \end{tabular}
 
