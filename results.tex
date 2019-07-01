@@ -10,7 +10,7 @@
 \textbf{CO} describes a cut off value which sets all dictionary entries to zero if they are smaller than the cut off value.\\
 \textbf{DF1/DF2/DF3/DF4} are the dictionary Functions, where \textbf{DF1} uses the Gompertz-fuctions, \textbf{DF2} uses the Sigmoid-function, \textbf{DF3} uses a simple logarithmic function and \textbf{DF4} uses a combination of logarithmic and Sigmoid-function.
 The \textbf{MO1/MO2/MO3} are functions used to get multiple Outputs based on their probabilities.
-For all runs we just used one genre to train with per book unless spezified. We added the title to the blurb to get more words and this way more information. All features where used insite a mean-feature per genre.\\
+For all runs we just used one genre to train with per book unless spezified. All runs where tested over the same train and test data set. We added the title to the blurb to get more words and this way more information. All features where used insite a mean-feature per genre.\\
 
 \begin{itemize}
     \item \textbf{SI} - sentence information (words per sentence and number od sentences)
@@ -56,6 +56,8 @@ For all runs we just used one genre to train with per book unless spezified. We 
     SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8186 &0.7951 &0.8066\\
 	\hline
     MultiLabelInput + SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8071 &0.8108 &0.8089\\
+    \hline
+    Lemmatisation + MultiLabelInput + SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) &0.8061 &0.8090 &0.8075\\
 	\hline
     10-Cross-Validation + SI + RFWC + \#S + 1GWBCR-15 + MF + MO2(0.1) + DF1 + CO(0.56) & 0.8172 & 0.7991 &0.8080\\
 	\hline

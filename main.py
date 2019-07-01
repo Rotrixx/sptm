@@ -3,16 +3,12 @@ import os
 import argparse
 import random
 import timeit
-from multiprocessing import Pool
 import spacy
 import pandas as pd
 import numpy as np
 from textblob_de import TextBlobDE
 from sklearn.ensemble import RandomForestClassifier
 from sklearn import metrics
-from sklearn.model_selection import GridSearchCV
-from sklearn.model_selection import cross_val_score
-from sklearn.model_selection import cross_val_predict
 
 pd.set_option('display.max_rows', 500)
 pd.set_option('display.max_columns', 500)
@@ -2099,7 +2095,6 @@ parser.add_argument("-rx", help="simulation of real use recursivly", action="sto
 parser.add_argument("-x10", help="10 cross val with all train data", action="store_true")
 parser.add_argument("-val", help="validation", action="store_true")
 parser.add_argument("-s", help="enable shuffle", action="store_true")
-parser.add_argument("-mp", help="activate multi processing", action="store_true")
 parser.add_argument("-mo", help="activate multi output", action="store_true")
 args = parser.parse_args()
 if args.lv:
@@ -2120,18 +2115,16 @@ if args.m:
     multilabel = True
 if args.s:
     shuffle = True
-if args.mp:
-    multiprocessing = True
 if args.mo:
     multiOut = True
 if args.x10:
     start = timeit.default_timer()
+    run = 0
     bookArray = readData('Data/blurbs_train_all.txt')
     stopWordListRead()
     testSplits, trainSplits = splitDataCrossVal()
     print(len(testSplits[5]))
     print("Done reading files.",  timeit.default_timer() - start)
-    run = 9
     tbookArray= testSplits[run]
     trainArray = trainSplits[run]
     bookArray = []
