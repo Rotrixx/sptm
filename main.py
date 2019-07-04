@@ -659,7 +659,7 @@ def improveDict():
     global allPentaWords
     global allAuthors
 
-    cutoff = 0.21
+    cutoff = 0.56
     """
     Gewichtung der Woerter in den Woerterbuechern
     ToDo Array mit allen Woerterbuechern erstellen und rueber-iterieren
@@ -1964,8 +1964,8 @@ def trainClassifier():
         y_predProb=randomForestClassifier.predict_proba(X_test)
         for i in y_predProb:
             #y_predRF.append(multiOutPrep(i, 0.7, 0.12))
-            #y_predRF.append(multiOutPrep2(i, 0.1))
-            y_predRF.append(multiOutPrep3(i, 0.72))
+            y_predRF.append(multiOutPrep2(i, 0.1))
+            #y_predRF.append(multiOutPrep3(i, 0.72))
             currPos += 1
     else:
         y_predRF=randomForestClassifier.predict(X_test)
@@ -2218,6 +2218,8 @@ if args.val:
     bookArray = readData('Data/blurbs_train.txt')
     tbookArray = readData('Data/blurbs_dev_participants.txt')
     stopWordListRead()
+    for i in tbookArray:
+        isbnData.append(i[4])
     print("Done reading files.",  timeit.default_timer() - start)
     createTempDict()
     improveDict()
