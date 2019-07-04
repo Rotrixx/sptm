@@ -659,7 +659,7 @@ def improveDict():
     global allPentaWords
     global allAuthors
 
-    cutoff = 0.56
+    cutoff = 0.21
     """
     Gewichtung der Woerter in den Woerterbuechern
     ToDo Array mit allen Woerterbuechern erstellen und rueber-iterieren
@@ -1963,9 +1963,9 @@ def trainClassifier():
         y_predRF = []
         y_predProb=randomForestClassifier.predict_proba(X_test)
         for i in y_predProb:
-            #y_predRF.append(multiOutPrep(i, 0.7, 0.1))
-            y_predRF.append(multiOutPrep2(i, 0.1))
-            #y_predRF.append(multiOutPrep3(i, 0.6))
+            #y_predRF.append(multiOutPrep(i, 0.7, 0.12))
+            #y_predRF.append(multiOutPrep2(i, 0.1))
+            y_predRF.append(multiOutPrep3(i, 0.72))
             currPos += 1
     else:
         y_predRF=randomForestClassifier.predict(X_test)
@@ -2215,8 +2215,8 @@ if args.x:
     print("Runntime: ",  stop - start)
 if args.val:
     start = timeit.default_timer()
-    bookArray = readData('Data/blurbs_train_all.txt')
-    tbookArray = readData('Data/blurbs_test_participant.txt')
+    bookArray = readData('Data/blurbs_train.txt')
+    tbookArray = readData('Data/blurbs_dev_participants.txt')
     stopWordListRead()
     print("Done reading files.",  timeit.default_timer() - start)
     createTempDict()
@@ -2233,8 +2233,6 @@ if args.val:
     print("Done creating DataFrame.",  timeit.default_timer() - start)
     trainClassifier()
     generateFinalOutputFile()
-    os.system('python ../evaluation/evaluate.py ../evaluation/input/ ../evaluation/output/')
-    os.system('cat ../evaluation/output/scores.html')
     stop = timeit.default_timer()
     print("Runntime: ",  stop - start)
 if args.rx:
